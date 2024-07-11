@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm'
 import Base from '../base.entity'
 import { Auth } from './auth.entity'
-import Media from '../media.enntity'
+import Media from '../media.entity'
 @Entity('users')
 export class userDetails extends Base {
   @Column({ name: 'first_name' })

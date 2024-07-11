@@ -6,7 +6,7 @@ import { StatusCodes } from '../constant/StatusCodes';
 import { errorHandler } from './errorHandler.middleware';
 import express, { NextFunction, Request, Response, type Application } from 'express';
 import compression from 'compression';
-import bodyParser from 'body-parser';
+import bodyParser, { urlencoded } from 'body-parser';
 import routes from '../routes/index.route';
 
 const middleware = (app: Application) => {
@@ -28,17 +28,17 @@ const middleware = (app: Application) => {
             else res.status(StatusCodes.FORBIDDEN).send('Forbidden');
         }
     });
-
-  
+    app.use(express.urlencoded({extended:false}))
     app.use(bodyParser.json());
-    app.set("view engine", "ejs");
-    app.set('views', path.join(__dirname,'../', 'views'));
-    // app.use(morganMiddleware);
+
+    app.set("view engine", "ejs"); 
+    app.set('views', path.join(__dirname, '../', 'views')); 
+
     app.use('/', routes);
 
-    app.use('/', (_, res: Response) => {
-        res.render('index');
-    });
+    // app.use('/', (_, res: Response) => {
+    //     res.render('index');
+    // });
 
     app.use(errorHandler);
 };

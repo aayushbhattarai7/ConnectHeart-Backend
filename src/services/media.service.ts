@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import path from 'path'
 import { AppDataSource } from "../config/database.config";
 import { Message } from "../constant/message";
-import Media from "../entities/media.enntity";
+import Media from "../entities/media.entity";
 import { getTempFolderPath } from "../utils/path.utils";
 import AppError from '../utils/HttpException.utils'
 

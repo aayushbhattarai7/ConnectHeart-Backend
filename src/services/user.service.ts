@@ -2,7 +2,6 @@ import { AppDataSource } from '../config/database.config'
 import { userDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity';
-
 import { AuthDTO, DetailDTO } from '../dto/user.dto';
 import HttpException from '../utils/HttpException.utils';
 class UserService {
