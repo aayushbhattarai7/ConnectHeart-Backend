@@ -4,5 +4,17 @@ export enum Environment {
 }
 
 export enum MediaType {
-    PROFILE = 'PROFILE'
+    PROFILE = 'PROFILE',
+    POST = 'POST'
+}
+
+export enum Role {
+    ADMIN = "ADMIN",
+    USER = "USER"
+
+}
+
+export enum AdminAllowedFetures{
+    SETUP = "SETUP",
+    MANAGE_ADMIN= "MANAGE_ADMIN"
 }

@@ -12,7 +12,9 @@ export const Message = {
     deleted: 'Successfully deleted',
     created: 'Successfully created',
     error: 'Error occurred',
-   
+    notAuthorized:' You are not Authorized',
+    tokenExpire: 'Token expired, Please signin again',
+    uploadFailed:'Sorry file couldnot be uploaded'
   }
 
   export const getNotFoundMessage = (title: string) =>{

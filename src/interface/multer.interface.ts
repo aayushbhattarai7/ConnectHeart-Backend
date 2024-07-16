@@ -7,4 +7,5 @@ export interface IMulterOutput {
     filename: string
     path:string
     size:number
+    type:string
 }

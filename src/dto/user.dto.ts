@@ -1,4 +1,6 @@
-import { IsNotEmpty,Matches,IsEmail, IsString, ValidateNested, IsOptional, IsStrongPassword } from "class-validator";
+import { Type as CType } from 'class-transformer'
+import { IsUUID,IsNotEmpty,Matches,IsEmail, IsString, ValidateNested, IsOptional, IsStrongPassword, IsEnum } from "class-validator";
+import { Role } from "../constant/enum";
 export class DetailDTO{
     @IsNotEmpty()
     @ValidateNested()
@@ -17,7 +19,7 @@ export class DetailDTO{
     @IsString()
     phone_number:string
 
-   
+  
 
 }
 export class AuthDTO extends DetailDTO{
@@ -29,8 +31,36 @@ export class AuthDTO extends DetailDTO{
     @IsString()
     username:string
 
+
+    @IsNotEmpty()
+    @IsStrongPassword()
+    @IsString()
+    password: string
+    
+    @IsNotEmpty()
+    @IsEnum(Role, {message:'Invalid Role'})
+    role:Role
+
+    
+}
+
+export class UpdateDTO extends DetailDTO {
+    @IsNotEmpty()
+    @IsUUID()
+    id: string
+
+    @IsNotEmpty()
+    @IsEmail()
+    email:string
+
     @IsNotEmpty()
     @IsString()
-    @IsStrongPassword()
-    password:string
+    username:string
+
+    @IsNotEmpty()
+    @IsEnum(Role, {message:'Invalid Role'})
+    role:Role
+
+
 }
+

@@ -1,12 +1,15 @@
 import { Router, type Request, type Response } from "express";
-import { AuthController } from '../controllers/auth.controllers';
+import { AuthController } from '../controllers/auth.controller';
 import { catchAsync } from '../utils/catchAsync.utils';
 import RequestValidator from '../middleware/Requestvalidator';
-import { AuthDTO } from '../dto/user.dto';
+import { AuthDTO, UpdateDTO } from '../dto/user.dto';
+import { authorization } from "../middleware/authorization.middleware";
 import wrapper from '@myrotvorets/express-async-middleware-wrapper';
 import { StatusCodes } from '../constant/StatusCodes';
 import mediaController from '../controllers/media.controller';
 import upload from '../utils/fileUpload';
+import { Role } from "../constant/enum";
+import { authentication } from "../middleware/authentication.middleware";
 
 const router: Router = Router();
 const authController = new AuthController();
@@ -19,8 +22,18 @@ router.get('/signup', (_, res: Response) => {
 router.get('/login', (_, res: Response) => {
     res.status(StatusCodes.SUCCESS).render('login');
 });
-
 router.post('/login', wrapper(authController.login));
-export default router;
+router.use(authentication())
 
+// router.delete('/:id', authController.delete)
+router.use(authorization([Role.USER]))
+
+router.get('/', (req: Request, res: Response) => {
+   
+      res.render('index',)
+   
+  });
+  router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
+router.get('/get/:id', authController.getId)
 router.post('/', upload.array('file'), catchAsync(mediaController.create));
+export default router;

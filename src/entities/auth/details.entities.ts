@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm'
 import Base from '../base.entity'
 import { Auth } from './auth.entity'
-import Media from '../media.entity'
+// import Media from '../media.entity'
+import { Post } from '../../entities/posts/posts.entity'
 @Entity('users')
 export class userDetails extends Base {
   @Column({ name: 'first_name' })
@@ -21,9 +22,11 @@ export class userDetails extends Base {
     onDelete:'CASCADE',
     onUpdate:'CASCADE'
   })
+
+
 @JoinColumn({name:'auth_id'})
 auth:Auth
 
-@ManyToMany(() => Media, (media) => media.details)
-profileImage:Media[]
+// @ManyToMany(() => Media, (media) => media.details)
+// profileImage:Media[]
 }
