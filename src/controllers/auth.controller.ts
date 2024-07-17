@@ -5,28 +5,25 @@ import authService from '../services/auth.service'
 import { AuthDTO } from '../dto/user.dto'
 import webTokenService from '../utils/webToken.service'
 import userService from '../services/user.service'
-import { Auth } from '../entities/auth/auth.entity'
 
 export class AuthController {
   async create(req: Request, res: Response) {
     console.log('🚀 ~ AuthController ~ req:', req.body)
 
     await authService.create(req.body as AuthDTO)
-    res.status(StatusCodes.CREATED).json({message:Message.created})
+    res.status(StatusCodes.CREATED).json({ message: Message.created })
   }
 
   async login(req: Request, res: Response) {
     const data = await authService.login(req.body)
-    console.log('uusserrr', data)
-
     const tokens = webTokenService.generateTokens(
       {
         id: data.id,
       },
       data.role
     )
-    res.cookie('token',tokens, {httpOnly:true})
-    
+    res.cookie('token', tokens, { httpOnly: true })
+
     res.status(StatusCodes.SUCCESS).json({
       data: {
         id: data.id,
@@ -53,13 +50,6 @@ export class AuthController {
     await userService.update(body, userId)
     res.status(StatusCodes.CREATED).json(Message.created)
   }
-
-  // async delete(req:Request, res:Response) {
-  //   const userId = req.params.id;
-  //   console.log(userId)
-  //   const message = await userService.delete(userId);
-  //   res.status(200).json(message);
-  // }
 
   async getId(req: Request, res: Response) {
     const id = req.user?.id

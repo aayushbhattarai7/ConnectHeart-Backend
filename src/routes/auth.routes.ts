@@ -25,15 +25,10 @@ router.get('/login', (_, res: Response) => {
 router.post('/login', wrapper(authController.login));
 router.use(authentication())
 
-// router.delete('/:id', authController.delete)
 router.use(authorization([Role.USER]))
 
-router.get('/', (req: Request, res: Response) => {
-   
-      res.render('index',)
-   
-  });
-  router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
-router.get('/get/:id', authController.getId)
 router.post('/', upload.array('file'), catchAsync(mediaController.create));
+router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
+// router.delete('/:id', authController.delete)
+
 export default router;

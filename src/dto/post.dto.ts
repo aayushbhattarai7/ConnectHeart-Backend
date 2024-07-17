@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsUUID } from 'class-validator'
 import { MediaType } from 'express'
 import { AuthDTO } from './user.dto'
 
-export class postDTO extends AuthDTO{
+export class PostDTO extends AuthDTO{
   @IsString()
   @IsNotEmpty()
   thought: string
