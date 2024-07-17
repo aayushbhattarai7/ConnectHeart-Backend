@@ -8,6 +8,7 @@ import postService from '../services/post.service'
 export class PostController {
   async create(req: Request, res: Response) {
     const userId = req?.user?.id
+    const body = req.body
     console.log(userId)
     if (req?.files?.length === 0) throw HttpException.badRequest
     console.log(req?.files)
@@ -19,9 +20,11 @@ export class PostController {
       }
     })
     
-    await postService.createPost(data as any, req.body as PostDTO, userId as string)
+    await postService.createPost(data as any, body , userId as string)
+    
     res.status(StatusCodes.CREATED).json({
       status: true,
+      body,
       data,
       message: Message.created,
     })
