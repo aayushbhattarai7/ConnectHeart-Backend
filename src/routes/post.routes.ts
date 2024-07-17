@@ -20,4 +20,6 @@ router.get('/', (req:Request, res:Response) => {
 router.post('/', RequestValidator.validate(PostDTO), upload.array('files'),wrapper(post.create))
   router.patch('/:id',wrapper(post.update))
 
+  router.get('/posts', wrapper(post.getPost))
+
 export default router;

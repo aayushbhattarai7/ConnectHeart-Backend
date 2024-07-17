@@ -78,5 +78,23 @@ class PostService {
       return Message.error
     }
   }
+
+async getPosts(userId:string, includeImage:boolean = true):Promise<any> {
+  try {
+    const query = this.postRepository.createQueryBuilder('post').where('post.auth_id = :userId', {userId})
+
+    if(includeImage) {
+      query.leftJoinAndSelect('post.postImage','postImage')
+    }
+    const posts = await query.getMany();
+    if(!posts.length) {
+      throw  HttpException.notFound
+    }
+    return posts
+   
+  } catch (error) {
+    console.log(error)
+  }
+}
 }
 export default new PostService()

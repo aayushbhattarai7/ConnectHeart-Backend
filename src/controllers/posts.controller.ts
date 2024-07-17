@@ -29,6 +29,17 @@ export class PostController {
       message: Message.created,
     })
   }
+
+  async getPost(req:Request, res:Response){
+    const userId = req.user?.id
+
+    await postService.getPosts(userId as string)
+    res.status(StatusCodes.CREATED).json({
+      status: true,
+      message: Message.loginSuccessfully,
+    })
+
+  }
   async update(req: Request, res: Response) {
     const userId = req.user?.id
     const postId = req.params.id
