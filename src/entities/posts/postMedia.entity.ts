@@ -6,7 +6,6 @@ import { MediaType } from '../../constant/enum'
 import { Post } from './posts.entity'
 import { getTempFolderPathForPost, getUploadFolderpathForPost } from '../../utils/path.utils'
 import { DotenvConfig } from '../../config/env.config'
-import postService from '../../services/post.service'
 
 @Entity('postimage')
 class PostMedia extends Base {
