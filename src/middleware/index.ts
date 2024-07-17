@@ -44,7 +44,11 @@ const middleware = (app: Application) => {
     })
   )
   app.use(express.urlencoded({ extended: false }))
-
+  app.get('/home', (req:Request, res:Response) => {
+   
+    res.render('index')
+ 
+});
   app.use('/', routes)
 
   app.use(errorHandler)

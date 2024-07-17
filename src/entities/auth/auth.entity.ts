@@ -1,5 +1,5 @@
 import { Column, Entity, OneToOne, OneToMany } from "typeorm";
-import { userDetails } from "./details.entities";
+import { UserDetails } from "./details.entities";
 import {AdminAllowedFetures, Role} from '../../constant/enum'
 import Base from "../base.entity";
 import {Post} from '../posts/posts.entity'
@@ -27,8 +27,8 @@ export class Auth extends Base {
 
    
 
-    @OneToOne(() =>userDetails, (details) => details.auth, {cascade: true})
-    details: userDetails
+    @OneToOne(() =>UserDetails, (details) => details.auth, {cascade: true})
+    details: UserDetails
 
     @OneToMany(() =>Post, (post) => post.postIt, {cascade: true})
     posts: Post

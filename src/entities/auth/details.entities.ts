@@ -4,7 +4,7 @@ import { Auth } from './auth.entity'
 // import Media from '../media.entity'
 import { Post } from '../../entities/posts/posts.entity'
 @Entity('users')
-export class userDetails extends Base {
+export class UserDetails extends Base {
   @Column({ name: 'first_name' })
   first_name: string
 

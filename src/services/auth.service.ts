@@ -1,5 +1,5 @@
 import { AppDataSource } from '../config/database.config'
-import { userDetails } from '../entities/auth/details.entities'
+import { UserDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity'
 import { AuthDTO, DetailDTO } from '../dto/user.dto'
@@ -8,13 +8,13 @@ import BcryptService from '../utils/bcrypt.utils'
 import UserService from './user.service'
 class AuthService {
   constructor(
-    private readonly getDet = AppDataSource.getRepository(userDetails),
+    private readonly getDet = AppDataSource.getRepository(UserDetails),
     private readonly getDetails = AppDataSource.getRepository(Auth),
     private readonly bcryptService = new BcryptService()
   ) {}
 
   async create(data: AuthDTO): Promise<string> {
-    const user = new userDetails()
+    const user = new UserDetails()
     user.first_name = data.first_name
     user.middle_name = data.middle_name
     user.last_name = data.last_name
@@ -44,8 +44,7 @@ class AuthService {
       return await UserService.getById(user.id)
     } catch (error) {
       throw HttpException.notFound(Message.invalidCredentials)
-      // throw HttpException.badRequest("Login Failed")
-      // throw new Error("Error occurred")
+      
     }
   }
 

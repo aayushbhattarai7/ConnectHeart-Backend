@@ -1,7 +1,6 @@
 import { existsSync } from 'fs'
 import path from 'path'
 import { AppDataSource } from '../config/database.config'
-import { Message } from '../constant/message'
 import PostMedia from '../entities/posts/postMedia.entity'
 import { getTempFolderPath } from '../utils/path.utils'
 import HttpException from '../utils/HttpException.utils'

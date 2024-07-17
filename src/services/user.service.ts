@@ -1,12 +1,12 @@
 import { AppDataSource } from '../config/database.config'
-import { userDetails } from '../entities/auth/details.entities'
+import { UserDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity'
-import { AuthDTO, DetailDTO, UpdateDTO } from '../dto/user.dto'
+import { UpdateDTO } from '../dto/user.dto'
 import HttpException from '../utils/HttpException.utils'
 class UserService {
   constructor(
-    private readonly getDet = AppDataSource.getRepository(userDetails),
+    private readonly getDet = AppDataSource.getRepository(UserDetails),
     private readonly getDetails = AppDataSource.getRepository(Auth)
   ) {}
   async getById(id: string, details: boolean = true): Promise<Auth> {
@@ -25,17 +25,18 @@ class UserService {
       throw new HttpException('Internal server error', 500)
     }
   }
+  
   async update(body: UpdateDTO, userId: string): Promise<string> {
     try {
       const id = userId
       console.log(userId)
-      const user = await this.getById(id);
-      user.details.first_name = body.first_name,
-        user.details.middle_name = body.middle_name,
-        user.details.last_name = body.last_name,
-        user.details.phone_number = body.phone_number,
-        user.email = body.email,
-        user.username = body.username,
+      const user = await this.getById(id)
+      ;(user.details.first_name = body.first_name),
+        (user.details.middle_name = body.middle_name),
+        (user.details.last_name = body.last_name),
+        (user.details.phone_number = body.phone_number),
+        (user.email = body.email),
+        (user.username = body.username),
         await this.getDet.save(user.details)
       await this.getDetails.save(user)
       await this.getById(user.id)
