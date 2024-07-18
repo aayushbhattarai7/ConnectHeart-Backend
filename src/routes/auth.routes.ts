@@ -6,7 +6,6 @@ import { AuthDTO, UpdateDTO } from '../dto/user.dto';
 import { authorization } from "../middleware/authorization.middleware";
 import wrapper from '@myrotvorets/express-async-middleware-wrapper';
 import { StatusCodes } from '../constant/StatusCodes';
-import mediaController from '../controllers/media.controller';
 import upload from '../utils/fileUpload';
 import { Role } from "../constant/enum";
 import { authentication } from "../middleware/authentication.middleware";
@@ -27,7 +26,6 @@ router.use(authentication())
 
 router.use(authorization([Role.USER]))
 
-router.post('/', upload.array('file'), catchAsync(mediaController.create));
 router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
 // router.delete('/:id', authController.delete)
 

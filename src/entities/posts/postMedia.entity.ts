@@ -6,13 +6,10 @@ import { MediaType } from '../../constant/enum'
 import { Post } from './posts.entity'
 import { getTempFolderPathForPost, getUploadFolderpathForPost } from '../../utils/path.utils'
 import { DotenvConfig } from '../../config/env.config'
-import postService from '../../services/post.service'
 
 @Entity('postimage')
 class PostMedia extends Base {
-  @Column({
-    nullable: true,
-  })
+  @Column({})
   name: string
 
   @Column({
@@ -24,7 +21,7 @@ class PostMedia extends Base {
   type: MediaType
 
   @ManyToOne(() => Post, (posts) => posts.postImage)
-  @JoinColumn({ name: 'post_id' })
+  @JoinColumn({ name: 'post_id'})
   posts: Post
 
   public path: string
@@ -34,11 +31,8 @@ class PostMedia extends Base {
     const TEMP_PATH = path.join(getTempFolderPathForPost(), this.name)
     const UPLOAD_PATH = path.join(getUploadFolderpathForPost(), type.toLowerCase(), post_id.toString())
 
-    console.log(post_id, 'Upload Path')
-    console.log(getUploadFolderpathForPost())
     !fs.existsSync(UPLOAD_PATH) && fs.mkdirSync(UPLOAD_PATH, { recursive: true })
     fs.renameSync(TEMP_PATH, path.join(UPLOAD_PATH, this.name))
-    console.log(UPLOAD_PATH, this.name)
   }
   @AfterLoad()
   async loadImagePath(): Promise<void> {
