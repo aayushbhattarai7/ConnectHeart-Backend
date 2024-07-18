@@ -2,60 +2,50 @@ import { AppDataSource } from '../config/database.config'
 import { UserDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity'
-import { AuthDTO, DetailDTO } from '../dto/user.dto'
+import { UpdateDTO } from '../dto/user.dto'
 import HttpException from '../utils/HttpException.utils'
-import BcryptService from '../utils/bcrypt.utils'
-import UserService from './user.service'
-class AuthService {
+class UserService {
   constructor(
     private readonly getDet = AppDataSource.getRepository(UserDetails),
-    private readonly getDetails = AppDataSource.getRepository(Auth),
-    private readonly bcryptService = new BcryptService()
+    private readonly getDetails = AppDataSource.getRepository(Auth)
   ) {}
-
-  async create(data: AuthDTO): Promise<string> {
-    const user = new UserDetails()
-    user.first_name = data.first_name
-    user.middle_name = data.middle_name
-    user.last_name = data.last_name
-    user.phone_number = data.phone_number
-    const auth = new Auth()
-    auth.email = data.email
-    auth.username = data.username
-    auth.password = await this.bcryptService.hash(data.password)
-    user.auth = auth
-    await auth.save()
-    await user.save()
-    console.log('User details saved successfully')
-    return Message.created
-  }
-
-  async login(data: AuthDTO): Promise<Auth> {
+  async getById(id: string, details: boolean = true): Promise<Auth> {
     try {
-      const user = await this.getDetails.findOne({
-        where: [{ email: data.email }],
-        select: ['id', 'email', 'password'],
-      })
-      if (!user) throw HttpException.notFound(Message.invalidCredentials)
-      const passwordMatched = await this.bcryptService.compare(data.password, user.password)
-      if (!passwordMatched) {
-        throw new Error('aayush vai pada')
+      const query = this.getDetails.createQueryBuilder('auth').where('auth.id = :id', { id })
+
+      if (details) query.leftJoinAndSelect('auth.details', 'details')
+      const users = await query.getOne()
+      if (!users) {
+        throw new HttpException('User not found', 404)
       }
-      return await UserService.getById(user.id)
+      console.log(users)
+      return users
     } catch (error) {
-      throw HttpException.notFound(Message.invalidCredentials)
-      
+      console.error('Error:', error)
+      throw new HttpException('Internal server error', 500)
     }
   }
 
-  // async getById(id:string):Promise<Auth>{
-  //   const query = this.getDetails.createQueryBuilder('user').where('user.id = :id', { id }).leftJoinAndSelect('user.details', 'details')
-  //   const users = await query.getOne()
-
-  //   if (!users) throw HttpException.notFound(Message.notFound)
-
-  //   return users
-  // }
+  async update(body: UpdateDTO, userId: string): Promise<string> {
+    try {
+      const id = userId
+      console.log(userId)
+      const user = await this.getById(id)
+      ;(user.details.first_name = body.first_name),
+        (user.details.middle_name = body.middle_name),
+        (user.details.last_name = body.last_name),
+        (user.details.phone_number = body.phone_number),
+        (user.email = body.email),
+        (user.username = body.username),
+        await this.getDet.save(user.details)
+      await this.getDetails.save(user)
+      await this.getById(user.id)
+      return Message.updated
+    } catch (error) {
+      console.log(error, 'error in update')
+      return Message.error
+    }
+  }
 }
 
-export default new AuthService()
+export default new UserService()

@@ -13,7 +13,9 @@ const getValidationMessage = (errors: ValidationError[], message: string[]) => {
         Object.values(err.constraints).forEach((value) => {
           const caseValue = titleNameToCase(value)
           message.push(caseValue)
-        }) } }
+        })
+      }
+    }
   })
 }
 class RequestValidator {
@@ -26,11 +28,11 @@ class RequestValidator {
         forbidNonWhitelisted: true,
       })
 
-    //   if (errors.length !== 0) {
-    //     getValidationMessage(errors, validationMessages)
-    //     console.log('req error')
-    //     next(HttpException.forbidden(validationMessages[0]))
-    //   }
+        if (errors.length !== 0) {
+          getValidationMessage(errors, validationMessages)
+          console.log('req error')
+          next(HttpException.forbidden(validationMessages[0]))
+        }
       next()
     }
   }

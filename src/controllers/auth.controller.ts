@@ -1,10 +1,10 @@
 import { type Request, type Response } from 'express'
 import { Message } from '../constant/message'
 import { StatusCodes } from '../constant/StatusCodes'
-import authService from '../services/auth.service'
+import authService from '../services/user.service'
 import { AuthDTO } from '../dto/user.dto'
 import webTokenService from '../utils/webToken.service'
-import userService from '../services/user.service'
+import userService from '../services/auth.service'
 
 export class AuthController {
   async create(req: Request, res: Response) {

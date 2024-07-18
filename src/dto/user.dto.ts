@@ -1,4 +1,3 @@
-import { Type as CType } from 'class-transformer'
 import { IsUUID,IsNotEmpty,Matches,IsEmail, IsString, ValidateNested, IsOptional, IsStrongPassword, IsEnum } from "class-validator";
 import { Role } from "../constant/enum";
 export class DetailDTO{

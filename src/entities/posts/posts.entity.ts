@@ -1,9 +1,8 @@
 import { JoinColumn, Column, Entity, OneToMany, ManyToOne } from 'typeorm'
 import Base from '../base.entity'
-import { MediaType } from '../../constant/enum'
-import { IsNotEmpty } from 'class-validator'
 import PostMedia from './postMedia.entity'
 import { Auth } from '../../entities/auth/auth.entity'
+import { Comment } from '../../entities/comment/comment.entity'
 
 @Entity('post')
 export class Post extends Base {
@@ -15,6 +14,9 @@ export class Post extends Base {
 
   @OneToMany(() => PostMedia, (postMedia) => postMedia.posts)
   postImage: Post[]
+
+  @OneToMany(() => Comment, (comments) => comments.posts)
+  comment: Post[]
 
   @ManyToOne(() => Auth, (postIt) => postIt.posts, {
     onDelete: 'CASCADE',

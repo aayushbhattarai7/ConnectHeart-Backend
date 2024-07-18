@@ -1,7 +1,7 @@
 import { Post } from '../entities/posts/posts.entity'
 import { AppDataSource } from '../config/database.config'
 import { Message } from '../constant/message'
-import { PostDTO, updatePostDTO } from '../dto/post.dto'
+import { PostDTO } from '../dto/post.dto'
 import { Auth } from '../entities/auth/auth.entity'
 import PostMedia from '../entities/posts/postMedia.entity'
 import HttpException from '../utils/HttpException.utils'
@@ -18,8 +18,6 @@ class PostService {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
 
-     
-
       const post = this.postRepository.create({
         thought: detail.thought,
         feeling: detail.feeling,
@@ -34,7 +32,7 @@ class PostService {
           name: file.name,
           mimetype: file.mimetype,
           type: file.type,
-          posts:savepost
+          posts: savepost,
         })
 
         const savedImage = await this.postMediaRepository.save(postImage)

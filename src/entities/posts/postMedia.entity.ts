@@ -21,7 +21,7 @@ class PostMedia extends Base {
   type: MediaType
 
   @ManyToOne(() => Post, (posts) => posts.postImage)
-  @JoinColumn({ name: 'post_id'})
+  @JoinColumn({ name: 'post_id' })
   posts: Post
 
   public path: string

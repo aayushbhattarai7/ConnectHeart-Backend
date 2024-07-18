@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import { DotenvConfig } from "../config/env.config";
-import { type IJwtPayload, type IJwtOptions } from "../interface/jwt.interface";
-import { Role } from "../constant/enum";
+import jwt from 'jsonwebtoken'
+import { DotenvConfig } from '../config/env.config'
+import { type IJwtPayload, type IJwtOptions } from '../interface/jwt.interface'
+import { Role } from '../constant/enum'
 
 class webTokenService {
   sign(user: IJwtPayload, options: IJwtOptions, role: Role): string {
@@ -14,15 +14,12 @@ class webTokenService {
       {
         expiresIn: options.expiresIn,
       }
-    );
+    )
   }
   verify(token: string, secret: string): any {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, secret)
   }
-  generateTokens(
-    user: IJwtPayload,
-    role: Role
-  ): { accessToken: string; refreshToken: string } {
+  generateTokens(user: IJwtPayload, role: Role): { accessToken: string; refreshToken: string } {
     console.log(DotenvConfig.ACCESS_TOKEN_SECRET)
     console.log(DotenvConfig.REFRESH_TOKEN_SECRET)
 
@@ -33,7 +30,7 @@ class webTokenService {
         secret: DotenvConfig.ACCESS_TOKEN_SECRET,
       },
       role
-    );
+    )
     const refreshToken = this.sign(
       user,
       {
@@ -41,8 +38,8 @@ class webTokenService {
         secret: DotenvConfig.REFRESH_TOKEN_SECRET,
       },
       role
-    );
-    return { accessToken, refreshToken };
+    )
+    return { accessToken, refreshToken }
   }
 
   generateAccessToken(user: IJwtPayload, role: Role): string {
@@ -53,8 +50,8 @@ class webTokenService {
         secret: DotenvConfig.ACCESS_TOKEN_SECRET,
       },
       role
-    );
+    )
   }
 }
 
-export default new webTokenService();
+export default new webTokenService()

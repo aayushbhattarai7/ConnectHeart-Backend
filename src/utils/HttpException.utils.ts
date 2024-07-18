@@ -20,7 +20,6 @@ class HttpException extends Error {
 
   static notFound(message: string): HttpException {
     return new HttpException(message, StatusCodes.NOT_FOUND)
-
   }
 
   static conflict(message: string): HttpException {

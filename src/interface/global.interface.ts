@@ -1,5 +1,4 @@
 export interface IMultiLanguage {
-    en: string
-    ne: string
-  }
-  
+  en: string
+  ne: string
+}

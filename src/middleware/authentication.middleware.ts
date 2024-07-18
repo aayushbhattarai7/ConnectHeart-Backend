@@ -14,7 +14,7 @@ export const authentication = () => {
       const mode = tokens[0]
       const accessToken = tokens[1]
 
-      if(mode!='token' || !accessToken) throw HttpException.unauthorized(Message.notAuthorized)
+      if (mode != 'token' || !accessToken) throw HttpException.unauthorized(Message.notAuthorized)
       const payload = tokenService.verify(accessToken, DotenvConfig.ACCESS_TOKEN_SECRET)
       console.log(payload)
       if (payload) {
