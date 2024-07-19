@@ -22,7 +22,6 @@ class CommentService {
       console.log(data.comment)
       let parents = null
       parents = await this.commentRepo.findOneBy({ id: data.parentId })
-      console.log('🚀 ~ CommentService ~ comment ~ parents:', parents)
 
       const comments = this.commentRepo.create({
         comment: data.comment,
@@ -40,9 +39,8 @@ class CommentService {
 
   async getComments(postId: string) {
     try {
-      const auth = await this.postRepo.findOneBy({ id: postId })
-      if (!auth) throw HttpException.unauthorized('You are not logged in, PLease Login to access your comments')
-      console.log(auth)
+      const post = await this.postRepo.findOneBy({ id: postId })
+      if (!post) throw HttpException.unauthorized('You are not logged in, PLease Login to access your comments')
       const comments = await this.commentRepo
         .createQueryBuilder('comment')
         .leftJoinAndMapOne('comment.post', Post, 'post', 'post.id = comment.post_id')
@@ -53,5 +51,7 @@ class CommentService {
       return error
     }
   }
+
+  
 }
 export default new CommentService()

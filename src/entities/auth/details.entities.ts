@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm'
+import { AfterLoad, Column, Entity, JoinColumn, OneToOne } from 'typeorm'
 import Base from '../base.entity'
 import { Auth } from './auth.entity'
 @Entity('users')
@@ -21,4 +21,5 @@ export class UserDetails extends Base {
   })
   @JoinColumn({ name: 'auth_id' })
   auth: Auth
+
 }

@@ -1,10 +1,11 @@
-import { IsString } from "class-validator";
-import { AuthDTO } from "./user.dto";
+import { IsEmpty, IsString } from 'class-validator'
+import { AuthDTO } from './user.dto'
+import {  } from 'typeorm'
 
-export class CommentDTO extends AuthDTO {
-    @IsString()
-    comment:string
+export class CommentDTO {
+  @IsString()
+  comment: string
 
-    @IsString()
-    parentId: string
+  @IsEmpty()
+  parentId: string
 }

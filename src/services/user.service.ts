@@ -5,45 +5,54 @@ import { Auth } from '../entities/auth/auth.entity'
 import { AuthDTO } from '../dto/user.dto'
 import HttpException from '../utils/HttpException.utils'
 import BcryptService from '../utils/bcrypt.utils'
-import UserService from './auth.service'
+import Auths from './auth.service'
 class AuthService {
   constructor(
-    private readonly getDet = AppDataSource.getRepository(UserDetails),
-    private readonly getDetails = AppDataSource.getRepository(Auth),
+    private readonly getDetails = AppDataSource.getRepository(UserDetails),
+    private readonly getAuth = AppDataSource.getRepository(Auth),
     private readonly bcryptService = new BcryptService()
   ) {}
 
-  async create(data: AuthDTO): Promise<string> {
-    const user = new UserDetails()
-    user.first_name = data.first_name
-    user.middle_name = data.middle_name
-    user.last_name = data.last_name
-    user.phone_number = data.phone_number
-    const auth = new Auth()
-    auth.email = data.email
-    auth.username = data.username
-    auth.password = await this.bcryptService.hash(data.password)
-    user.auth = auth
-    await auth.save()
-    await user.save()
-    console.log('User details saved successfully')
-    return Message.created
+  async create( data: AuthDTO): Promise<Auth> {
+   
+      const auth =  this.getAuth.create({
+        email:data.email,
+        username:data.username,
+        password:await this.bcryptService.hash(data.password),
+      })
+      await this.getAuth.save(auth)
+
+      const details = this.getDetails.create({
+        first_name: data.first_name,
+        middle_name:data.middle_name,
+        last_name:data.last_name,
+        phone_number: data.phone_number,
+        auth:auth
+      })
+      await this.getDetails.save(details)
+      return auth
+    
   }
 
   async login(data: AuthDTO): Promise<Auth> {
     try {
-      const user = await this.getDetails.findOne({
+      const user = await this.getAuth.findOne({
         where: [{ email: data.email }],
         select: ['id', 'email', 'password'],
       })
-      if (!user) throw HttpException.notFound(Message.invalidCredentials)
+      console.log(user?.email)
+      if (!user) throw HttpException.notFound(Message.notFound)
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
+      console.log("🚀 ~ AuthService ~ login ~ passwordMatched:", passwordMatched)
       if (!passwordMatched) {
-        throw new Error('aayush vai pada')
+        throw new Error('Incorrect Password')
       }
-      return await UserService.getById(user.id)
+      
+      const userid = await Auths.getById(user.id)
+      console.log(userid,"okok")
+      return await Auths.getById(user.id)
     } catch (error) {
-      throw HttpException.notFound(Message.invalidCredentials)
+      throw HttpException.notFound(Message.error)
     }
   }
 }

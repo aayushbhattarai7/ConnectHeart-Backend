@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from 'express'
+import { Router} from 'express'
 import RequestValidator from '../middleware/Requestvalidator'
 import { authorization } from '../middleware/authorization.middleware'
 import wrapper from '@myrotvorets/express-async-middleware-wrapper'
@@ -17,9 +17,12 @@ router.use(authentication())
 
 router.use(authorization([Role.USER]))
 
+router.get('/:postId', wrapper(post.getPost))
+router.get('/user/posts', post.getUserPost)
 router.post('/comment/:id', RequestValidator.validate(CommentDTO), wrapper(comment.comment))
-router.get('/:id', wrapper(comment.getComments))
-router.post('/', RequestValidator.validate(PostDTO), upload.array('files'), wrapper(post.create))
+router.get('/comment/:id', wrapper(comment.getComments))
+router.post('/', upload.array('files'), wrapper(post.create))
 router.patch('/:id', wrapper(post.update))
+router.patch(':/postId/:imageId', upload.single('files'), wrapper(post.updateImage))
 
 export default router

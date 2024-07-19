@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import user from './auth.routes'
 import post from './post.routes'
+import connect from './connect.routes'
 
 export interface Route {
   path: string
@@ -17,6 +18,10 @@ const routes: Route[] = [
     path: '/share',
     route: post,
   },
+  {
+    path:'/connect',
+    route:connect
+  }
 ]
 
 routes.forEach((route) => {

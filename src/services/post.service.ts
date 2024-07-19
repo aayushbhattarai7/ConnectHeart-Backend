@@ -13,7 +13,7 @@ class PostService {
     private readonly postMediaRepository = AppDataSource.getRepository(PostMedia)
   ) {}
 
-  async createPost(data: any[], detail: PostDTO, userId: string): Promise<any> {
+  async createPost(data: any[], detail: PostDTO, userId: string): Promise<string> {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
@@ -47,7 +47,7 @@ class PostService {
     }
   }
 
-  async update(data: any[], detail: PostDTO, userId: string, postId: string): Promise<string> {
+  async update(data: string, detail: PostDTO, userId: string, postId: string): Promise<string> {
     console.log(postId)
 
     const auth = await this.getAuth.findOneBy({ id: userId })
@@ -57,7 +57,59 @@ class PostService {
     post.thought = detail.thought
     post.feeling = detail.feeling
     await this.postRepository.save(post)
+
     return Message.updated
+  }
+
+  async updateImage(data: any, userId: string, postId: string, imageId: string): Promise<string> {
+    console.log(postId)
+
+    const auth = await this.getAuth.findOneBy({ id: userId })
+    if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
+    const post = await this.postRepository.findOneBy({ id: postId })
+    if (!post) throw HttpException.notFound
+    const image = await this.postMediaRepository.findOneBy({ id: imageId })
+    if (!image) throw HttpException.notFound
+
+    image.name = data.name
+    image.type = data.type
+    await this.postMediaRepository.save(image)
+
+    return Message.updated
+  }
+  async getPost(postId: string): Promise<object> {
+    try {
+      const fetchPost = await this.postRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.postIt', 'postIt')
+        .leftJoinAndSelect('post.postImage', 'image')
+        .leftJoinAndSelect('post.comment', 'comments')
+        .where('post.id = :postId ', { postId })
+
+        .getOne()
+      if (!fetchPost) throw HttpException.notFound('post not found')
+      return fetchPost
+    } catch (error) {
+      console.log('🚀 ~ PostService ~ getPost ~ error:', error)
+      throw HttpException.internalServerError
+    }
+  }
+
+  async getUserPost(userId: string): Promise<object> {
+    try {
+      const fetchPost = await this.postRepository
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.postIt', 'postIt')
+        .leftJoinAndSelect('post.postImage', 'image')
+        .leftJoinAndSelect('post.comment', 'comments')
+        .where('post.auth_id = :userId', { userId })
+        .getMany()
+      if (!fetchPost) throw HttpException.notFound('post not found')
+      return fetchPost
+    } catch (error) {
+      console.log('🚀 ~ PostService ~ getPost ~ error:', error)
+      throw HttpException.internalServerError
+    }
   }
 
   async delete(userId: string, postId: string): Promise<string> {

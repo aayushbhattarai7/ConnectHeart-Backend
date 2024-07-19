@@ -8,6 +8,7 @@ import wrapper from '@myrotvorets/express-async-middleware-wrapper';
 import { StatusCodes } from '../constant/StatusCodes';
 import { Role } from "../constant/enum";
 import { authentication } from "../middleware/authentication.middleware";
+import upload from '../utils/fileUpload'
 
 const router: Router = Router();
 const authController = new AuthController();

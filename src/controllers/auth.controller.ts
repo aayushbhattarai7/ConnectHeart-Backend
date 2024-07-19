@@ -16,6 +16,7 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     const data = await authService.login(req.body)
+    console.log(req.body)
     const tokens = webTokenService.generateTokens(
       {
         id: data.id,

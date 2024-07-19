@@ -1,65 +1,67 @@
-import { IsUUID,IsNotEmpty,Matches,IsEmail, IsString, ValidateNested, IsOptional, IsStrongPassword, IsEnum } from "class-validator";
-import { Role } from "../constant/enum";
-export class DetailDTO{
-    @IsNotEmpty()
-    @ValidateNested()
-    first_name:string
+import {
+  IsUUID,
+  IsNotEmpty,
+  Matches,
+  IsEmail,
+  IsString,
+  ValidateNested,
+  IsOptional,
+  IsStrongPassword,
+  IsEnum,
+  IsEmpty,
+} from 'class-validator'
+import { Role } from '../constant/enum'
+export class DetailDTO {
+  @IsNotEmpty()
+  first_name: string
 
-    @IsOptional()
-    @ValidateNested()
-    middle_name:string
+  @IsOptional()
+  middle_name: string
 
-    @IsNotEmpty()
-    @ValidateNested()
-    last_name:string
+  @IsNotEmpty()
+  last_name: string
 
-
-    @IsNotEmpty()
-    @IsString()
-    phone_number:string
+  @IsNotEmpty()
+  @IsString()
+  phone_number: string
 
   
-
 }
-export class AuthDTO extends DetailDTO{
-    @IsNotEmpty()
-    @IsEmail()
-    email:string
+export class AuthDTO extends DetailDTO {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string
 
-    @IsNotEmpty()
-    @IsString()
-    username:string
+  @IsNotEmpty()
+  @IsString()
+  username: string
 
+  @IsNotEmpty()
+  @IsStrongPassword()
+  @IsString()
+  password: string
 
-    @IsNotEmpty()
-    @IsStrongPassword()
-    @IsString()
-    password: string
-    
-    @IsNotEmpty()
-    @IsEnum(Role, {message:'Invalid Role'})
-    role:Role
-
-    
+  @IsNotEmpty()
+  @IsEnum(Role, { message: 'Invalid Role' })
+  role: Role = Role.USER
+  
+ 
 }
 
 export class UpdateDTO extends DetailDTO {
-    @IsNotEmpty()
-    @IsUUID()
-    id: string
+  @IsNotEmpty()
+  @IsUUID()
+  id: string
 
-    @IsNotEmpty()
-    @IsEmail()
-    email:string
+  @IsNotEmpty()
+  @IsEmail()
+  email: string
 
-    @IsNotEmpty()
-    @IsString()
-    username:string
+  @IsNotEmpty()
+  @IsString()
+  username: string
 
-    @IsNotEmpty()
-    @IsEnum(Role, {message:'Invalid Role'})
-    role:Role
-
-
+  @IsNotEmpty()
+  @IsEnum(Role, { message: 'Invalid Role' })
+  role: Role
 }
-

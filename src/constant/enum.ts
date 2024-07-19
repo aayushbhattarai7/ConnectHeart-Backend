@@ -13,8 +13,8 @@ export enum Role {
     USER = "USER"
 
 }
-
-export enum AdminAllowedFetures{
-    SETUP = "SETUP",
-    MANAGE_ADMIN= "MANAGE_ADMIN"
+export enum Status {
+    ACCEPTED = "ACCEPTED",
+    PENDING = "PENDING"
 }
+
