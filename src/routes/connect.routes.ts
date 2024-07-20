@@ -13,5 +13,9 @@ router.use(authentication())
 
 router.use(authorization([Role.USER]))
 
-router.post('/:id',connectController.connect)
+router.post('/:id',wrapper(connectController.connect))
+router.get('/requests',wrapper(connectController.viewRequest))
+router.patch('/accept/:id',wrapper(connectController.accept))
+router.delete('/reject/:id',wrapper(connectController.reject))
+router.get('/friends',wrapper(connectController.friend))
 export default router

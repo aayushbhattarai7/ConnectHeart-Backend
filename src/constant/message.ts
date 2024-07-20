@@ -16,6 +16,7 @@ export const Message = {
   tokenExpire: 'Token expired, Please signin again',
   uploadFailed: 'Sorry file couldnot be uploaded',
   success: 'Success',
+  accepted:'accepted'
 }
 
 export const getNotFoundMessage = (title: string) => {

@@ -15,6 +15,7 @@ export enum Role {
 }
 export enum Status {
     ACCEPTED = "ACCEPTED",
-    PENDING = "PENDING"
+    PENDING = "PENDING",
+    REJECTED =" REJECTED"
 }
 
