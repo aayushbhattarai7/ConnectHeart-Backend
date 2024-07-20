@@ -20,8 +20,7 @@ class CommentService {
       const post = await this.postRepo.findOneBy({ id: postId })
       if (!post) throw HttpException.notFound('Post Not Found')
       console.log(data.comment)
-      let parents = null
-      parents = await this.commentRepo.findOneBy({ id: data.parentId })
+      const parents = null
 
       const comments = this.commentRepo.create({
         comment: data.comment,
@@ -37,10 +36,33 @@ class CommentService {
     }
   }
 
+  async commentReply(data: CommentDTO, userId: string, postId: string, commentId: string): Promise<string> {
+    try {
+      const auth = await this.authRepo.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized
+
+      const post = await this.postRepo.findOneBy({ id: postId })
+      if (!post) throw HttpException.notFound('Post Not Found')
+      console.log(data.comment)
+      const parents = await this.commentRepo.findOneBy({ id: commentId })
+
+      const comments = this.commentRepo.create({
+        comment: data.comment,
+        parentComment: parents,
+        commentAuth: auth,
+        posts: post,
+      })
+      await this.commentRepo.save(comments)
+      return Message.created
+    } catch (error) {
+      console.log(error)
+      return Message.error
+    }
+  }
   async getComments(postId: string) {
     try {
       const post = await this.postRepo.findOneBy({ id: postId })
-      if (!post) throw HttpException.unauthorized('You are not logged in, PLease Login to access your comments')
+      if (!post) throw HttpException.notFound
       const comments = await this.commentRepo
         .createQueryBuilder('comment')
         .leftJoinAndMapOne('comment.post', Post, 'post', 'post.id = comment.post_id')
@@ -52,6 +74,36 @@ class CommentService {
     }
   }
 
-  
+  async updateComments(userId: string, data: CommentDTO, commentId: string) {
+    try {
+      if (!userId) throw HttpException.unauthorized
+
+      if (!commentId) throw HttpException.notFound('Comment not Found')
+      const comment = await this.commentRepo
+        .createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.commentAuth', 'auth')
+        .where('comment.auth_id = :userId', { userId })
+        .andWhere('comment.id = :commentId', { commentId })
+        .getOne()
+      if (!comment) throw HttpException.notFound('nono')
+
+      comment.comment = data.comment
+      await this.commentRepo.save(comment)
+      return Message.success
+    } catch (error) {
+      console.log('🚀 ~ CommentService ~ updateComments ~ error:', error)
+    }
+  }
+
+  async deleteComments(userId: string, commentId: string): Promise<string> {
+    await this.commentRepo
+      .createQueryBuilder('comment')
+      .delete()
+      .where('comment.auth_id = :userId', { userId })
+      .where('comment.id = :commentId', { commentId })
+      .execute()
+    
+    return Message.success
+  }
 }
 export default new CommentService()

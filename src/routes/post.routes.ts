@@ -1,4 +1,4 @@
-import { Router} from 'express'
+import { Router } from 'express'
 import RequestValidator from '../middleware/Requestvalidator'
 import { authorization } from '../middleware/authorization.middleware'
 import wrapper from '@myrotvorets/express-async-middleware-wrapper'
@@ -19,10 +19,15 @@ router.use(authorization([Role.USER]))
 
 router.get('/:postId', wrapper(post.getPost))
 router.get('/user/posts', post.getUserPost)
-router.post('/comment/:id', RequestValidator.validate(CommentDTO), wrapper(comment.comment))
-router.get('/comment/:id', wrapper(comment.getComments))
 router.post('/', upload.array('files'), wrapper(post.create))
 router.patch('/:id', wrapper(post.update))
-router.patch(':/postId/:imageId', upload.single('files'), wrapper(post.updateImage))
+router.patch('/:postId/:imageId', upload.single('files'), wrapper(post.updateImage))
+router.delete('/:postId',wrapper(post.delete))
+
+router.post('/comment/:postId', RequestValidator.validate(CommentDTO), wrapper(comment.comment))
+router.post('/comment/:postId/:commentId', wrapper(comment.commentReply))
+router.get('/comment/:id', wrapper(comment.getComments))
+router.patch('/comment/:postId', wrapper(comment.updateComment))
+router.delete('/comment/:commentId', wrapper(comment.deleteComment))
 
 export default router

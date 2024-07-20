@@ -42,7 +42,7 @@ export class PostController {
   async updateImage(req: Request, res: Response) {
     const userId = req.user?.id
     const postId = req.params.id
-    const imageId = req.params.id
+    const imageId = req.params.imageId
     const data = req?.files?.map((file: any) => {
       return {
         name: file?.filename,
@@ -77,11 +77,11 @@ export class PostController {
     })
   }
 
-  // async delete(req: Request, res: Response) {
-  //   const userId = req.user?.id
-  //   const postId = req.params.id
-  //   console.log(postId, 'posttttt')
-  //   await PostService.delete(userId as string, postId, req.body as PostDTO)
-  //   res.status(StatusCodes.SUCCESS).json(Message.deleted)
-  // }
+  async delete(req: Request, res: Response) {
+    const userId = req.user?.id
+    const postId = req.params.postId
+    console.log(postId, 'posttttt')
+    await PostService.delete(userId as string, postId)
+    res.status(StatusCodes.SUCCESS).json(Message.deleted)
+  }
 }

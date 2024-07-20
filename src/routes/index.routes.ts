@@ -15,7 +15,7 @@ const routes: Route[] = [
     route: user,
   },
   {
-    path: '/share',
+    path: '/post',
     route: post,
   },
   {

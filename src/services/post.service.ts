@@ -1,4 +1,5 @@
 import { Post } from '../entities/posts/posts.entity'
+import { Comment } from '../entities/comment/comment.entity'
 import { AppDataSource } from '../config/database.config'
 import { Message } from '../constant/message'
 import { PostDTO } from '../dto/post.dto'
@@ -10,7 +11,8 @@ class PostService {
   constructor(
     private readonly postRepository = AppDataSource.getRepository(Post),
     private readonly getAuth = AppDataSource.getRepository(Auth),
-    private readonly postMediaRepository = AppDataSource.getRepository(PostMedia)
+    private readonly postMediaRepository = AppDataSource.getRepository(PostMedia),
+    private readonly commentRepo = AppDataSource.getRepository(Comment)
   ) {}
 
   async createPost(data: any[], detail: PostDTO, userId: string): Promise<string> {
@@ -85,7 +87,6 @@ class PostService {
         .leftJoinAndSelect('post.postImage', 'image')
         .leftJoinAndSelect('post.comment', 'comments')
         .where('post.id = :postId ', { postId })
-
         .getOne()
       if (!fetchPost) throw HttpException.notFound('post not found')
       return fetchPost
@@ -117,12 +118,34 @@ class PostService {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
 
-      const post = await this.postRepository.findOneBy({ postIt: auth })
-      if (!post) throw HttpException.forbidden
+        const post = await this.postRepository
+        .createQueryBuilder('post')
+        .where('post.auth_id =:userId', { userId })
+        .andWhere('post.id =:postId', { postId })
+        .getOne()
 
-      await this.postRepository.delete(postId)
-      this.postRepository.delete(postId)
-      return postId
+        if(!post) throw HttpException.forbidden
+
+      await this.postMediaRepository
+        .createQueryBuilder('postimage')
+        .delete()
+        .where('postimage.post_id =:postId', { postId })
+        .execute()
+      
+      const comment = await this.commentRepo
+      .createQueryBuilder()
+      .delete()
+      .from('comment')
+      .where('comment.post_id =:postId',{postId})
+      .execute()
+
+      await this.postRepository
+        .createQueryBuilder('post')
+        .delete()
+        .where('post.auth_id =:userId', { userId })
+        .andWhere('post.id =:postId', { postId })
+        .execute()
+      return Message.deleted
     } catch (error) {
       console.log(error)
       return Message.error
