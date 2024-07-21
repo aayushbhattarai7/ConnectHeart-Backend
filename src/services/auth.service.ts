@@ -16,13 +16,13 @@ class UserService {
       if (details) query.leftJoinAndSelect('auth.details', 'details')
       const users = await query.getOne()
       if (!users) {
-        throw new HttpException('User not found', 404)
+        throw HttpException.notFound('User not found')
       }
       console.log(users)
       return users
     } catch (error) {
       console.error('Error:', error)
-      throw new HttpException('Internal server error', 500)
+      throw HttpException.internalServerError('Internal server error')
     }
   }
 
@@ -30,8 +30,8 @@ class UserService {
     try {
       const id = userId
       console.log(userId)
-      const user = await this.getById(id)
-      ;(user.details.first_name = body.first_name),
+      const user = await this.getById(id);
+        (user.details.first_name = body.first_name),
         (user.details.middle_name = body.middle_name),
         (user.details.last_name = body.last_name),
         (user.details.phone_number = body.phone_number),
@@ -44,6 +44,32 @@ class UserService {
     } catch (error) {
       console.log(error, 'error in update')
       return Message.error
+    }
+  }
+
+  async searchUser(userId: string, firstName: string, middleName: string, lastName: string) {
+    try {
+      const auth = await this.getDetails.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized
+
+      const searchUser = this.getDet.createQueryBuilder('user')
+
+      if (firstName) {
+        searchUser.andWhere('user.first_name ILIKE :firstName', { firstName: `%${firstName}%` })
+      }
+      if (middleName) {
+        searchUser.andWhere('user.middle_name ILIKE :middleName', { middleName: `%${middleName}%` })
+      }
+      if (lastName) {
+        searchUser.andWhere('user.last_name ILIKE :lastName', { lastName: `%${lastName}%` })
+      }
+      const search = await searchUser.getMany()
+      console.log('🚀 ~ UserService ~ searchUser ~ search:', search)
+
+      return search
+    } catch (error) {
+      console.log('🚀 ~ UserService ~ searchUser ~ error:', error)
+      throw HttpException.internalServerError
     }
   }
 }

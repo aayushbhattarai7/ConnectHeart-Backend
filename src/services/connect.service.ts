@@ -4,6 +4,7 @@ import { Connect } from '../entities/connection/connection.entity'
 import HttpException from '../utils/HttpException.utils'
 import { Status } from '../constant/enum'
 import { Message } from '../constant/message'
+import { Http } from 'winston/lib/winston/transports'
 
 export class ConnectService {
   constructor(
@@ -58,20 +59,25 @@ export class ConnectService {
   }
 
   async acceptRequest(userId: string, senderId: string): Promise<string> {
-    const accept = await this.connectRepo
-      .createQueryBuilder('connect')
-      .update('connect')
-      .set({ status: Status.ACCEPTED })
-      .where('connect.sender_id =:senderId', { senderId })
-      .andWhere('connect.receiver_id =:userId', { userId })
-      .andWhere('connect.status =:status', { status: Status.PENDING })
-      .execute()
-    return Message.accepted
+    try {
+      await this.connectRepo
+        .createQueryBuilder('connect')
+        .update('connect')
+        .set({ status: Status.ACCEPTED })
+        .where('connect.sender_id =:senderId', { senderId })
+        .andWhere('connect.receiver_id =:userId', { userId })
+        .andWhere('connect.status =:status', { status: Status.PENDING })
+        .execute()
+      return Message.accepted
+    } catch (error) {
+      console.log('🚀 ~ ConnectService ~ acceptRequest ~ error:', error)
+      throw HttpException.internalServerError(Message.error)
+    }
   }
 
   async rejectRequest(userId: string, senderId: string): Promise<string> {
     try {
-      const reject = await this.connectRepo
+      await this.connectRepo
         .createQueryBuilder('connect')
         .delete()
         .from('connect')

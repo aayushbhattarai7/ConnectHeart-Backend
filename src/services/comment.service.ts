@@ -67,7 +67,6 @@ class CommentService {
         .createQueryBuilder('comment')
         .leftJoinAndMapOne('comment.post', Post, 'post', 'post.id = comment.post_id')
         .getMany()
-
       return comments
     } catch (error) {
       return error
@@ -96,14 +95,19 @@ class CommentService {
   }
 
   async deleteComments(userId: string, commentId: string): Promise<string> {
-    await this.commentRepo
-      .createQueryBuilder('comment')
-      .delete()
-      .where('comment.auth_id = :userId', { userId })
-      .where('comment.id = :commentId', { commentId })
-      .execute()
-    
-    return Message.success
+    try {
+      await this.commentRepo
+        .createQueryBuilder('comment')
+        .delete()
+        .where('comment.auth_id = :userId', { userId })
+        .where('comment.id = :commentId', { commentId })
+        .execute()
+
+      return Message.success
+    } catch (error) {
+      console.log('🚀 ~ CommentService ~ deleteComments ~ error:', error)
+      throw HttpException.internalServerError(Message.error)
+    }
   }
 }
 export default new CommentService()

@@ -28,4 +28,5 @@ router.use(authorization([Role.USER]))
 
 router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
 
+router.get('/search', wrapper(authController.searchUser))
 export default router;

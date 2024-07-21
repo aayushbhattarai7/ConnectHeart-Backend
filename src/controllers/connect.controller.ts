@@ -38,21 +38,35 @@ export class ConnectController {
   }
 
   async accept(req: Request, res: Response) {
-    const userId = req.user?.id
-    const senderId = req.params.id
-    const acceptRequest = await Connect.acceptRequest(userId as string, senderId)
-    res.status(StatusCodes.SUCCESS).json({
-      acceptRequest,
-    })
+    try {
+      const userId = req.user?.id
+      const senderId = req.params.id
+      const acceptRequest = await Connect.acceptRequest(userId as string, senderId)
+      res.status(StatusCodes.SUCCESS).json({
+        acceptRequest,
+      })
+    } catch (error) {
+      console.log('🚀 ~ ConnectController ~ accept ~ error:', error)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: Message.error,
+      })
+    }
   }
 
-  async reject(req:Request, res:Response) {
-    const userId = req.user?.id
-    const senderId = req.params.id
-    const rejectRequest = await Connect.rejectRequest(userId as string, senderId)
-        res.status(StatusCodes.SUCCESS).json({
-            rejectRequest,
-          })
+  async reject(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id
+      const senderId = req.params.id
+      const rejectRequest = await Connect.rejectRequest(userId as string, senderId)
+      res.status(StatusCodes.SUCCESS).json({
+        rejectRequest,
+      })
+    } catch (error) {
+      console.log('🚀 ~ ConnectController ~ reject ~ error:', error)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: Message.error,
+      })
+    }
   }
 
   async friend(req: Request, res: Response) {

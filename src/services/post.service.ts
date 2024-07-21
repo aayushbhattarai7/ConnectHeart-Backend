@@ -49,35 +49,57 @@ class PostService {
     }
   }
 
-  async update(data: string, detail: PostDTO, userId: string, postId: string): Promise<string> {
-    console.log(postId)
+  async updatePost(data: any[], detail: PostDTO, userId: string, postId: string): Promise<string> {
+    try {
+      const auth = await this.getAuth.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
+      const post = await this.postRepository.findOneBy({ id: postId })
+      if (!post) throw HttpException.notFound
 
-    const auth = await this.getAuth.findOneBy({ id: userId })
-    if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-    const post = await this.postRepository.findOneBy({ id: postId })
-    if (!post) throw HttpException.notFound
-    post.thought = detail.thought
-    post.feeling = detail.feeling
-    await this.postRepository.save(post)
+      
+      post.thought = detail.thought
+      post.feeling = detail.feeling
+      const updatePost = await this.postRepository.save(post)
+      
+      // const postImages: PostMedia[] = []
+      // for (const file of data) {
+      //   const postImage = await this.postMediaRepository.update({
+      //     name : file.name,
+      //     memetype: file.memetype,
+      //     type:file.type,
+      //     postIt:updatePost
+      //   })
+      return Message.updated
 
-    return Message.updated
+      
+
+
+
+    } catch (error: any) {
+      console.log('🚀 ~ PostService ~ update ~ error:', error?.message)
+      throw HttpException.badRequest(error?.message)
+    
   }
+}
 
   async updateImage(data: any, userId: string, postId: string, imageId: string): Promise<string> {
-    console.log(postId)
+    try {
+      const auth = await this.getAuth.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
+      const post = await this.postRepository.findOneBy({ id: postId })
+      if (!post) throw HttpException.notFound
+      const image = await this.postMediaRepository.findOneBy({ id: imageId })
+      if (!image) throw HttpException.notFound
 
-    const auth = await this.getAuth.findOneBy({ id: userId })
-    if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-    const post = await this.postRepository.findOneBy({ id: postId })
-    if (!post) throw HttpException.notFound
-    const image = await this.postMediaRepository.findOneBy({ id: imageId })
-    if (!image) throw HttpException.notFound
+      image.name = data.name
+      image.type = data.type
+      await this.postMediaRepository.save(image)
 
-    image.name = data.name
-    image.type = data.type
-    await this.postMediaRepository.save(image)
-
-    return Message.updated
+      return Message.updated
+    } catch (error: any) {
+      console.log('🚀 ~ PostService ~ updateImage ~ error:', error?.message)
+      throw HttpException.badRequest(error?.message)
+    }
   }
   async getPost(postId: string): Promise<object> {
     try {
@@ -118,26 +140,26 @@ class PostService {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
 
-        const post = await this.postRepository
+      const post = await this.postRepository
         .createQueryBuilder('post')
         .where('post.auth_id =:userId', { userId })
         .andWhere('post.id =:postId', { postId })
         .getOne()
 
-        if(!post) throw HttpException.forbidden
+      if (!post) throw HttpException.forbidden
 
       await this.postMediaRepository
         .createQueryBuilder('postimage')
         .delete()
         .where('postimage.post_id =:postId', { postId })
         .execute()
-      
+
       const comment = await this.commentRepo
-      .createQueryBuilder()
-      .delete()
-      .from('comment')
-      .where('comment.post_id =:postId',{postId})
-      .execute()
+        .createQueryBuilder()
+        .delete()
+        .from('comment')
+        .where('comment.post_id =:postId', { postId })
+        .execute()
 
       await this.postRepository
         .createQueryBuilder('post')

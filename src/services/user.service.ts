@@ -13,25 +13,28 @@ class AuthService {
     private readonly bcryptService = new BcryptService()
   ) {}
 
-  async create( data: AuthDTO): Promise<Auth> {
-   
-      const auth =  this.getAuth.create({
-        email:data.email,
-        username:data.username,
-        password:await this.bcryptService.hash(data.password),
+  async create(data: AuthDTO): Promise<Auth> {
+    try {
+      const auth = this.getAuth.create({
+        email: data.email,
+        username: data.username,
+        password: await this.bcryptService.hash(data.password),
       })
       await this.getAuth.save(auth)
 
       const details = this.getDetails.create({
         first_name: data.first_name,
-        middle_name:data.middle_name,
-        last_name:data.last_name,
+        middle_name: data.middle_name,
+        last_name: data.last_name,
         phone_number: data.phone_number,
-        auth:auth
+        auth: auth,
       })
       await this.getDetails.save(details)
       return auth
-    
+    } catch (error: any) {
+      console.log('🚀  error:', error?.message)
+      throw HttpException.badRequest(error?.message)
+    }
   }
 
   async login(data: AuthDTO): Promise<Auth> {
@@ -43,13 +46,13 @@ class AuthService {
       console.log(user?.email)
       if (!user) throw HttpException.notFound(Message.notFound)
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
-      console.log("🚀 ~ AuthService ~ login ~ passwordMatched:", passwordMatched)
+      console.log('🚀 ~ AuthService ~ login ~ passwordMatched:', passwordMatched)
       if (!passwordMatched) {
         throw new Error('Incorrect Password')
       }
-      
+
       const userid = await Auths.getById(user.id)
-      console.log(userid,"okok")
+      console.log(userid, 'okok')
       return await Auths.getById(user.id)
     } catch (error) {
       throw HttpException.notFound(Message.error)
