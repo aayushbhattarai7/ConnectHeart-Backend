@@ -2,62 +2,86 @@ import { AppDataSource } from '../config/database.config'
 import { UserDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity'
-import { AuthDTO } from '../dto/user.dto'
+import { UpdateDTO } from '../dto/user.dto'
+import { EmailService } from './email.service'
 import HttpException from '../utils/HttpException.utils'
-import BcryptService from '../utils/bcrypt.utils'
-import Auths from './auth.service'
-class AuthService {
+import { generateHtml } from '../utils/mail.template'
+
+class UserService {
   constructor(
-    private readonly getDetails = AppDataSource.getRepository(UserDetails),
-    private readonly getAuth = AppDataSource.getRepository(Auth),
-    private readonly bcryptService = new BcryptService()
+    private readonly getDet = AppDataSource.getRepository(UserDetails),
+    private readonly getDetails = AppDataSource.getRepository(Auth),
+    private readonly mailService = new EmailService()
   ) {}
-
-  async create(data: AuthDTO): Promise<Auth> {
+  async getById(id: string, details: boolean = true): Promise<Auth> {
     try {
-      const auth = this.getAuth.create({
-        email: data.email,
-        username: data.username,
-        password: await this.bcryptService.hash(data.password),
-      })
-      await this.getAuth.save(auth)
+      const query = this.getDetails.createQueryBuilder('auth').where('auth.id = :id', { id })
 
-      const details = this.getDetails.create({
-        first_name: data.first_name,
-        middle_name: data.middle_name,
-        last_name: data.last_name,
-        phone_number: data.phone_number,
-        auth: auth,
-      })
-      await this.getDetails.save(details)
-      return auth
-    } catch (error: any) {
-      console.log('🚀  error:', error?.message)
-      throw HttpException.badRequest(error?.message)
+      if (details) query.leftJoinAndSelect('auth.details', 'details')
+      const users = await query.getOne()
+      if (!users) {
+        throw HttpException.notFound('User not found')
+      }
+      console.log(users)
+      return users
+    } catch (error) {
+      console.error('Error:', error)
+      throw HttpException.internalServerError('Internal server error')
     }
   }
 
-  async login(data: AuthDTO): Promise<Auth> {
+  async update(body: UpdateDTO, userId: string): Promise<string> {
     try {
-      const user = await this.getAuth.findOne({
-        where: [{ email: data.email }],
-        select: ['id', 'email', 'password'],
+      const id = userId
+      console.log(userId)
+      const user = await this.getById(id);
+        (user.details.first_name = body.first_name),
+        (user.details.middle_name = body.middle_name),
+        (user.details.last_name = body.last_name),
+        (user.details.phone_number = body.phone_number),
+        (user.email = body.email),
+        (user.username = body.username),
+        await this.getDet.save(user.details)
+      await this.getDetails.save(user)
+      await this.getById(user.id)
+      await this.mailService.sendMail({
+        to: user.email,
+        text:'Profile Updated Successfully',
+        subject:'Profile Updated Successfully',
+        html:generateHtml(`Profile Updated Successfully`)
       })
-      console.log(user?.email)
-      if (!user) throw HttpException.notFound(Message.notFound)
-      const passwordMatched = await this.bcryptService.compare(data.password, user.password)
-      console.log('🚀 ~ AuthService ~ login ~ passwordMatched:', passwordMatched)
-      if (!passwordMatched) {
-        throw new Error('Incorrect Password')
-      }
-
-      const userid = await Auths.getById(user.id)
-      console.log(userid, 'okok')
-      return await Auths.getById(user.id)
+      return Message.updated
     } catch (error) {
-      throw HttpException.notFound(Message.error)
+      console.log(error, 'error in update')
+      return Message.error
+    }
+  }
+
+  async searchUser(userId: string, firstName: string, middleName: string, lastName: string) {
+    try {
+      const auth = await this.getDetails.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized
+
+      const searchUser = this.getDet.createQueryBuilder('user')
+
+      if (firstName) {
+        searchUser.andWhere('user.first_name ILIKE :firstName', { firstName: `%${firstName}%` })
+      }
+      if (middleName) {
+        searchUser.andWhere('user.middle_name ILIKE :middleName', { middleName: `%${middleName}%` })
+      }
+      if (lastName) {
+        searchUser.andWhere('user.last_name ILIKE :lastName', { lastName: `%${lastName}%` })
+      }
+      const search = await searchUser.getMany()
+      console.log('🚀 ~ UserService ~ searchUser ~ search:', search)
+
+      return search
+    } catch (error) {
+      console.log('🚀 ~ UserService ~ searchUser ~ error:', error)
+      throw HttpException.internalServerError
     }
   }
 }
 
-export default new AuthService()
+export default new UserService()

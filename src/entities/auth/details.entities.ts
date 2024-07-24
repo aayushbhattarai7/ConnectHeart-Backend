@@ -12,7 +12,7 @@ export class UserDetails extends Base {
   @Column({ name: 'last_name' })
   last_name: string
 
-  @Column({ name: 'phone_number' })
+  @Column({ name: 'phone_number', nullable: true })
   phone_number: string
 
   @OneToOne(() => Auth, (auth) => auth.details, {

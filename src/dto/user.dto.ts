@@ -9,6 +9,8 @@ import {
   IsStrongPassword,
   IsEnum,
   IsEmpty,
+  isNotEmpty,
+  isString,
 } from 'class-validator'
 import { Role } from '../constant/enum'
 export class DetailDTO {
@@ -64,4 +66,16 @@ export class UpdateDTO extends DetailDTO {
   @IsNotEmpty()
   @IsEnum(Role, { message: 'Invalid Role' })
   role: Role
+}
+export class GoogleLoginDTO {
+  @IsNotEmpty()
+  @IsString()
+  googleId:string
+}
+
+export class ResetPasswordDTO {
+  @IsNotEmpty()
+  @IsString()
+  @IsStrongPassword()
+  password:string
 }

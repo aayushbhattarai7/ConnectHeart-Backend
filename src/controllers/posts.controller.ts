@@ -33,31 +33,9 @@ export class PostController {
     }
   }
   async update(req: Request, res: Response) {
-    // try {
-    //   const userId = req.user?.id
-    //   const postId = req.params.id
-    //   const data = req?.files?.map((file: any) => {
-    //     return {
-    //       name: file?.filename,
-    //       mimetype: file?.mimetype,
-    //       type: req.body?.type,
-    //     }
-    //   })
-    //   await PostService.update(data as any, req.body as PostDTO, userId as string, postId as string)
-    //   res.status(StatusCodes.SUCCESS).json(Message.updated)
-    // } catch (error) {
-    //   console.log('🚀 ~ PostController ~ update ~ error:', error)
-    //   res.status(StatusCodes.BAD_REQUEST).json({
-    //     message: Message.error,
-    //   })
-    // }
-  }
-
-  async updateImage(req: Request, res: Response) {
     try {
       const userId = req.user?.id
       const postId = req.params.id
-      const imageId = req.params.imageId
       const data = req?.files?.map((file: any) => {
         return {
           name: file?.filename,
@@ -65,15 +43,17 @@ export class PostController {
           type: req.body?.type,
         }
       })
-      await PostService.updateImage(data as any, userId as string, postId as string, imageId as string)
+      await PostService.updatePost(data as any, req.body as PostDTO, userId as string, postId as string)
       res.status(StatusCodes.SUCCESS).json(Message.updated)
     } catch (error) {
-      console.log('🚀 ~ PostController ~ updateImage ~ error:', error)
+      console.log('🚀 ~ PostController ~ update ~ error:', error)
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
       })
     }
   }
+
+
 
   async getPost(req: Request, res: Response) {
     try {

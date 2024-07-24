@@ -27,6 +27,9 @@ export class Auth extends Base {
   })
   role: Role
 
+  @Column({name:'verified', default:false})
+  Verified:boolean
+
   @OneToOne(() => UserDetails, (details) => details.auth, { cascade: true })
   details: UserDetails
 

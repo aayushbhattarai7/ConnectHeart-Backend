@@ -6,7 +6,7 @@ import { PostDTO } from '../dto/post.dto'
 import { Auth } from '../entities/auth/auth.entity'
 import PostMedia from '../entities/posts/postMedia.entity'
 import HttpException from '../utils/HttpException.utils'
-
+import { transferImageFromUploadToTemp } from '../utils/path.utils'
 class PostService {
   constructor(
     private readonly postRepository = AppDataSource.getRepository(Post),
@@ -27,8 +27,6 @@ class PostService {
       })
 
       const savepost = await this.postRepository.save(post)
-      const postImages: PostMedia[] = []
-
       for (const file of data) {
         const postImage = this.postMediaRepository.create({
           name: file.name,
@@ -38,7 +36,6 @@ class PostService {
         })
 
         const savedImage = await this.postMediaRepository.save(postImage)
-        postImages.push(savedImage)
         savedImage.transferImageFromTempToUpload(post.id, savedImage.type)
       }
 
@@ -53,54 +50,50 @@ class PostService {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
+
       const post = await this.postRepository.findOneBy({ id: postId })
       if (!post) throw HttpException.notFound
 
-      
       post.thought = detail.thought
       post.feeling = detail.feeling
-      const updatePost = await this.postRepository.save(post)
-      
-      // const postImages: PostMedia[] = []
-      // for (const file of data) {
-      //   const postImage = await this.postMediaRepository.update({
-      //     name : file.name,
-      //     memetype: file.memetype,
-      //     type:file.type,
-      //     postIt:updatePost
-      //   })
+      const updatedPost = await this.postRepository.save(post)
+      const media = await this.postMediaRepository.find({
+        where: { posts: { id: postId } },
+        relations: ['posts'],
+      })
+
+      if (media.length > 0) {
+        for (const mediaItem of media) {
+          transferImageFromUploadToTemp(post.id, mediaItem.name, mediaItem.type)
+        }
+
+        await this.postMediaRepository
+          .createQueryBuilder()
+          .delete()
+          .from(PostMedia)
+          .where('posts.id = :postId', { postId })
+          .execute()
+      }
+
+      for (const file of data) {
+        const saveMedia = new PostMedia()
+        saveMedia.name = file.name
+        saveMedia.mimetype = file.mimetype
+        saveMedia.type = file.type
+        saveMedia.posts = updatedPost
+
+        const savedImage = await this.postMediaRepository.save(saveMedia)
+        savedImage.transferImageFromTempToUpload(post.id, savedImage.type)
+        console.log(savedImage)
+      }
+
       return Message.updated
-
-      
-
-
-
     } catch (error: any) {
       console.log('🚀 ~ PostService ~ update ~ error:', error?.message)
       throw HttpException.badRequest(error?.message)
-    
-  }
-}
-
-  async updateImage(data: any, userId: string, postId: string, imageId: string): Promise<string> {
-    try {
-      const auth = await this.getAuth.findOneBy({ id: userId })
-      if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-      const post = await this.postRepository.findOneBy({ id: postId })
-      if (!post) throw HttpException.notFound
-      const image = await this.postMediaRepository.findOneBy({ id: imageId })
-      if (!image) throw HttpException.notFound
-
-      image.name = data.name
-      image.type = data.type
-      await this.postMediaRepository.save(image)
-
-      return Message.updated
-    } catch (error: any) {
-      console.log('🚀 ~ PostService ~ updateImage ~ error:', error?.message)
-      throw HttpException.badRequest(error?.message)
     }
   }
+
   async getPost(postId: string): Promise<object> {
     try {
       const fetchPost = await this.postRepository

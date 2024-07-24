@@ -2,76 +2,152 @@ import { AppDataSource } from '../config/database.config'
 import { UserDetails } from '../entities/auth/details.entities'
 import { Message } from '../constant/message'
 import { Auth } from '../entities/auth/auth.entity'
-import { UpdateDTO } from '../dto/user.dto'
+import { AuthDTO, ResetPasswordDTO } from '../dto/user.dto'
 import HttpException from '../utils/HttpException.utils'
-class UserService {
+import BcryptService from '../utils/bcrypt.utils'
+import Auths from './user.service'
+import { jwtDecode } from 'jwt-decode'
+import { EmailService } from './email.service'
+import UserService from './user.service'
+import { generateHtml } from '../utils/mail.template'
+class AuthService {
   constructor(
-    private readonly getDet = AppDataSource.getRepository(UserDetails),
-    private readonly getDetails = AppDataSource.getRepository(Auth)
+    private readonly getDetails = AppDataSource.getRepository(UserDetails),
+    private readonly getAuth = AppDataSource.getRepository(Auth),
+    private readonly bcryptService = new BcryptService(),
+    private readonly mailService = new EmailService()
   ) {}
-  async getById(id: string, details: boolean = true): Promise<Auth> {
-    try {
-      const query = this.getDetails.createQueryBuilder('auth').where('auth.id = :id', { id })
 
-      if (details) query.leftJoinAndSelect('auth.details', 'details')
-      const users = await query.getOne()
-      if (!users) {
-        throw HttpException.notFound('User not found')
+  async create(data: AuthDTO): Promise<Auth> {
+    try {
+      const auth = this.getAuth.create({
+        email: data.email,
+        username: data.username,
+        password: await this.bcryptService.hash(data.password),
+      })
+      await this.getAuth.save(auth)
+
+      const details = this.getDetails.create({
+        first_name: data.first_name,
+        middle_name: data.middle_name,
+        last_name: data.last_name,
+        phone_number: data.phone_number,
+        auth: auth,
+      })
+      await this.getDetails.save(details)
+      await this.mailService.sendMail({
+        to: data.email,
+        text:'Registered Successfully',
+        subject:'Registered Successfully',
+        html:generateHtml(`Hey ${details.first_name}! Welcome to the ConnectHub`)
+      })
+      return auth
+    } catch (error: any) {
+      console.log('🚀  error:', error?.message)
+      throw HttpException.badRequest(error?.message)
+    }
+  }
+
+  async login(data: AuthDTO): Promise<Auth> {
+    try {
+      const user = await this.getAuth.findOne({
+        where: [{ email: data.email }],
+        select: ['id', 'email', 'password'],
+      })
+      console.log(user?.email)
+      if (!user) throw HttpException.notFound(Message.notFound)
+      const passwordMatched = await this.bcryptService.compare(data.password, user.password)
+      console.log('🚀 ~ AuthService ~ login ~ passwordMatched:', passwordMatched)
+      console.log(user.password)
+      if (!passwordMatched) {
+        throw new Error('Incorrect Password')
       }
-      console.log(users)
-      return users
+
+      const userid = await Auths.getById(user.id)
+      console.log(userid, 'okok')
+      await this.mailService.sendMail({
+        to: data.email,
+        text:'Login Info',
+        subject:'Login Info',
+        html:generateHtml(`Someone has logged in to your account`)
+      })
+      return await Auths.getById(user.id)
     } catch (error) {
-      console.error('Error:', error)
-      throw HttpException.internalServerError('Internal server error')
+      throw HttpException.notFound(Message.error)
     }
   }
 
-  async update(body: UpdateDTO, userId: string): Promise<string> {
+  async googleLogin(googleId: string): Promise<any> {
     try {
-      const id = userId
-      console.log(userId)
-      const user = await this.getById(id);
-        (user.details.first_name = body.first_name),
-        (user.details.middle_name = body.middle_name),
-        (user.details.last_name = body.last_name),
-        (user.details.phone_number = body.phone_number),
-        (user.email = body.email),
-        (user.username = body.username),
-        await this.getDet.save(user.details)
-      await this.getDetails.save(user)
-      await this.getById(user.id)
-      return Message.updated
+      const decoded: any = jwtDecode(googleId)
+      const user = await this.getAuth.findOne({
+        where: { email: decoded.email },
+        relations: ['details'],
+      })
+      if (!user) {
+        try {
+          const user = new Auth()
+          user.email = decoded?.email
+          user.username = decoded?.email
+          user.password = await this.bcryptService.hash(decoded?.sub)
+
+          const save = await this.getAuth.save(user)
+          console.log('🚀 ~ AuthService ~ googleLogin ~ save:', save)
+          if (save) {
+            const details = new UserDetails()
+            details.auth = save
+            details.first_name = decoded.given_name
+            details.middle_name = decoded?.middle_name
+            details.last_name = decoded.family_name
+            await this.getDetails.save(details)
+            return await UserService.getById(save.id)
+          }
+        } catch (error) {
+          throw HttpException.badRequest(Message.error)
+        }
+      }
     } catch (error) {
-      console.log(error, 'error in update')
-      return Message.error
+      console.log(error)
+      
     }
   }
 
-  async searchUser(userId: string, firstName: string, middleName: string, lastName: string) {
+  async getEmail(data: any) {
+    await this.mailService.sendMail({
+      to: data?.email,
+      text: 'Reset Password',
+      subject: 'Reset Password',
+      html: '<p>http://localhost:4000/user/updatePassword</p>',
+    })
+  }
+
+  async passwordReset(userId: string, data: ResetPasswordDTO): Promise<string> {
     try {
-      const auth = await this.getDetails.findOneBy({ id: userId })
+      const users = await this.getAuth.findOneBy({id:userId})
+      if(!users) throw HttpException.unauthorized(Message.notAuthorized)
+      console.log("🚀 ~ AuthService ~ passwordReset ~ users:", users)
+      
+      const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id','password'] })
       if (!auth) throw HttpException.unauthorized
+      if (!auth.password) throw HttpException.badRequest('No password')
+      console.log('🚀 ~ AuthService ~ passwordReset ~ !auth:', auth.password)
+    auth.password = await this.bcryptService.hash(data.password)
+      console.log("yaa samma good xa");
 
-      const searchUser = this.getDet.createQueryBuilder('user')
-
-      if (firstName) {
-        searchUser.andWhere('user.first_name ILIKE :firstName', { firstName: `%${firstName}%` })
-      }
-      if (middleName) {
-        searchUser.andWhere('user.middle_name ILIKE :middleName', { middleName: `%${middleName}%` })
-      }
-      if (lastName) {
-        searchUser.andWhere('user.last_name ILIKE :lastName', { lastName: `%${lastName}%` })
-      }
-      const search = await searchUser.getMany()
-      console.log('🚀 ~ UserService ~ searchUser ~ search:', search)
-
-      return search
+      console.log("🚀 ~ AuthService ~ passwordReset ~ data.password:", data.password)
+      await this.getAuth.update(auth.id, { password: auth.password });
+      await this.mailService.sendMail({
+        to: users.email,
+        text:'Password Reset Successfully',
+        subject:'Password Reset Successfully',
+        html:'<p>Password changed Successfully!</p>'
+      })
+      return Message.passwordReset
     } catch (error) {
-      console.log('🚀 ~ UserService ~ searchUser ~ error:', error)
-      throw HttpException.internalServerError
+      console.log('🚀 ~ AuthService ~ passwordReset ~ error:', error)
+      return Message.error
     }
   }
 }
 
-export default new UserService()
+export default new AuthService()
