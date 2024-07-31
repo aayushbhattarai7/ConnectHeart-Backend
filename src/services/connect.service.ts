@@ -99,14 +99,14 @@ export class ConnectService {
         .innerJoinAndSelect('connection.sender', 'sender')
         .innerJoinAndSelect('connection.receiver', 'receiver')
         .where('connection.sender_id= :userId OR connection.receiver_id= :userId', { userId })
-        .andWhere('connection.status =:status', { status: Status.ACCEPTED })
+        
         .getMany()
-      console.log('🚀 ~ ConnectService ~ getFriends ~ allFriends:', allFriends)
+        console.log('Status.ACCEPTED:', Status.ACCEPTED);
 
       const friends: Auth[] = allFriends.map((connection) =>
-        connection.sender.id === userId ? connection.receiver : connection.sender
+        connection.sender.id === userId && Status.ACCEPTED? connection.receiver : connection.sender
       )
-      console.log('🚀 ~ ConnectService ~ getFriends ~ friends:', friends)
+
 
       return friends
     } catch (error) {

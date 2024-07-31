@@ -9,15 +9,17 @@ import { Connect } from '../../entities/connection/connection.entity'
 export class Auth extends Base {
   @Column({
     unique: true,
+    nullable:false
   })
   email: string
 
   @Column({
     unique: true,
+    nullable:false
   })
   username: string
 
-  @Column({ select: false })
+  @Column({ select: false , nullable:false})
   password: string
 
   @Column({

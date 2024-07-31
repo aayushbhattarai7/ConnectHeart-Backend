@@ -1,5 +1,5 @@
 export interface IMulterOutput {
-  fieldname: 'file'
+  fieldname: 'files'
   originalname: string
   ecncoding: string
   mimetype: string

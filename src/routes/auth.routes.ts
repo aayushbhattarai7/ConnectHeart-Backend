@@ -12,7 +12,7 @@ import { authentication } from "../middleware/authentication.middleware";
 const router: Router = Router();
 const authController = new AuthController();
 
-router.post('/signup', RequestValidator.validate(AuthDTO), catchAsync(authController.create));
+router.post('/signup', RequestValidator.validate(AuthDTO),catchAsync(authController.create));
 router.get('/signup', (_, res: Response) => {
     res.render('signup');
 });
@@ -24,6 +24,7 @@ router.post('/login', wrapper(authController.login));
 
 router.post('/google', wrapper(authController.googleLogin))
 
+router.get('/getit/:id', authController.getId)
 
 
 router.use(authentication())

@@ -65,12 +65,12 @@ class AuthService {
 
       const userid = await Auths.getById(user.id)
       console.log(userid, 'okok')
-      await this.mailService.sendMail({
-        to: data.email,
-        text:'Login Info',
-        subject:'Login Info',
-        html:generateHtml(`Someone has logged in to your account`)
-      })
+      // await this.mailService.sendMail({
+      //   to: data.email,
+      //   text:'Login Info',
+      //   subject:'Login Info',
+      //   html:generateHtml(`Someone has logged in to your account`)
+      // })
       return await Auths.getById(user.id)
     } catch (error) {
       throw HttpException.notFound(Message.error)

@@ -31,8 +31,6 @@ export class AuthController {
         },
         data.role
       )
-      res.cookie('token', tokens, { httpOnly: true })
-
       res.status(StatusCodes.SUCCESS).json({
         data: {
           id: data.id,
@@ -109,7 +107,7 @@ export class AuthController {
 
   async getId(req: Request, res: Response) {
     try {
-      const id = req.user?.id
+      const id = req.params.id
       console.log(id)
       const data = await userService.getById(id as string)
       console.log(data)

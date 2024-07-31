@@ -9,7 +9,6 @@ export class PostController {
     try {
       const userId = req?.user?.id
       console.log(userId)
-      if (req?.files?.length === 0) throw HttpException.badRequest
       console.log(req?.files)
       const data = req?.files?.map((file: any) => {
         return {
@@ -25,10 +24,10 @@ export class PostController {
         data,
         message: Message.created,
       })
-    } catch (error) {
+    } catch (error:any) {
       console.log('🚀 ~ PostController ~ create ~ error:', error)
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: Message.error,
+        message: error?.message,
       })
     }
   }

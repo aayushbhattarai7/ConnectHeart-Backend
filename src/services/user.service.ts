@@ -13,16 +13,18 @@ class UserService {
     private readonly getDetails = AppDataSource.getRepository(Auth),
     private readonly mailService = new EmailService()
   ) {}
-  async getById(id: string, details: boolean = true): Promise<Auth> {
+  async getById(id: string): Promise<Auth> {
     try {
-      const query = this.getDetails.createQueryBuilder('auth').where('auth.id = :id', { id })
+      const query = this.getDetails.createQueryBuilder('auth')
+      .leftJoinAndSelect('auth.details', 'details')
+      .where('auth.id = :id', { id })
 
-      if (details) query.leftJoinAndSelect('auth.details', 'details')
+       
       const users = await query.getOne()
       if (!users) {
         throw HttpException.notFound('User not found')
       }
-      console.log(users)
+      console.log(users,"Users is hererree")
       return users
     } catch (error) {
       console.error('Error:', error)

@@ -3,13 +3,13 @@ import Base from '../base.entity'
 import { Auth } from './auth.entity'
 @Entity('users')
 export class UserDetails extends Base {
-  @Column({ name: 'first_name' })
+  @Column({ name: 'first_name', nullable:false })
   first_name: string
 
   @Column({ name: 'middle_name', nullable: true })
   middle_name: string
 
-  @Column({ name: 'last_name' })
+  @Column({ name: 'last_name', nullable:false })
   last_name: string
 
   @Column({ name: 'phone_number', nullable: true })

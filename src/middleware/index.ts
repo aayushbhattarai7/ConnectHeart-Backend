@@ -36,7 +36,7 @@ const middleware = (app: Application) => {
 
   app.use(express.urlencoded({ extended: false }))
 
-  app.use('/', routes)
+  app.use('/api', routes)
 
   app.use(errorHandler)
 }
