@@ -1,3 +1,4 @@
+
 import { IsNotEmpty, IsEnum } from "class-validator";
 import { Status } from "../constant/enum";
 import { AuthDTO } from "./user.dto";

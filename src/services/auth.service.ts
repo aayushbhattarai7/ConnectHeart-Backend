@@ -148,6 +148,8 @@ class AuthService {
       return Message.error
     }
   }
+
+  
 }
 
 export default new AuthService()

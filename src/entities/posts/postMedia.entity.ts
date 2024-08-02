@@ -28,10 +28,14 @@ class PostMedia extends Base {
 
   transferImageFromTempToUpload(id: string, type: MediaType): void {
     const post_id = this.posts.id
+    console.log(post_id,"Post ko id postid")
     const TEMP_PATH = path.join(getTempFolderPathForPost(), this.name)
-    const UPLOAD_PATH = path.join(getUploadFolderpathForPost(), type.toLowerCase(), post_id.toString())
+    const UPLOAD_PATH = path.join(getUploadFolderpathForPost(), type.toLowerCase(), this.id.toString())
     !fs.existsSync(UPLOAD_PATH) && fs.mkdirSync(UPLOAD_PATH, { recursive: true })
     fs.renameSync(TEMP_PATH, path.join(UPLOAD_PATH, this.name))
+    this.path = `${DotenvConfig.BASE_URL}/${this.type.toLowerCase()}/${this.id.toString()}/${this.name}`
+console.log(this.path)
+    
   }
 
   // transferImageFromUploadToTemp(id: string, type: MediaType): void {
@@ -62,7 +66,7 @@ class PostMedia extends Base {
 
   @AfterLoad()
   async loadImagePath(): Promise<void> {
-    this.path = `${DotenvConfig.BASE_URL}/${this.type.toLowerCase()}`
+    this.path = `${DotenvConfig.BASE_URL}/${this.type.toLowerCase()}/${this.id.toString()}/${this.name}`
   }
 }
 export default PostMedia

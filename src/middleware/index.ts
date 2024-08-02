@@ -19,6 +19,9 @@ const middleware = (app: Application) => {
     })
   )
 
+  // console.log()
+  // app.use(cors())
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     const userAgent = req.headers['user-agent']
     const apikey = req.headers['apikey']
@@ -31,9 +34,8 @@ const middleware = (app: Application) => {
   })
   app.use(bodyParser.json())
 
-  app.set('view engine', 'ejs')
-  app.set('views', path.join(__dirname, '../', 'views'))
-
+  app.set('public', path.join(__dirname, '../','../', 'public','posts', 'upload'))
+app.use(express.static(path.join(__dirname,'../','../', 'public/posts/upload')))
   app.use(express.urlencoded({ extended: false }))
 
   app.use('/api', routes)

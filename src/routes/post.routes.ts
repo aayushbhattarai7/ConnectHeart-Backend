@@ -13,12 +13,12 @@ const post = new PostController()
 const comment = new CommentController()
 const router: Router = Router()
 
-// router.use(authentication())
-
-// router.use(authorization([Role.USER]))
+router.use(authentication())
+router.use(authorization([Role.USER]))
 
 router.get('/:postId', wrapper(post.getPost))
 router.get('/user/posts', post.getUserPost)
+router.get('/', wrapper(post.getAllPost))
 router.post('/', upload.array('files'), wrapper(post.create))
 router.patch('/:id', upload.array('files'), wrapper(post.update))
 router.delete('/:postId',wrapper(post.delete))

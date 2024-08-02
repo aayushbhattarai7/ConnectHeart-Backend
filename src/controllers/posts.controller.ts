@@ -9,7 +9,7 @@ export class PostController {
     try {
       const userId = req?.user?.id
       console.log(userId)
-      console.log(req?.files)
+      console.log(req?.files, "aayushhh")
       const data = req?.files?.map((file: any) => {
         return {
           name: file?.filename,
@@ -17,7 +17,7 @@ export class PostController {
           type: req.body?.type,
         }
       })
-      console.log(req.body)
+      console.log(req.body ,"aasa")
       await PostService.createPost(data as any, req.body as PostDTO, userId as string)
       res.status(StatusCodes.CREATED).json({
         status: true,
@@ -68,6 +68,21 @@ export class PostController {
       })
     }
   }
+
+  async getAllPost(req:Request, res: Response) {
+    try {
+      const posts = await PostService.getAllPost()
+      res.status(StatusCodes.SUCCESS).json({
+        posts
+      })
+    }catch(error) {
+      console.log("🚀 ~ PostController ~ getAllPost ~ error:", error)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message:'Error While fetching post'
+      })
+    }
+  }
+
   async getUserPost(req: Request, res: Response) {
     try {
       const userId = req.user?.id

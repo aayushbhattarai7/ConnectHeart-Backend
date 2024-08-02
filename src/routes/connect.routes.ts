@@ -18,4 +18,5 @@ router.get('/requests',wrapper(connectController.viewRequest))
 router.patch('/accept/:id',wrapper(connectController.accept))
 router.delete('/reject/:id',wrapper(connectController.reject))
 router.get('/friends',wrapper(connectController.friend))
+router.get('/suggestion', wrapper(connectController.getUserSuggestion))
 export default router

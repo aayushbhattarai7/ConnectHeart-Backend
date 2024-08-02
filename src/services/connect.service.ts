@@ -10,7 +10,7 @@ export class ConnectService {
   constructor(
     private readonly connectRepo = AppDataSource.getRepository(Connect),
     private readonly AuthRepo = AppDataSource.getRepository(Auth)
-  ) {}
+  ) { }
 
   async connect(sender: string, receiver: string): Promise<Connect> {
     try {
@@ -20,16 +20,16 @@ export class ConnectService {
       const receiverId = await this.AuthRepo.findOneBy({ id: receiver })
       if (!receiverId) throw HttpException.notFound('Receiver Not Found')
       if (sender === receiver) throw HttpException.badRequest('Cannot send friend request')
-      const existingRequest = await this.connectRepo.findOne({
-        where: [
-          { sender: { id: sender }, receiver: { id: receiver } },
-          { sender: { id: receiver }, receiver: { id: sender } },
-        ],
-      })
-
-      if (existingRequest) {
-        throw HttpException.badRequest('Friend Request already sent to this user')
-      }
+        const existingRequest = await this.connectRepo.findOne({
+          where: [
+            { sender: { id: sender }, receiver: { id: receiver } },
+            { sender: { id: receiver }, receiver: { id: sender } },
+          ],
+        })
+  
+        if (existingRequest) {
+          throw HttpException.badRequest('Friend Request already sent to this user')
+        }
 
       const send = this.connectRepo.create({
         sender: senderId,
@@ -43,16 +43,24 @@ export class ConnectService {
     }
   }
 
-  async viewRequests(userId: string): Promise<Connect[]> {
+  async viewRequests(userId: string): Promise<Auth[]> {
     try {
-      const view = await this.connectRepo
-        .createQueryBuilder('connect')
-        .innerJoinAndSelect('connect.sender', 'sender')
-        .where('connect.receiver_id =:userId', { userId })
-        .andWhere('connect.status =:status', { status: Status.PENDING })
-        .getMany()
+      const requests = await this.connectRepo.find({
+        where:{
+          receiver:{
+            id:userId
+          },
+          
+            status:Status.PENDING
+          
+        },
+        relations: ['sender.details']
+      })
 
-      return view
+      const req = requests.map((request) =>
+        request.sender.id === userId && Status.PENDING ? request.receiver : request.sender
+      )
+      return req
     } catch (error) {
       throw HttpException.notFound
     }
@@ -96,15 +104,16 @@ export class ConnectService {
     try {
       const allFriends = await this.connectRepo
         .createQueryBuilder('connection')
-        .innerJoinAndSelect('connection.sender', 'sender')
-        .innerJoinAndSelect('connection.receiver', 'receiver')
-        .where('connection.sender_id= :userId OR connection.receiver_id= :userId', { userId })
-        
-        .getMany()
-        console.log('Status.ACCEPTED:', Status.ACCEPTED);
+        .leftJoinAndSelect('connection.sender', 'sender')
+        .leftJoinAndSelect('connection.receiver', 'receiver')
+        .leftJoinAndSelect('sender.details', 'senderDetails') 
+        .leftJoinAndSelect('receiver.details', 'receiverDetails')
+        .where('connection.sender_id = :userId OR connection.receiver_id = :userId', { userId })
+        .andWhere('connection.status = :status', { status: Status.ACCEPTED })
+        .getMany();
 
       const friends: Auth[] = allFriends.map((connection) =>
-        connection.sender.id === userId && Status.ACCEPTED? connection.receiver : connection.sender
+        connection.sender.id === userId && Status.ACCEPTED ? connection.receiver : connection.sender
       )
 
 
@@ -114,4 +123,33 @@ export class ConnectService {
       throw new Error('Error fetching friends list')
     }
   }
+
+  async getUserSuggestion(userId:string) {
+    const auth = await this.AuthRepo.findOne({where: {id:userId}})
+    if(!auth) throw HttpException.unauthorized
+
+    const users = await this.AuthRepo.createQueryBuilder('auth')
+    .leftJoinAndSelect('auth.details','details')
+    .where('auth.id != :userId', {userId})
+    .andWhere(qb => {
+      const subQuery = qb.subQuery()
+      .select('connect.receiver_id')
+      .from(Connect, 'connect')
+      .where('connect.sender_id =:userId',{userId})
+      .getQuery();
+      return 'auth.id NOT IN' +subQuery
+    })
+    .andWhere(qb => {
+      const subQuery = qb.subQuery()
+      .select('connect.sender_id')
+      .from(Connect, 'connect')
+      .where('connect.receiver_id = :userId', {userId})
+
+      .getQuery();
+      return 'auth.id NOT IN' +subQuery
+    })
+    .getMany()
+    return users
+  }
+  
 }

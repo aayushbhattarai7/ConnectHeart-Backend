@@ -111,6 +111,24 @@ class PostService {
     }
   }
 
+  async getAllPost() {
+    try {
+      const getpost = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.postIt','postIt')
+      .leftJoinAndSelect('postIt.details','details')
+      .leftJoinAndSelect('post.postImage','image')
+      .leftJoinAndSelect('post.comment','comment')
+      .getMany()
+      console.log(getpost)
+      if(!getpost) throw HttpException.notFound('post not found')
+        return getpost
+    }catch(error) {
+      console.log("🚀 ~ PostService ~ getAllPost ~ error:", error)
+        throw HttpException.internalServerError
+    }
+  }
+
   async getUserPost(userId: string): Promise<object> {
     try {
       const fetchPost = await this.postRepository

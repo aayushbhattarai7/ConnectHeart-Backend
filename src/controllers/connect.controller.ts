@@ -84,4 +84,22 @@ export class ConnectController {
       })
     }
   }
+  async getUserSuggestion(req:Request, res:Response) {
+    try {
+      const userId = req.user?.id
+      console.log("🚀 ~ AuthController ~ getUserSuggestion ~ userId:", userId)
+      
+      const user = await Connect.getUserSuggestion(userId as string)
+      res.status(StatusCodes.SUCCESS). json({
+        message:Message.success,
+        user
+      })
+
+    }catch(error) {
+      console.log("🚀 ~ AuthController ~ getUserSuggestion ~ error:", error)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message:'Error while getting suggestion'
+      })
+    }
+  }
 }
