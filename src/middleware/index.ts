@@ -11,16 +11,16 @@ import routes from '../routes/index.routes'
 const middleware = (app: Application) => {
   console.log('DotenvConfig', DotenvConfig.CORS_ORIGIN)
   app.use(compression())
-  app.use(
-    cors({
-      origin: DotenvConfig.CORS_ORIGIN,
-      methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-  )
+  // app.use(
+  //   cors({
+  //     origin: DotenvConfig.CORS_ORIGIN,
+  //     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  //     allowedHeaders: ['Content-Type', 'Authorization'],
+  //   })
+  // )
 
   // console.log()
-  // app.use(cors())
+  app.use(cors())
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     const userAgent = req.headers['user-agent']

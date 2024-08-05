@@ -14,6 +14,7 @@ const comment = new CommentController()
 const router: Router = Router()
 
 router.use(authentication())
+
 router.use(authorization([Role.USER]))
 
 router.get('/:postId', wrapper(post.getPost))
@@ -22,10 +23,11 @@ router.get('/', wrapper(post.getAllPost))
 router.post('/', upload.array('files'), wrapper(post.create))
 router.patch('/:id', upload.array('files'), wrapper(post.update))
 router.delete('/:postId',wrapper(post.delete))
-router.post('/comment/:postId', RequestValidator.validate(CommentDTO), wrapper(comment.comment))
+router.post('/comment/:postId', wrapper(comment.comment))
 router.post('/comment/:postId/:commentId', wrapper(comment.commentReply))
 router.get('/comment/:id', wrapper(comment.getComments))
 router.patch('/comment/:postId', wrapper(comment.updateComment))
 router.delete('/comment/:commentId', wrapper(comment.deleteComment))
+router.get('/comments', comment.getAllComment)
 
 export default router

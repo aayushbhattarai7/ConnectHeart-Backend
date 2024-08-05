@@ -119,6 +119,8 @@ class PostService {
       .leftJoinAndSelect('postIt.details','details')
       .leftJoinAndSelect('post.postImage','image')
       .leftJoinAndSelect('post.comment','comment')
+      .leftJoinAndSelect('comment.childComment', 'childComment') 
+      .leftJoinAndSelect('comment.parentComment','parentComment')
       .getMany()
       console.log(getpost)
       if(!getpost) throw HttpException.notFound('post not found')

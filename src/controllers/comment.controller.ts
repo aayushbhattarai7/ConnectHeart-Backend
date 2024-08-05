@@ -3,6 +3,7 @@ import { CommentDTO } from '../dto/comment.dto'
 import CommentService from '../services/comment.service'
 import { Message } from '../constant/message'
 import { StatusCodes } from '../constant/StatusCodes'
+import commentService from '../services/comment.service'
 export class CommentController {
   async comment(req: Request, res: Response) {
     try {
@@ -75,6 +76,18 @@ export class CommentController {
       res.status(StatusCodes.ACCEPTED).json({ deleteIt })
     } catch (error) {
       console.log('🚀 ~ CommentController ~ deleteComment ~ error:', error)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: Message.error,
+      })
+    }
+  }
+  
+  async getAllComment(req: Request, res: Response) {
+    try {
+      const comments = await CommentService.getPostComment()
+      res.status(StatusCodes.ACCEPTED).json({ comments })
+    } catch (error) {
+      console.log('🚀 ~ CommentController ~ comments ~ error:', error)
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
       })

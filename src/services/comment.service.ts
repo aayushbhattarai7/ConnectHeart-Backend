@@ -109,5 +109,21 @@ class CommentService {
       throw HttpException.internalServerError(Message.error)
     }
   }
+
+  async getPostComment () {
+    try {
+      const comments = await this.postRepo.createQueryBuilder('post')
+      .leftJoinAndSelect('post.comment','comment')
+      .leftJoinAndSelect('comment.parentComment', 'parentComment') 
+      .leftJoinAndSelect('comment.childComment', 'childComment') 
+      .where('post.id = comment.post_id')
+      .getMany()
+return comments
+    } catch (error) {
+      console.log("🚀 ~ CommentService ~ getPostComment ~ error:", error)
+      
+    }
+  }
+  
 }
 export default new CommentService()

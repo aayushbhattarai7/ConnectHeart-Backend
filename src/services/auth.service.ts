@@ -35,12 +35,12 @@ class AuthService {
         auth: auth,
       })
       await this.getDetails.save(details)
-      await this.mailService.sendMail({
-        to: data.email,
-        text:'Registered Successfully',
-        subject:'Registered Successfully',
-        html:generateHtml(`Hey ${details.first_name}! Welcome to the ConnectHub`)
-      })
+      // await this.mailService.sendMail({
+      //   to: data.email,
+      //   text:'Registered Successfully',
+      //   subject:'Registered Successfully',
+      //   html:generateHtml(`Hey ${details.first_name}! Welcome to the ConnectHub`)
+      // })
       return auth
     } catch (error: any) {
       console.log('🚀  error:', error?.message)
