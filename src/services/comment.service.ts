@@ -11,7 +11,7 @@ class CommentService {
     private readonly commentRepo = AppDataSource.getRepository(Comment),
     private readonly authRepo = AppDataSource.getRepository(Auth),
     private readonly postRepo = AppDataSource.getRepository(Post)
-  ) {}
+  ) { }
   async comment(data: CommentDTO, userId: string, postId: string): Promise<string> {
     try {
       const auth = await this.authRepo.findOneBy({ id: userId })
@@ -36,7 +36,7 @@ class CommentService {
     }
   }
 
-  async commentReply(data: CommentDTO, userId: string, postId: string, commentId: string): Promise<string> {
+  async commentReply(data: CommentDTO, userId: string, postId: string, commentId: string){
     try {
       const auth = await this.authRepo.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized
@@ -53,7 +53,7 @@ class CommentService {
         posts: post,
       })
       await this.commentRepo.save(comments)
-      return Message.created
+      return comments
     } catch (error) {
       console.log(error)
       return Message.error
@@ -65,7 +65,8 @@ class CommentService {
       if (!post) throw HttpException.notFound
       const comments = await this.commentRepo
         .createQueryBuilder('comment')
-        .leftJoinAndMapOne('comment.post', Post, 'post', 'post.id = comment.post_id')
+        .leftJoinAndSelect('comment.posts', 'posts')
+        .where('comment.post_id =:postId', { postId })
         .getMany()
       return comments
     } catch (error) {
@@ -110,20 +111,20 @@ class CommentService {
     }
   }
 
-  async getPostComment () {
+  async getPostComment() {
     try {
       const comments = await this.postRepo.createQueryBuilder('post')
-      .leftJoinAndSelect('post.comment','comment')
-      .leftJoinAndSelect('comment.parentComment', 'parentComment') 
-      .leftJoinAndSelect('comment.childComment', 'childComment') 
-      .where('post.id = comment.post_id')
-      .getMany()
-return comments
+        .leftJoinAndSelect('post.comment', 'comment')
+        .leftJoinAndSelect('comment.parentComment', 'parentComment')
+        .leftJoinAndSelect('comment.childComment', 'childComment')
+        .where('post.id = comment.post_id')
+        .getMany()
+      return comments
     } catch (error) {
       console.log("🚀 ~ CommentService ~ getPostComment ~ error:", error)
-      
+
     }
   }
-  
+
 }
 export default new CommentService()

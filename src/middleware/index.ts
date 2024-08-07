@@ -32,8 +32,8 @@ const middleware = (app: Application) => {
   })
   app.use(bodyParser.json())
 
-  app.set('public', path.join(__dirname, '../','../', 'public','posts', 'upload'))
-app.use(express.static(path.join(__dirname,'../','../', 'public/posts/upload')))
+  app.set('public', path.join(__dirname, '../','../', 'public','files'))
+app.use(express.static(path.join(__dirname,'../','../', 'public/files')))
   app.use(express.urlencoded({ extended: false }))
 
   app.use('/api', routes)

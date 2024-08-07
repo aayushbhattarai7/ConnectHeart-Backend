@@ -6,6 +6,7 @@ import { Post } from '../posts/posts.entity'
 import { Comment } from '../../entities/comment/comment.entity'
 import { Connect } from '../../entities/connection/connection.entity'
 import { Like } from '../../entities/like/like.entity'
+import Profile from './profile.entity'
 @Entity('auth')
 export class Auth extends Base {
   @Column({
@@ -13,12 +14,6 @@ export class Auth extends Base {
     nullable:false
   })
   email: string
-
-  @Column({
-    unique: true,
-    nullable:false
-  })
-  username: string
 
   @Column({ select: false , nullable:false})
   password: string
@@ -35,6 +30,9 @@ export class Auth extends Base {
 
   @OneToOne(() => UserDetails, (details) => details.auth, { cascade: true })
   details: UserDetails
+
+  @OneToOne(()=> Profile, (profile)=> profile.auth, {cascade:true})
+  profile:Profile
 
   @OneToMany(() => Post, (post) => post.postIt, { cascade: true })
   posts: Post

@@ -17,7 +17,7 @@ export class Post extends Base {
   postImage: Post[]
 
   @OneToMany(() => Comment, (comments) => comments.posts)
-  comment: Post[]
+  comment: Comment[]
 
   @ManyToOne(() => Auth, (postIt) => postIt.posts, {
     onDelete: 'CASCADE',

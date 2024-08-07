@@ -80,6 +80,7 @@ import { Message } from "../../constant/message";
                 .where('like.auth_id =:userId', { userId })
                 .andWhere('like.post_id =:postId', { postId })
                 .getOne()
+                console.log('ajdnj')
             console.log("🚀 ~ LikeService ~ changeLike ~ changelikes:", changelikes)
 
             if (changelikes) {

@@ -5,6 +5,7 @@ import HttpException from '../utils/HttpException.utils'
 import { Status } from '../constant/enum'
 import { Message } from '../constant/message'
 import { Http } from 'winston/lib/winston/transports'
+import { freemem } from 'os'
 
 export class ConnectService {
   constructor(
@@ -116,13 +117,27 @@ export class ConnectService {
         connection.sender.id === userId && Status.ACCEPTED ? connection.receiver : connection.sender
       )
 
-
       return friends
     } catch (error) {
       console.error(error)
       throw new Error('Error fetching friends list')
     }
   }
+
+  async getFriendsCount() {
+    try {
+
+      const friends =  this.getFriends
+      const count:number = friends.length
+      console.log("🚀 ~ ConnectService ~ getFriendsCount ~ count:", count)
+      return count
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error fetching friends list')
+    }
+  }
+
+
 
   async getUserSuggestion(userId:string) {
     const auth = await this.AuthRepo.findOne({where: {id:userId}})
@@ -144,7 +159,6 @@ export class ConnectService {
       .select('connect.sender_id')
       .from(Connect, 'connect')
       .where('connect.receiver_id = :userId', {userId})
-
       .getQuery();
       return 'auth.id NOT IN' +subQuery
     })

@@ -7,6 +7,7 @@ import { Auth } from '../entities/auth/auth.entity'
 import PostMedia from '../entities/posts/postMedia.entity'
 import HttpException from '../utils/HttpException.utils'
 import { transferImageFromUploadToTemp } from '../utils/path.utils'
+import { IsNull } from 'typeorm'
 class PostService {
   constructor(
     private readonly postRepository = AppDataSource.getRepository(Post),
@@ -97,12 +98,14 @@ class PostService {
   async getPost(postId: string): Promise<object> {
     try {
       const fetchPost = await this.postRepository
-        .createQueryBuilder('post')
-        .leftJoinAndSelect('post.postIt', 'postIt')
-        .leftJoinAndSelect('post.postImage', 'image')
-        .leftJoinAndSelect('post.comment', 'comments')
-        .where('post.id = :postId ', { postId })
-        .getOne()
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.postIt', 'postIt') // Join postIt
+      .leftJoinAndSelect('post.postImage', 'image') // Join postImage
+      .leftJoinAndSelect('post.comment', 'comment') // Join comments
+      .leftJoinAndSelect('comment.childComment', 'childComment') // Join child comments
+      .leftJoinAndSelect('comment.parentComment', 'parentComment') // Join parent comments
+      .where('post.id = :postId', { postId })
+      .getOne();
       if (!fetchPost) throw HttpException.notFound('post not found')
       return fetchPost
     } catch (error) {
@@ -111,24 +114,56 @@ class PostService {
     }
   }
 
-  async getAllPost() {
+  async getAllPost():Promise<Post[]> {
     try {
-      const getpost = await this.postRepository
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.postIt','postIt')
-      .leftJoinAndSelect('postIt.details','details')
-      .leftJoinAndSelect('post.postImage','image')
-      .leftJoinAndSelect('post.comment','comment')
-      .leftJoinAndSelect('comment.childComment', 'childComment') 
-      .leftJoinAndSelect('comment.parentComment','parentComment')
-      .getMany()
-      console.log(getpost)
-      if(!getpost) throw HttpException.notFound('post not found')
-        return getpost
+      const posts = await this.postRepository.find({
+       
+        relations: [
+            'postIt', 
+            'postIt.details', 
+            'postImage',
+            'comment', 
+            'comment.childComment', 
+            'comment.childComment.childComment', 
+            'comment.childComment.parentComment', 
+            'comment.parentComment'
+        ],
+       
+    });
+      if(!posts) throw HttpException.notFound('post not found')
+
+        for(const post of posts) {
+            const parentComments = await this.commentRepo.find({
+              where: {
+                posts:{id:post.id},
+                parentComment:IsNull()
+              },
+              relations: ['childComment']
+            });
+            for(const comment of parentComments) {
+              await this.fetchReplies(comment)
+            }
+            post.comment = parentComments
+          
+        }
+        return posts
     }catch(error) {
       console.log("🚀 ~ PostService ~ getAllPost ~ error:", error)
         throw HttpException.internalServerError
     }
+  }
+
+  async fetchReplies(comment:Comment): Promise<void> {
+    const childs = await this.commentRepo.find({
+      where:{parentComment:{id:comment.id}},
+      relations:['childComment']
+    })
+
+    comment.childComment = childs
+    for(const child of childs) {
+      await this.fetchReplies(child)
+    }
+    
   }
 
   async getUserPost(userId: string): Promise<object> {

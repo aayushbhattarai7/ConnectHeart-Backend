@@ -57,6 +57,7 @@ export class LikeController {
             const userId = req?.user?.id
             const postId = req?.params?.postId
             const likes = await like.changeLike(userId as string, postId)
+            console.log('jadhui')
             res.status(StatusCodes.SUCCESS).json({
                 likes,
                 Message:Message.success

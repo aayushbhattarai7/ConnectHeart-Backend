@@ -10,8 +10,8 @@ const storage = multer.diskStorage({
     let folderPath = ''
     if (!MediaType[req.body.type as keyof typeof MediaType]) return cb(HttpException.badRequest('invalid file type'))
     if (DotenvConfig.NODE_ENV === Environment.DEVELOPMENT)
-      folderPath = path.join(process.cwd(), 'public', 'posts', 'temp')
-    else folderPath = path.resolve(process.cwd(), 'public', 'posts', 'temp')
+      folderPath = path.join(process.cwd(), 'public', 'files', 'temp')
+    else folderPath = path.resolve(process.cwd(), 'public', 'files', 'temp')
 
     !fs.existsSync(folderPath) && fs.mkdirSync(folderPath, { recursive: true })
     cb(null, folderPath)

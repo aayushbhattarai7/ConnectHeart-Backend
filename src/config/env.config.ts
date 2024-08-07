@@ -34,8 +34,7 @@ export class DotenvConfig {
   static DEBUG_MODE = process.env.DEBUG_MODE
 
   //Cors Origin List
-  static CORS_ORIGIN = process.env.CORS_ORIGIN!
-  // .split(',') || []
+  static CORS_ORIGIN = process.env.CORS_ORIGIN!.split(',') || []
 
   //API KEy for postman or Thunder client
   static API_KEY = process.env.API_KEY

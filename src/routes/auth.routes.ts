@@ -8,11 +8,12 @@ import wrapper from '@myrotvorets/express-async-middleware-wrapper';
 import { StatusCodes } from '../constant/StatusCodes';
 import { Role } from "../constant/enum";
 import { authentication } from "../middleware/authentication.middleware";
+import upload from "../utils/fileUpload";
 
 const router: Router = Router();
 const authController = new AuthController();
 
-router.post('/signup',catchAsync(authController.create));
+router.post('/signup', upload.single('profile'), catchAsync(authController.create));
 router.get('/signup', (_, res: Response) => {
     res.render('signup');
 });
@@ -36,6 +37,6 @@ router.patch('/updatePassword', catchAsync(authController.resetPassword))
 
 router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
 
-
+router.get('/user', authController.getUser)
 router.get('/search', wrapper(authController.searchUser))
 export default router;

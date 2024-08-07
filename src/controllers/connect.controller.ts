@@ -102,4 +102,13 @@ export class ConnectController {
       })
     }
   }
+
+  async getCount(req:Request, res:Response) {
+    const count = await Connect.getFriendsCount()
+    res.status(StatusCodes.SUCCESS). json({
+      message:Message.success,
+      count
+    })
+
+  }
 }

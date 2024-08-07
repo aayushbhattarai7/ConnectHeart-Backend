@@ -6,15 +6,15 @@ export class UserDetails extends Base {
   @Column({ name: 'first_name', nullable:false })
   first_name: string
 
-  @Column({ name: 'middle_name', nullable: true })
-  middle_name: string
-
-  @Column({ name: 'last_name', nullable:false })
+  @Column({ name: 'last_name'})
   last_name: string
 
   @Column({ name: 'phone_number', nullable: true })
   phone_number: string
 
+  @Column({name:'gender'})
+  gender:string
+  
   @OneToOne(() => Auth, (auth) => auth.details, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

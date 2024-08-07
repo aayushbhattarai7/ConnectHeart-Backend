@@ -10,31 +10,42 @@ import { jwtDecode } from 'jwt-decode'
 import { EmailService } from './email.service'
 import UserService from './user.service'
 import { generateHtml } from '../utils/mail.template'
+import Profile from '../entities/auth/profile.entity'
 class AuthService {
   constructor(
     private readonly getDetails = AppDataSource.getRepository(UserDetails),
     private readonly getAuth = AppDataSource.getRepository(Auth),
+    private readonly getMediaRepo = AppDataSource.getRepository(Profile),
     private readonly bcryptService = new BcryptService(),
     private readonly mailService = new EmailService()
   ) {}
 
-  async create(data: AuthDTO): Promise<Auth> {
+  async create(image:any, data: AuthDTO): Promise<Auth> {
     try {
       const auth = this.getAuth.create({
         email: data.email,
-        username: data.username,
         password: await this.bcryptService.hash(data.password),
       })
       await this.getAuth.save(auth)
 
       const details = this.getDetails.create({
         first_name: data.first_name,
-        middle_name: data.middle_name,
         last_name: data.last_name,
         phone_number: data.phone_number,
+        gender:data.gender,
         auth: auth,
       })
       await this.getDetails.save(details)
+
+      const profilepic = this.getMediaRepo.create({
+        name:image.name,
+        mimetype:image.mimetype,
+        type:image.type,
+        auth:auth
+      })
+
+      const saveProfile = await this.getMediaRepo.save(profilepic)
+      saveProfile.transferProfileToUpload(auth.id, saveProfile.type)
       // await this.mailService.sendMail({
       //   to: data.email,
       //   text:'Registered Successfully',
@@ -88,7 +99,6 @@ class AuthService {
         try {
           const user = new Auth()
           user.email = decoded?.email
-          user.username = decoded?.email
           user.password = await this.bcryptService.hash(decoded?.sub)
 
           const save = await this.getAuth.save(user)
@@ -97,8 +107,8 @@ class AuthService {
             const details = new UserDetails()
             details.auth = save
             details.first_name = decoded.given_name
-            details.middle_name = decoded?.middle_name
             details.last_name = decoded.family_name
+            details.gender = decoded.gender
             await this.getDetails.save(details)
             return await UserService.getById(save.id)
           }
@@ -149,6 +159,22 @@ class AuthService {
     }
   }
 
+  async getUser(userId:string) {
+   try {
+    const auth = await this.getAuth.findOneBy({id:userId})
+    if(!auth) throw HttpException.notFound
+
+    const users = await this.getAuth.createQueryBuilder('auth')
+    .leftJoinAndSelect('auth.details','details')
+    .leftJoinAndSelect('auth.profile','profile')
+    .where('auth.id =:userId',{userId})
+    .getOne()
+    return users
+   } catch (error) {
+    console.log("🚀 ~ AuthService ~ getUser ~ error:", error)
+    throw HttpException.notFound
+   } 
+  }
   
 }
 

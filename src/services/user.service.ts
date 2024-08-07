@@ -38,11 +38,9 @@ class UserService {
       console.log(userId)
       const user = await this.getById(id);
         (user.details.first_name = body.first_name),
-        (user.details.middle_name = body.middle_name),
         (user.details.last_name = body.last_name),
         (user.details.phone_number = body.phone_number),
         (user.email = body.email),
-        (user.username = body.username),
         await this.getDet.save(user.details)
       await this.getDetails.save(user)
       await this.getById(user.id)
@@ -69,9 +67,7 @@ class UserService {
       if (firstName) {
         searchUser.andWhere('user.first_name ILIKE :firstName', { firstName: `%${firstName}%` })
       }
-      if (middleName) {
-        searchUser.andWhere('user.middle_name ILIKE :middleName', { middleName: `%${middleName}%` })
-      }
+
       if (lastName) {
         searchUser.andWhere('user.last_name ILIKE :lastName', { lastName: `%${lastName}%` })
       }

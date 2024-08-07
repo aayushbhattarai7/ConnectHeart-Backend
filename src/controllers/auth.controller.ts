@@ -11,7 +11,14 @@ const emailservice = new EmailService()
 export class AuthController {
   async create(req: Request, res: Response) {
     try {
-      await authService.create(req.body as AuthDTO)
+      const file = req?.file
+      const image = file? {
+        name: file.filename,
+          mimetype: file?.mimetype,
+          type: req.body?.type
+      }:null;
+
+      await authService.create(image as any, req.body as AuthDTO)
       res.status(StatusCodes.CREATED).json({ message: Message.created })
     } catch (error) {
       console.log('🚀 ~ AuthController ~ create ~ error:', error)
@@ -35,10 +42,8 @@ export class AuthController {
         data: {
           id: data.id,
           email: data.email,
-          username: data.username,
           details: {
             first_name: data.details.first_name,
-            middle_name: data.details.middle_name,
             last_name: data.details.last_name,
             phone_number: data.details.phone_number,
           },
@@ -72,7 +77,6 @@ export class AuthController {
       data: {
         user: {
           id: data?.id,
-          username: data?.usename,
           email: data?.email,
           role: data?.role,
           details: {
@@ -173,6 +177,20 @@ export class AuthController {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
       })
+    }
+  }
+
+  async getUser(req:Request, res:Response) {
+    try {
+      const userId = req.user?.id
+      const getuser = await authService.getUser(userId as string)
+      res.status(StatusCodes.SUCCESS).json({
+        getuser,
+        message:Message.success
+      })
+    } catch (error) {
+      console.log("🚀 ~ AuthController ~ getUser ~ error:", error)
+      
     }
   }
 }

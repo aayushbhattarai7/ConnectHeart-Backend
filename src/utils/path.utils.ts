@@ -3,20 +3,20 @@ import { Environment } from '../constant/enum'
 import fs from 'fs'
 
 export const getUploadFolderpath = (): string => {
-  if (process.env.NODE_ENV === Environment.PRODUCTION) return path.resolve(process.cwd(), 'public', 'uploads')
-  return path.join(__dirname, '..', '..', 'public', 'uploads')
+  if (process.env.NODE_ENV === Environment.PRODUCTION) return path.resolve(process.cwd(), 'public', 'files')
+  return path.join(__dirname, '..', '..', 'public', 'files')
 }
 
 export const getTempFolderPath = (): string => {
-  return path.resolve(process.cwd(), 'public', 'uploads', 'temp')
+  return path.resolve(process.cwd(), 'public', 'files', 'temp')
 }
 
 export const getTempFolderPathForPost = (): string => {
-  return path.resolve(process.cwd(), 'public', 'posts', 'temp')
+  return path.resolve(process.cwd(), 'public', 'files', 'temp')
 }
 export const getUploadFolderpathForPost = (): string => {
-  if (process.env.NODE_ENV === Environment.PRODUCTION) return path.resolve(process.cwd(), 'public', 'posts', 'upload')
-  return path.join(__dirname, '..', '..', 'public', 'posts', 'upload')
+  if (process.env.NODE_ENV === Environment.PRODUCTION) return path.resolve(process.cwd(), 'public', 'files')
+  return path.join(__dirname, '..', '..', 'public', 'files')
 }
 
 export const transferImageFromUploadToTemp = (id: string, name: string, type: string): void => {
