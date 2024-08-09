@@ -20,4 +20,5 @@ router.delete('/reject/:id',wrapper(connectController.reject))
 router.get('/friends',wrapper(connectController.friend))
 router.get('/count', wrapper(connectController.getCount))
 router.get('/suggestion', wrapper(connectController.getUserSuggestion))
+router.delete('/remove/:id',wrapper(connectController.removeConnection))
 export default router

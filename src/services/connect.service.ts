@@ -2,10 +2,8 @@ import { AppDataSource } from '../config/database.config'
 import { Auth } from '../entities/auth/auth.entity'
 import { Connect } from '../entities/connection/connection.entity'
 import HttpException from '../utils/HttpException.utils'
-import { Status } from '../constant/enum'
+import { Gender, Status } from '../constant/enum'
 import { Message } from '../constant/message'
-import { Http } from 'winston/lib/winston/transports'
-import { freemem } from 'os'
 
 export class ConnectService {
   constructor(
@@ -44,24 +42,17 @@ export class ConnectService {
     }
   }
 
-  async viewRequests(userId: string): Promise<Auth[]> {
+  async viewRequests(userId: string): Promise<Connect[]> {
     try {
-      const requests = await this.connectRepo.find({
-        where:{
-          receiver:{
-            id:userId
-          },
-          
-            status:Status.PENDING
-          
-        },
-        relations: ['sender.details']
-      })
-
-      const req = requests.map((request) =>
-        request.sender.id === userId && Status.PENDING ? request.receiver : request.sender
-      )
-      return req
+      const requests = await this.connectRepo
+      .createQueryBuilder('connect')
+      .leftJoinAndSelect('connect.sender', 'sender')
+      .leftJoinAndSelect('sender.details', 'details')
+      .leftJoinAndSelect('sender.profile', 'profile')
+      .where('connect.receiver.id = :userId', { userId })
+      .andWhere('connect.status = :status', { status: Status.PENDING })
+      .getMany();
+      return requests
     } catch (error) {
       throw HttpException.notFound
     }
@@ -92,7 +83,6 @@ export class ConnectService {
         .from('connect')
         .where('connect.receiver_id =:userId', { userId })
         .andWhere('connect.sender_id =:senderId', { senderId })
-        .andWhere('connect.status = :status', { status: Status.PENDING })
         .execute()
       return Message.deleted
     } catch (error) {
@@ -101,21 +91,43 @@ export class ConnectService {
     }
   }
 
+  async removeConnection(userId: string, connectId:string): Promise<string> {
+    try {
+      await this.connectRepo
+        .createQueryBuilder('connect')
+        .delete()
+        .from('connect')
+        // .where('connect.sender_id = :userId OR connect.receiver_id = :userId', { userId })
+        // .andWhere('connect.sender_id =:connectId OR connect.receiver_id = :connectId',{connectId})
+        .execute()
+      return Message.deleted
+    } catch (error) {
+      console.log(error)
+      throw HttpException.badRequest
+    }
+  }
+
+
   async getFriends(userId: string): Promise<Auth[]> {
     try {
       const allFriends = await this.connectRepo
-        .createQueryBuilder('connection')
-        .leftJoinAndSelect('connection.sender', 'sender')
-        .leftJoinAndSelect('connection.receiver', 'receiver')
-        .leftJoinAndSelect('sender.details', 'senderDetails') 
-        .leftJoinAndSelect('receiver.details', 'receiverDetails')
-        .where('connection.sender_id = :userId OR connection.receiver_id = :userId', { userId })
-        .andWhere('connection.status = :status', { status: Status.ACCEPTED })
-        .getMany();
+      .createQueryBuilder('connection')
+      .leftJoinAndSelect('connection.sender', 'sender')
+      .leftJoinAndSelect('connection.receiver', 'receiver')
+      .leftJoinAndSelect('sender.details', 'senderDetails') 
+      .leftJoinAndSelect('receiver.details', 'receiverDetails')
+      .leftJoinAndSelect('sender.profile','senderprofile')
+      .leftJoinAndSelect('receiver.profile','receiverprofile')
+      .where('(connection.sender_id = :userId OR connection.receiver_id = :userId) AND connection.status != :status', { userId, status: Status.PENDING })
+      .getMany();
+      console.log("🚀 ~ ConnectService ~ getFriends ~ allFriends:", allFriends)
 
-      const friends: Auth[] = allFriends.map((connection) =>
-        connection.sender.id === userId && Status.ACCEPTED ? connection.receiver : connection.sender
-      )
+      
+        const friends: Auth[] = allFriends.map(connection => 
+          connection.sender.id === userId ? connection.receiver : connection.sender
+      );
+      
+      
 
       return friends
     } catch (error) {
@@ -124,10 +136,10 @@ export class ConnectService {
     }
   }
 
-  async getFriendsCount() {
+  async getFriendsCount(userId:string):Promise<Number> {
     try {
 
-      const friends =  this.getFriends
+      const friends =  await this.getFriends(userId)
       const count:number = friends.length
       console.log("🚀 ~ ConnectService ~ getFriendsCount ~ count:", count)
       return count
@@ -140,12 +152,17 @@ export class ConnectService {
 
 
   async getUserSuggestion(userId:string) {
-    const auth = await this.AuthRepo.findOne({where: {id:userId}})
+    const auth = await this.AuthRepo.findOne({where: {id:userId}, relations:['details']})
     if(!auth) throw HttpException.unauthorized
-
+    if(!auth.details.gender) throw HttpException.notFound
+    const gender = auth.details.gender
+    if(!gender) throw HttpException.notFound
     const users = await this.AuthRepo.createQueryBuilder('auth')
     .leftJoinAndSelect('auth.details','details')
+    .leftJoinAndSelect('auth.profile','profile')
     .where('auth.id != :userId', {userId})
+    .andWhere('details.gender != :gender', { gender }) 
+
     .andWhere(qb => {
       const subQuery = qb.subQuery()
       .select('connect.receiver_id')

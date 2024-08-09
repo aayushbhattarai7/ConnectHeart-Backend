@@ -1,6 +1,7 @@
 import { AfterLoad, Column, Entity, JoinColumn, OneToOne } from 'typeorm'
 import Base from '../base.entity'
 import { Auth } from './auth.entity'
+import { Gender } from '../../constant/enum'
 @Entity('users')
 export class UserDetails extends Base {
   @Column({ name: 'first_name', nullable:false })
@@ -12,8 +13,10 @@ export class UserDetails extends Base {
   @Column({ name: 'phone_number', nullable: true })
   phone_number: string
 
-  @Column({name:'gender'})
-  gender:string
+  @Column({type:'enum', enum:Gender})
+  gender:Gender
+
+  
   
   @OneToOne(() => Auth, (auth) => auth.details, {
     onDelete: 'CASCADE',

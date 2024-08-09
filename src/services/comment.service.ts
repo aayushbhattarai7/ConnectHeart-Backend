@@ -66,6 +66,8 @@ class CommentService {
       const comments = await this.commentRepo
         .createQueryBuilder('comment')
         .leftJoinAndSelect('comment.posts', 'posts')
+        .leftJoinAndSelect('comment.commentAuth','commentAuth')
+        .leftJoinAndSelect('commentAuth.details','details')
         .where('comment.post_id =:postId', { postId })
         .getMany()
       return comments

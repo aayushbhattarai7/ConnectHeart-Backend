@@ -8,15 +8,16 @@ import { getTempFolderPath, getUploadFolderpath } from "../../utils/path.utils";
 import { DotenvConfig } from "../../config/env.config";
 @Entity('profile')
 class Profile extends Base {
-    @Column()
+    @Column({nullable:true})
     name: string
 
     @Column({
-        name: 'mimetype'
+        name: 'mimetype',
+        nullable:true
     })
     mimetype: string
 
-    @Column({ enum: MediaType, type: 'enum' })
+    @Column({ enum: MediaType, type: 'enum' , nullable:true})
     type: MediaType
 
     @OneToOne(() => Auth, (auth) => auth.profile)

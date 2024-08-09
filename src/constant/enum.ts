@@ -15,7 +15,13 @@ export enum Role {
 }
 export enum Status {
     ACCEPTED = "ACCEPTED",
-    PENDING = "PENDING",
-    REJECTED =" REJECTED"
+    PENDING = "PENDING"
 }
+
+export enum Gender {
+    MALE ="MALE",
+    FEMALE = "FEMALE"
+}
+
+
 

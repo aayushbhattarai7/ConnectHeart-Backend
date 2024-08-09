@@ -99,11 +99,11 @@ class PostService {
     try {
       const fetchPost = await this.postRepository
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.postIt', 'postIt') // Join postIt
-      .leftJoinAndSelect('post.postImage', 'image') // Join postImage
-      .leftJoinAndSelect('post.comment', 'comment') // Join comments
-      .leftJoinAndSelect('comment.childComment', 'childComment') // Join child comments
-      .leftJoinAndSelect('comment.parentComment', 'parentComment') // Join parent comments
+      .leftJoinAndSelect('post.postIt', 'postIt') 
+      .leftJoinAndSelect('post.postImage', 'image') 
+      .leftJoinAndSelect('post.comment', 'comment') 
+      .leftJoinAndSelect('comment.childComment', 'childComment') 
+      .leftJoinAndSelect('comment.parentComment', 'parentComment') 
       .where('post.id = :postId', { postId })
       .getOne();
       if (!fetchPost) throw HttpException.notFound('post not found')
@@ -114,55 +114,60 @@ class PostService {
     }
   }
 
-  async getAllPost():Promise<Post[]> {
-    try {
-      const posts = await this.postRepository.find({
-       
-        relations: [
-            'postIt', 
-            'postIt.details', 
-            'postImage',
-            'comment', 
-            'comment.childComment', 
-            'comment.childComment.childComment', 
-            'comment.childComment.parentComment', 
-            'comment.parentComment'
-        ],
-       
+async getAllPost():Promise<Post[]> {
+  try {
+    const posts = await this.postRepository.find({
+      relations: [
+        'postIt',
+        'postIt.details',
+        'postIt.profile',
+        'postImage',
+        'comment',
+        'comment.commentAuth', 
+        'comment.commentAuth.details',
+        'comment.commentAuth.profile',
+        'comment.childComment',
+        'comment.childComment.childComment',
+        'comment.childComment.parentComment',
+        'comment.parentComment',
+        
+      ],
     });
-      if(!posts) throw HttpException.notFound('post not found')
 
-        for(const post of posts) {
-            const parentComments = await this.commentRepo.find({
-              where: {
-                posts:{id:post.id},
-                parentComment:IsNull()
-              },
-              relations: ['childComment']
-            });
-            for(const comment of parentComments) {
-              await this.fetchReplies(comment)
-            }
-            post.comment = parentComments
-          
-        }
-        return posts
-    }catch(error) {
-      console.log("🚀 ~ PostService ~ getAllPost ~ error:", error)
-        throw HttpException.internalServerError
+    if (!posts.length) throw HttpException.notFound('Posts not found');
+
+    for (const post of posts) {
+      const parentComments = await this.commentRepo.find({
+        where: {
+          posts: { id: post.id },
+          parentComment: IsNull(),
+        },
+        relations: ['childComment', 'commentAuth', 'commentAuth.details', 'commentAuth.profile'], 
+      });
+
+      for (const comment of parentComments) {
+        await this.fetchReplies(comment);
+      }
+      post.comment = parentComments;
     }
+
+    return posts;
+  } catch (error) {
+    console.error("🚀 ~ PostService ~ getAllPost ~ error:", error);
+    throw HttpException.internalServerError
   }
+}
 
-  async fetchReplies(comment:Comment): Promise<void> {
-    const childs = await this.commentRepo.find({
-      where:{parentComment:{id:comment.id}},
-      relations:['childComment']
-    })
+async fetchReplies(comment: Comment): Promise<void> {
+  const childs = await this.commentRepo.find({
+    where: { parentComment: { id: comment.id } },
+    relations: ['childComment', 'commentAuth', 'commentAuth.details','commentAuth.profile'], 
+  });
 
-    comment.childComment = childs
-    for(const child of childs) {
-      await this.fetchReplies(child)
-    }
+  comment.childComment = childs;
+  for (const child of childs) {
+    await this.fetchReplies(child);
+  }
     
   }
 
@@ -171,11 +176,37 @@ class PostService {
       const fetchPost = await this.postRepository
         .createQueryBuilder('post')
         .leftJoinAndSelect('post.postIt', 'postIt')
+        .leftJoinAndSelect('postIt.details','details')
+        .leftJoinAndSelect('postIt.profile','profile')
         .leftJoinAndSelect('post.postImage', 'image')
-        .leftJoinAndSelect('post.comment', 'comments')
+        .leftJoinAndSelect('post.comment','comment')
+        .leftJoinAndSelect('comment.commentAuth','commentAuth')
+        .leftJoinAndSelect('comment.childComment','childComment')
+        .leftJoinAndSelect('comment.parentComment','parentComment')
+        .leftJoinAndSelect('childComment.parentComment','grandComment')
+        .leftJoinAndSelect('childComment.childComment','grandChildComment')
+
+
         .where('post.auth_id = :userId', { userId })
         .getMany()
       if (!fetchPost) throw HttpException.notFound('post not found')
+        if (!fetchPost.length) throw HttpException.notFound('Posts not found');
+
+      for (const post of fetchPost) {
+        const parentComments = await this.commentRepo.find({
+          where: {
+            posts: { id: post.id },
+            parentComment: IsNull(),
+          },
+          relations: ['childComment', 'commentAuth', 'commentAuth.details', 'commentAuth.profile'], 
+        });
+  
+        for (const comment of parentComments) {
+          await this.fetchReplies(comment);
+        }
+        post.comment = parentComments;
+      }
+  
       return fetchPost
     } catch (error) {
       console.log('🚀 ~ PostService ~ getPost ~ error:', error)

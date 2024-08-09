@@ -12,8 +12,6 @@ router.use(authentication())
 
 router.use(authorization([Role.USER]))
 
-// router.post('/:id',like.like)
-// router.post('/:postId', like.dislike)
 router.post('/:postId', like.changeLike)
 
 export default router

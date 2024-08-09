@@ -31,14 +31,14 @@ export class Auth extends Base {
   @OneToOne(() => UserDetails, (details) => details.auth, { cascade: true })
   details: UserDetails
 
-  @OneToOne(()=> Profile, (profile)=> profile.auth, {cascade:true})
+  @OneToOne(()=> Profile, (profile)=> profile.auth, {cascade:true, nullable:true})
   profile:Profile
 
   @OneToMany(() => Post, (post) => post.postIt, { cascade: true })
   posts: Post
 
   @OneToMany(() => Comment, (comment) => comment.commentAuth, { cascade: true })
-  comments: Auth
+  comments: Comment[]
 
   @OneToMany(() => Connect, (connect) => connect.sender, { cascade: true })
   connect: Connect[]

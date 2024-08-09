@@ -104,11 +104,31 @@ export class ConnectController {
   }
 
   async getCount(req:Request, res:Response) {
-    const count = await Connect.getFriendsCount()
+    const userId = req.user?.id
+    const counts = await Connect.getFriendsCount(userId as string)
     res.status(StatusCodes.SUCCESS). json({
       message:Message.success,
-      count
+      counts
     })
+
+  }
+
+  async removeConnection(req:Request, res:Response) {
+    try {
+      const userId = req.user?.id
+      const connectId = req.params.id
+      const remove = await Connect.removeConnection(userId as string, connectId)
+      res.status(StatusCodes.SUCCESS). json({
+        message:Message.success,
+        remove
+      })
+    }catch(error) {
+      res.status(StatusCodes.BAD_REQUEST). json({
+        message:Message.error,
+        
+      })
+    }
+   
 
   }
 }

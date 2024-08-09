@@ -13,17 +13,17 @@ export class AuthController {
     try {
       const file = req?.file
       const image = file? {
-        name: file.filename,
+        name: file?.filename,
           mimetype: file?.mimetype,
           type: req.body?.type
       }:null;
 
       await authService.create(image as any, req.body as AuthDTO)
       res.status(StatusCodes.CREATED).json({ message: Message.created })
-    } catch (error) {
-      console.log('🚀 ~ AuthController ~ create ~ error:', error)
+    } catch (error:any) {
+      console.log('🚀 ~ AuthController ~ create ~ error:', error?.message)
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: Message.error,
+        message: error?.message
       })
     }
   }
@@ -54,10 +54,10 @@ export class AuthController {
           message: Message.loginSuccessfully,
         },
       })
-    } catch (error) {
-      console.log('🚀 ~ AuthController ~ login ~ error:', error)
+    } catch (error:any) {
+      console.log('🚀 ~ AuthController ~ login ~ error:', error?.message)
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: Message.error,
+        message: error?.message,
       })
     }
   }
@@ -97,7 +97,6 @@ export class AuthController {
   async update(req: Request, res: Response) {
     try {
       const userId = req.params.id
-      console.log(userId, 'controller')
       const body = req.body
       await userService.update(body, userId)
       res.status(StatusCodes.CREATED).json(Message.created)

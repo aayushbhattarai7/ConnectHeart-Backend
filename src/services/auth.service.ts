@@ -11,6 +11,8 @@ import { EmailService } from './email.service'
 import UserService from './user.service'
 import { generateHtml } from '../utils/mail.template'
 import Profile from '../entities/auth/profile.entity'
+import { Gender } from '../constant/enum'
+//name
 class AuthService {
   constructor(
     private readonly getDetails = AppDataSource.getRepository(UserDetails),
@@ -22,6 +24,11 @@ class AuthService {
 
   async create(image:any, data: AuthDTO): Promise<Auth> {
     try {
+      const emailExist = await this.getAuth.findOne({where: {
+        email:data.email
+      }})
+      
+      if(emailExist) throw HttpException.badRequest('Entered email is already registered')
       const auth = this.getAuth.create({
         email: data.email,
         password: await this.bcryptService.hash(data.password),
@@ -32,20 +39,23 @@ class AuthService {
         first_name: data.first_name,
         last_name: data.last_name,
         phone_number: data.phone_number,
-        gender:data.gender,
+        gender:Gender[data.gender as keyof typeof Gender],
         auth: auth,
       })
       await this.getDetails.save(details)
-
-      const profilepic = this.getMediaRepo.create({
-        name:image.name,
-        mimetype:image.mimetype,
-        type:image.type,
-        auth:auth
-      })
-
-      const saveProfile = await this.getMediaRepo.save(profilepic)
-      saveProfile.transferProfileToUpload(auth.id, saveProfile.type)
+      let profilepic = null
+      if(image) {
+        profilepic = this.getMediaRepo.create({
+          name:image?.name,
+          mimetype:image?.mimetype,
+          type:image?.type,
+          auth:auth
+        })
+  
+        const saveProfile = await this.getMediaRepo?.save(profilepic)
+        saveProfile?.transferProfileToUpload(auth.id, saveProfile.type)
+      }
+       
       // await this.mailService.sendMail({
       //   to: data.email,
       //   text:'Registered Successfully',
@@ -66,7 +76,7 @@ class AuthService {
         select: ['id', 'email', 'password'],
       })
       console.log(user?.email)
-      if (!user) throw HttpException.notFound(Message.notFound)
+      if (!user) throw HttpException.notFound("Please Enter a valid email")
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
       console.log('🚀 ~ AuthService ~ login ~ passwordMatched:', passwordMatched)
       console.log(user.password)
@@ -83,8 +93,8 @@ class AuthService {
       //   html:generateHtml(`Someone has logged in to your account`)
       // })
       return await Auths.getById(user.id)
-    } catch (error) {
-      throw HttpException.notFound(Message.error)
+    } catch (error:any) {
+      throw HttpException.notFound(error.message)
     }
   }
 
