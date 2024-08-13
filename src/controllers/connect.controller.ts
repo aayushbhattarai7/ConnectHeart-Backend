@@ -7,6 +7,8 @@ export class ConnectController {
   async connect(req: Request, res: Response) {
     try {
       const sender = req.user?.id
+      console.log("🚀 ~ ConnectController ~ connect ~ sender:", sender)
+      
       const receiver = req.params.id
       const send = await Connect.connect(sender as string, receiver)
       res.status(StatusCodes.SUCCESS).json({
@@ -24,6 +26,8 @@ export class ConnectController {
   async viewRequest(req: Request, res: Response) {
     try {
       const userId = req.user?.id
+      console.log("🚀 ~ ConnectController ~ viewRequest ~ userId:", userId)
+      
       const viewRequest = await Connect.viewRequests(userId as string)
       res.status(StatusCodes.SUCCESS).json({
         viewRequest,

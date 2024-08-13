@@ -192,4 +192,21 @@ export class AuthController {
       
     }
   }
+
+  async getUserProfile(req:Request, res:Response) {
+    try {
+      const userId = req.user?.id
+      const friendId = req?.params?.id
+      const getUser = await authService.getUserProfile(userId as string, friendId)
+      res.status(StatusCodes.SUCCESS).json({
+        getUser,
+        message:Message.success
+      })
+    } catch (error:any) {
+      console.log(error?.message)
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message:error?.message
+      })
+    }
+  }
 }

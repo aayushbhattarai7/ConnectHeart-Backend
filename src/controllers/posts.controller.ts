@@ -8,7 +8,6 @@ export class PostController {
   async create(req: Request, res: Response) {
     try {
       const userId = req?.user?.id
-      console.log(userId)
       console.log(req?.files, "aayushhh")
       const data = req.files?.map((file: any) => {
         return {
@@ -17,7 +16,6 @@ export class PostController {
           type: req.body?.type,
         }
       })
-      console.log(req.body ,"aasa")
       await PostService.createPost(data as any, req.body as PostDTO, userId as string)
       res.status(StatusCodes.CREATED).json({
         status: true,
@@ -35,7 +33,7 @@ export class PostController {
     try {
       const userId = req.user?.id
       const postId = req.params.id
-      const data = req?.files?.map((file: any) => {
+      const data = req?.files?.map((file?: any) => {
         return {
           name: file?.filename,
           mimetype: file?.mimetype,

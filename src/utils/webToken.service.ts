@@ -20,8 +20,6 @@ class webTokenService {
     return jwt.verify(token, secret)
   }
   generateTokens(user: IJwtPayload, role: Role): { accessToken: string; refreshToken: string } {
-    console.log(DotenvConfig.ACCESS_TOKEN_SECRET)
-    console.log(DotenvConfig.REFRESH_TOKEN_SECRET)
 
     const accessToken = this.sign(
       user,

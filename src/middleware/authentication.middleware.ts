@@ -3,7 +3,6 @@ import { DotenvConfig } from '../config/env.config'
 import { Message } from '../constant/message'
 import HttpException from '../utils/HttpException.utils'
 import tokenService from '../utils/webToken.service'
-
 export const authentication = () => {
   return (req: Request, res: Response, next: NextFunction) => {
     const tokens = req.headers.authorization?.split(' ')
@@ -16,7 +15,6 @@ export const authentication = () => {
 
       if (mode != 'Bearer' || !accessToken) throw HttpException.unauthorized(Message.notAuthorized)
       const payload = tokenService.verify(accessToken, DotenvConfig.ACCESS_TOKEN_SECRET)
-      console.log(payload)
       if (payload) {
         req.user = payload
         next()

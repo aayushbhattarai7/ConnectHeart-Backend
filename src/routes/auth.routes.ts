@@ -36,7 +36,7 @@ router.get('/updatePassword',(_, res) =>res.status(StatusCodes.SUCCESS).render('
 router.patch('/updatePassword', catchAsync(authController.resetPassword))
 
 router.patch('/update', RequestValidator.validate(UpdateDTO),catchAsync(authController.update))
-
+router.get('/userProfile/:id', wrapper(authController.getUserProfile))
 router.get('/user', authController.getUser)
 router.get('/search', wrapper(authController.searchUser))
 export default router;

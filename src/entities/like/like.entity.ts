@@ -6,6 +6,10 @@ import { Post } from "../../entities/posts/posts.entity";
 @Entity('likes')
 export class Like extends Base {
 
+    @Column({name:'isLiked'})
+    isLiked:boolean
+
+
     @ManyToOne(() => Auth, (auth) => auth.likes)
     @JoinColumn({ name: 'auth_id' })
     auth: Auth;

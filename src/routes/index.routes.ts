@@ -3,7 +3,7 @@ import user from './auth.routes'
 import post from './post.routes'
 import connect from './connect.routes'
 import like from './like.routes'
-
+import chat from './chat.routes'
 export interface Route {
   path: string
   route: Router
@@ -26,7 +26,11 @@ const routes: Route[] = [
   {
     path:'/like',
     route: like
-  }
+  }, 
+  {
+    path:'/chat',
+    route:chat
+  },
 ]
 
 routes.forEach((route) => {

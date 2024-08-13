@@ -4,8 +4,6 @@ import { Auth } from "../../entities/auth/auth.entity";
 import { LikeDTO } from "../../dto/like.dto";
 import HttpException from "../../utils/HttpException.utils";
 import { Post } from "../../entities/posts/posts.entity";
-import { pid } from "process";
-import { Message } from "../../constant/message";
 
 
  class LikeService {
@@ -25,6 +23,7 @@ import { Message } from "../../constant/message";
             if(!post) throw HttpException.notFound
             
           const likes = this.likeRepo.create({
+            isLiked:true,
            auth:auth,
            post:post
           })
@@ -93,7 +92,17 @@ import { Message } from "../../constant/message";
             console.log(error)
         }
     }
+
+    async getLikeCount(userId:string, postId:string):Promise<Number> {
+        try {
+            const likeCount = await this.likeRepo.count({ where: { post: { id: postId } } });
+            return likeCount
+        } catch (error) {
+            throw HttpException.badRequest
+        }
+    
 }
+ }
 export default LikeService
 
 

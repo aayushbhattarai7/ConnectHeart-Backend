@@ -56,37 +56,40 @@ class PostService {
       if (!post) throw HttpException.notFound
 
       post.thought = detail.thought
-      post.feeling = detail.feeling
+       post.feeling = detail?.feeling
       const updatedPost = await this.postRepository.save(post)
       const media = await this.postMediaRepository.find({
         where: { posts: { id: postId } },
         relations: ['posts'],
       })
 
-      if (media.length > 0) {
-        for (const mediaItem of media) {
-          transferImageFromUploadToTemp(post.id, mediaItem.name, mediaItem.type)
+      if(media) {
+        if (media.length > 0) {
+          for (const mediaItem of media) {
+            transferImageFromUploadToTemp(post.id, mediaItem.name, mediaItem.type)
+          }
+  
+          await this.postMediaRepository
+            .createQueryBuilder()
+            .delete()
+            .from(PostMedia)
+            .where('posts.id = :postId', { postId })
+            .execute()
         }
-
-        await this.postMediaRepository
-          .createQueryBuilder()
-          .delete()
-          .from(PostMedia)
-          .where('posts.id = :postId', { postId })
-          .execute()
+  
+        for (const file of data) {
+          const saveMedia = new PostMedia()
+          saveMedia.name = file.name
+          saveMedia.mimetype = file.mimetype
+          saveMedia.type = file.type
+          saveMedia.posts = updatedPost
+  
+          const savedImage = await this.postMediaRepository.save(saveMedia)
+          savedImage.transferImageFromTempToUpload(post.id, savedImage.type)
+          console.log(savedImage)
+        }
       }
-
-      for (const file of data) {
-        const saveMedia = new PostMedia()
-        saveMedia.name = file.name
-        saveMedia.mimetype = file.mimetype
-        saveMedia.type = file.type
-        saveMedia.posts = updatedPost
-
-        const savedImage = await this.postMediaRepository.save(saveMedia)
-        savedImage.transferImageFromTempToUpload(post.id, savedImage.type)
-        console.log(savedImage)
-      }
+    
 
       return Message.updated
     } catch (error: any) {
@@ -123,6 +126,8 @@ async getAllPost():Promise<Post[]> {
         'postIt.profile',
         'postImage',
         'comment',
+        'likes',
+        'likes.auth',
         'comment.commentAuth', 
         'comment.commentAuth.details',
         'comment.commentAuth.profile',
@@ -131,7 +136,11 @@ async getAllPost():Promise<Post[]> {
         'comment.childComment.parentComment',
         'comment.parentComment',
         
+        
       ],
+      order: {
+        createdAt:'DESC'
+      }
     });
 
     if (!posts.length) throw HttpException.notFound('Posts not found');
@@ -185,9 +194,8 @@ async fetchReplies(comment: Comment): Promise<void> {
         .leftJoinAndSelect('comment.parentComment','parentComment')
         .leftJoinAndSelect('childComment.parentComment','grandComment')
         .leftJoinAndSelect('childComment.childComment','grandChildComment')
-
-
         .where('post.auth_id = :userId', { userId })
+        .orderBy('post.createdAt', 'DESC')
         .getMany()
       if (!fetchPost) throw HttpException.notFound('post not found')
         if (!fetchPost.length) throw HttpException.notFound('Posts not found');

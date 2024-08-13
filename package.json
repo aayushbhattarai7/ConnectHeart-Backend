@@ -67,6 +67,8 @@
     "reflect-metadata": "^0.2.2",
     "sanitize-html": "^2.13.0",
     "sass": "^1.77.8",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20",

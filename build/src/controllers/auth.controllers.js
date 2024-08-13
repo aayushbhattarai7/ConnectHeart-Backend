@@ -42,7 +42,6 @@ class AuthController {
     }
     async update(req, res) {
         const userId = req.params.id;
-        console.log(userId, "controller");
         const body = req.body;
         await user_service_1.default.update(body, userId);
         res.status(StatusCodes_1.StatusCodes.CREATED).json(message_1.Message.created);

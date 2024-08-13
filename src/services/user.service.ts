@@ -24,7 +24,6 @@ class UserService {
       if (!users) {
         throw HttpException.notFound('User not found')
       }
-      console.log(users,"Users is hererree")
       return users
     } catch (error) {
       console.error('Error:', error)
@@ -35,7 +34,6 @@ class UserService {
   async update(body: UpdateDTO, userId: string): Promise<string> {
     try {
       const id = userId
-      console.log(userId)
       const user = await this.getById(id);
         (user.details.first_name = body.first_name),
         (user.details.last_name = body.last_name),

@@ -12,6 +12,7 @@ import UserService from './user.service'
 import { generateHtml } from '../utils/mail.template'
 import Profile from '../entities/auth/profile.entity'
 import { Gender } from '../constant/enum'
+//console
 //name
 class AuthService {
   constructor(
@@ -56,12 +57,12 @@ class AuthService {
         saveProfile?.transferProfileToUpload(auth.id, saveProfile.type)
       }
        
-      // await this.mailService.sendMail({
-      //   to: data.email,
-      //   text:'Registered Successfully',
-      //   subject:'Registered Successfully',
-      //   html:generateHtml(`Hey ${details.first_name}! Welcome to the ConnectHub`)
-      // })
+      await this.mailService.sendMail({
+        to: data.email,
+        text:'Registered Successfully',
+        subject:'Registered Successfully',
+        html:generateHtml(`Hey ${details.first_name}! Welcome to the ConnectHub`)
+      })
       return auth
     } catch (error: any) {
       console.log('🚀  error:', error?.message)
@@ -75,17 +76,13 @@ class AuthService {
         where: [{ email: data.email }],
         select: ['id', 'email', 'password'],
       })
-      console.log(user?.email)
       if (!user) throw HttpException.notFound("Please Enter a valid email")
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
-      console.log('🚀 ~ AuthService ~ login ~ passwordMatched:', passwordMatched)
-      console.log(user.password)
       if (!passwordMatched) {
         throw new Error('Incorrect Password')
       }
 
       const userid = await Auths.getById(user.id)
-      console.log(userid, 'okok')
       // await this.mailService.sendMail({
       //   to: data.email,
       //   text:'Login Info',
@@ -112,7 +109,6 @@ class AuthService {
           user.password = await this.bcryptService.hash(decoded?.sub)
 
           const save = await this.getAuth.save(user)
-          console.log('🚀 ~ AuthService ~ googleLogin ~ save:', save)
           if (save) {
             const details = new UserDetails()
             details.auth = save
@@ -145,7 +141,6 @@ class AuthService {
     try {
       const users = await this.getAuth.findOneBy({id:userId})
       if(!users) throw HttpException.unauthorized(Message.notAuthorized)
-      console.log("🚀 ~ AuthService ~ passwordReset ~ users:", users)
       
       const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id','password'] })
       if (!auth) throw HttpException.unauthorized
@@ -184,6 +179,26 @@ class AuthService {
     console.log("🚀 ~ AuthService ~ getUser ~ error:", error)
     throw HttpException.notFound
    } 
+  }
+
+  async getUserProfile(userId:string, friendId:string ) {
+    try {
+      const auth = await this.getAuth.findOneBy({id:userId})
+      if(!auth) throw HttpException.unauthorized('You are not authorized')
+
+        const userProfile = await this.getAuth.createQueryBuilder('auth')
+        .leftJoinAndSelect('auth.details','details')
+        .leftJoinAndSelect('auth.profile','profile')
+        .leftJoinAndSelect('auth.posts','posts')
+        .leftJoinAndSelect('posts.postImage','postImage')
+        .where('auth.id =:friendId',{friendId} )
+        .getMany()
+
+        return userProfile
+    } catch (error:any) {
+      console.log(error?.message)
+      throw HttpException.badRequest('Error while fetching user post')
+    }
   }
   
 }

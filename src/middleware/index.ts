@@ -12,6 +12,8 @@ const middleware = (app: Application) => {
   console.log('DotenvConfig', DotenvConfig.CORS_ORIGIN)
   app.use(compression())
   app.use(
+    //   origin: DotenvConfig.CORS_ORIGIN,
+    // })
     cors({
       origin: DotenvConfig.CORS_ORIGIN,
       methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
