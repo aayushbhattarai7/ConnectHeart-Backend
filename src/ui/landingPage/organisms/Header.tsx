@@ -3,15 +3,15 @@ import SideBarDetails from './SideBarDetails';
 
 const Header = () => {
   const location = useLocation();
-  const targetPath = location.pathname !== '/login' && location.pathname !== '/signup'
-    ? '/'
-    : '/login';
+  const targetPath =
+    location.pathname !== '/login' && location.pathname !== '/signup' ? '/' : '/login';
   return (
-    <div className='relative'>
+    <div className="relative">
       <header className="fixed top-0 left-0 w-full h-20 bg-white shadow-md z-50">
-        <div className="font-poppins font-medium flex items-center justify-between 
-        p-4 h-full">
-
+        <div
+          className="font-poppins font-medium flex items-center justify-between 
+        p-4 h-full"
+        >
           <div>
             <h2 className="pl-5">
               <NavLink to={targetPath}>
@@ -29,21 +29,26 @@ const Header = () => {
             )}
 
             {location.pathname === '/login' && (
-              <div className='justify-end flex items-end w-full'>
-                <NavLink to="/signup" className="text-white bg-blue-600 w-20 px-4
-                 py-1 rounded-lg h-8 transition duration-300 ease-in-out hover:bg-blue-900">
+              <div className="justify-end flex items-end w-full">
+                <NavLink
+                  to="/signup"
+                  className="text-white bg-blue-600 w-20 px-4
+                 py-1 rounded-lg h-8 transition duration-300 ease-in-out hover:bg-blue-900"
+                >
                   Signup
                 </NavLink>
               </div>
             )}
 
             {location.pathname === '/signup' && (
-              <div className='justify-end flex items-end w-full px-10'>
-                <NavLink to="/login" className="text-white bg-blue-600 w-20 px-4 py-1
-                 rounded-lg h-8 transition duration-300 ease-in-out hover:bg-blue-900">
+              <div className="justify-end flex items-end w-full px-10">
+                <NavLink
+                  to="/login"
+                  className="text-white bg-blue-600 w-20 px-4 py-1
+                 rounded-lg h-8 transition duration-300 ease-in-out hover:bg-blue-900"
+                >
                   Login
                 </NavLink>
-
               </div>
             )}
           </div>

@@ -1,11 +1,7 @@
-import User from "./User"
+import User from './User';
 
 const Home = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <div></div>;
+};
 
-export default Home
+export default Home;

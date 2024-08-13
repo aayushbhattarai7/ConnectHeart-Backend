@@ -1,77 +1,79 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "../../../service/instance";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../../service/instance';
+import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 interface LikeProps {
-    postId: string;
-    userId: string;
-    isLiked: boolean;
+  postId: string;
 }
 
 interface Auth {
-    id: string;
+  id: string;
 }
 
-
-
 interface Like {
-    id: string;
-    auth: Auth;
-    isLiked: boolean;
+  id: string;
+  auth: Auth;
+  isLiked: boolean;
 }
 
 interface GetLike {
-    postId: string;
-    likes: Like[];
+  postId: string;
+  likes: Like[];
 }
 
-const Like: React.FC<LikeProps> = ({ postId, userId, isLiked }) => {
-    const [like, setLike] = useState(isLiked);
-    const[allLikes, setAllLikes] = useState<GetLike | null>(null)
-    const [likeAuth, setLikeAuth] = useState<Auth |null>(null)
-    const toggleLike = async () => {
-        try {
-            const response = await axiosInstance.post(`/like/${postId}`, {
-                userId,
+const Like: React.FC<LikeProps> = ({ postId }) => {
+  const [like, setLike] = useState<boolean>(false);
+  const [allLikes, setAllLikes] = useState<GetLike | null>(null);
 
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            setLike(!like);
-            console.log(response);
-        } catch (error) {
-            console.error('Error toggling like:', error);
-        }
-    };
+  const toggleLike = async () => {
+    try {
+      const userId = sessionStorage.getItem('accessToken');
 
-    const getLike = async (postId: string) => {
-        try {
-            const response = await axiosInstance.get(`/like/${postId}`);
-            setAllLikes(response?.data?.likes);
-            console.log(response?.data?.likes);
-        } catch (error) {
-            console.error('Error toggling like:', error);
-        }
+      const response = await axiosInstance.post(
+        `/like/${postId}`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userId}`,
+          },
+        },
+      );
+      setLike(!like);
+      getLike(postId);
+      console.log(response);
+    } catch (error) {
+      console.error('Error toggling like:', error);
     }
+  };
 
-    useEffect(() => {
-        getLike(postId)
-    }, [])
+  const getLike = async (postId: string) => {
+    try {
+      const response = await axiosInstance.get(`/like/${postId}`);
+      const likes = response?.data?.likes || [];
+      setAllLikes(response.data);
 
-    return (
-        <div>
+      const userId = sessionStorage.getItem('accessToken');
+      const userLiked = likes.some((like: Like) => like.auth.id === userId);
+      setLike(userLiked);
 
-            <button
-            
-                onClick={toggleLike}
-                className="text-xl"
-                style={{ color: like ? 'red' : 'black' }}>
-                {like ? <FaHeart /> : <FaRegHeart />}
-            </button>
-        </div>
+      console.log(response?.data?.likes);
+    } catch (error) {
+      console.error('Error fetching likes:', error);
+    }
+  };
 
-    );
-}
+  useEffect(() => {
+    getLike(postId);
+  }, [postId]);
+
+  return (
+    <div>
+      <button onClick={toggleLike} className="text-xl" style={{ color: like ? 'red' : 'black' }}>
+        {like ? <FaHeart /> : <FaRegHeart />}
+      </button>
+    </div>
+  );
+};
 
 export default Like;

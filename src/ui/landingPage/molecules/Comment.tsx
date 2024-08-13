@@ -1,77 +1,81 @@
-
 import axiosInstance from '../../../service/instance';
 import { useState } from 'react';
-import InputField from "../../common/atoms/InputField";
+import InputField from '../../common/atoms/InputField';
 import Button from '../../common/atoms/Button';
 import axios from 'axios';
 import { authLabel } from '../../../localization/auth';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLang } from '../../../hooks/useLang';
-import Label from '../../common/atoms/Label'
+import Label from '../../common/atoms/Label';
 
 interface FormData {
-    comment?: string,
+  comment?: string;
 }
 interface CommentProps {
-    postId: string
-    refresh:(postId:string) => void
+  postId: string;
+  refresh: (postId: string) => void;
 }
-
-
-
 
 const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
-    const [error, setError] = useState<string>('')
-    const { lang } = useLang()
-    const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm<FormData>();
+  const [error, setError] = useState<string>('');
+  const { lang } = useLang();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<FormData>();
 
-    const onSubmit: SubmitHandler<FormData> = async (data) => {
-        if (!postId) {
-            setError('No post found')
-            return
-        }
-        try {
-            
-            const response = await axiosInstance.post(`/post/comment/${postId}`, data, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            reset()
-            refresh(postId)
-            console.log(response)
-        } catch (error: any) {
-            if (axios.isAxiosError(error)) {
-                setError(error.response?.data?.message || 'Error while fetching post')
-            } else {
-                setError('Error while fetching post')
-            }
-        }
-
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    if (!postId) {
+      setError('No post found');
+      return;
     }
-    return (
-        <div className='w-fit'>
-            {error && <p>{error}</p>}
-            <form onSubmit={handleSubmit(onSubmit)} action="">
-                <Label name={'comment'} label={authLabel.comment[lang]} required></Label>
-                <div className=' w-60 rounded-md mb-4'>
-                <InputField
-                    placeholder={authLabel.comment[lang]}
-                    type='text'
-                    name='comment'
-                    register={register}
-                    className='' required>
-                </InputField>
-                </div>
-                
-                <div className='mb-3 '>
-                <Button buttonText={authLabel.comment[lang]}
-                    name='' type='submit' disabled={isSubmitting} className=''></Button>
-                </div>
-                
-            </form>
+    try {
+      const response = await axiosInstance.post(`/post/comment/${postId}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      reset();
+      refresh(postId);
+      console.log(response);
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || 'Error while fetching post');
+      } else {
+        setError('Error while fetching post');
+      }
+    }
+  };
+  return (
+    <div className="w-fit">
+      {error && <p>{error}</p>}
+      <form onSubmit={handleSubmit(onSubmit)} action="">
+        <Label name={'comment'} label={authLabel.comment[lang]} required></Label>
+        <div className=" w-60 rounded-md mb-4">
+          <InputField
+            placeholder={authLabel.comment[lang]}
+            type="text"
+            name="comment"
+            register={register}
+            className=""
+            required
+          ></InputField>
         </div>
-    )
-}
 
-export default Comments
+        <div className="mb-3 ">
+          <Button
+            buttonText={authLabel.comment[lang]}
+            name=""
+            type="submit"
+            disabled={isSubmitting}
+            className=""
+          ></Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default Comments;

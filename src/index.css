@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .navlink-icon {
-   @apply  p-2 text-xl
+  @apply p-2 text-xl;
 }
