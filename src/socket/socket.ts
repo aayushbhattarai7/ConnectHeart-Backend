@@ -7,6 +7,7 @@ import { ChatService } from "../services/utils/chat.service";
 import userService from "../services/user.service";
 
 const roomservice = new RoomService();
+const chatService = new ChatService();
 
 export class Socket {
     async ChatSocket(server: any) {
@@ -42,40 +43,43 @@ export class Socket {
                 try {
                     const rooms = await roomservice.checkRoom(userId, receiverId);
                     if (rooms) {
-                        rooms.forEach((room) => {
-                            if (room && room.id) {
+                        rooms?.forEach((room) => {
+                            if (room && room?.id) {
                                 socket.join(room.id);
                                 console.log(`User ${userId} joined room ${room.id}`);
                             }
                         });
+                    }else{
+                        console.log("room not found")
+                        throw new Error("room not found")
                     }
                 } catch (error) {
                     console.error("Error joining room:", error);
                 }
             });
 
-            socket.on("message", async ({ message, receiverId }) => {
+            socket.on("message", async({ message, receiverId }) => {
                 try {
                     if (!socket.data.user) {
                         throw new Error('User is not authenticated');
                     }
-                    const chatService = new ChatService();
 
                     const userId = socket.data.user.id;
                     const rooms = await roomservice.checkRoom(userId, receiverId);
                     if (rooms) {
-                        rooms.forEach(async (room) => {
-                            if (room && room.id) {
-                                const chat = await chatService.chat(userId, room.id, receiverId, { message });
-                                const senders = await userService.getById(userId);
-                                const receiver = await userService.getById(receiverId);
-                                console.log("Chat saved:", chat);
+                        const roomId = rooms?.find((room) => room?.id)?.id
+                        if(roomId){
+                            const chat = await chatService.chat(userId, roomId, receiverId, { message });
+                            const senders = await userService.getById(userId);
+                            const receiver = await userService.getById(receiverId);
+                        
 
+                        rooms.forEach( (room) => {
                                 const messagePayload = {
-                                    id: socket.id,
-                                    message,
+                                    id: socket.data.user.id,
+                                    message:chat.message,
                                     sender: {
-                                        id: socket.data.user.id,
+                                        id: senders.id,
                                         details: {
                                             first_name: senders.details.first_name,
                                             last_name: senders.details.last_name,
@@ -89,14 +93,27 @@ export class Socket {
                                 };
 
                                 io.to(room.id).emit('message', messagePayload);
-                                console.log(`Emitted message to room ${room.id}:`, messagePayload);
-                            }
+            
                         });
+                    }
                     }
                 } catch (error) {
                     console.error("Error sending message:", error);
                 }
             });
+
+            socket.on("readed", async({senderId})=> {
+                console.log("🚀 ~ Socket ~ socket.on ~ senderId:", senderId)
+                try {
+                    if(!socket.data.user.id) throw HttpException.unauthorized
+                    const userId = socket.data.user.id
+                    
+                    const chat = await chatService.readChat(userId, senderId)
+                    io.to(socket.id).emit('read',{ read:true})
+                } catch (error) {
+                    console.log("🚀 ~ Socket ~ socket.on ~ error:", error)   
+                }
+            })
 
             socket.on("disconnect", () => {
                 console.log("User Disconnected", socket.id);

@@ -3,7 +3,6 @@ import { AppDataSource } from "../../config/database.config";
 import { Auth } from "../../entities/auth/auth.entity";
 import HttpException from "../../utils/HttpException.utils";
 import { ChatDTO } from "../../dto/chat.dto";
-import BcryptService from "../../utils/bcrypt.utils";
 import { EncryptionService } from "../../utils/encrypt.utils";
 import { Room } from "../../entities/chat/room.entity";
 
@@ -11,7 +10,6 @@ export class ChatService {
     constructor(
         private readonly chatRepo = AppDataSource.getRepository(Chat),
         private readonly AuthRepo = AppDataSource.getRepository(Auth),
-        private readonly encryptService = new EncryptionService(),
         private readonly roomRepo = AppDataSource.getRepository(Room),
     ) { }
 
@@ -35,18 +33,19 @@ export class ChatService {
                 receiver: receiver
             });
             const saveChat = await this.chatRepo.save(chat);
+            const decryptedMessage = EncryptionService.decryptMessage(chat.message);
+                    return { ...chat, message: decryptedMessage };
 
-            return saveChat;
-        } catch (error: any) {
-            console.log(error?.message);
-            throw new Error(error?.message);
+            } catch (error: any) {
+                console.log(error?.message);
+                throw new Error(error?.message);
         }
     }
 
     async displayChat(userId: string, receiverId: string) {
         try {
             const auth = await this.AuthRepo.findOneBy({ id: userId });
-            if (!auth) throw new HttpException('Unauthorized', 401);
+            if (!auth) throw  HttpException.unauthorized
 
             const chats = await this.chatRepo.find({
                 where: [
@@ -65,10 +64,84 @@ export class ChatService {
                     return chat; 
                 }
             });
+            console.log("ok")
             return decryptedChats;
         } catch (error) {
             console.log("🚀 ~ ChatService ~ displayChat ~ error:", error);
             throw error;
         }
+    }
+
+    async chatCount(userId:string, receiverId:string) {
+
+        try {
+            const auth = await this.AuthRepo.findOneBy({id:userId})
+            if(!auth) throw HttpException.unauthorized
+
+            const receiver = await this.AuthRepo.findOneBy({id:receiverId})
+            if(!receiver) throw HttpException.notFound
+    
+            const chat = await this.chatRepo.find({
+                where:  [
+                    { sender: { id: receiverId }, receiver: { id: userId } }
+                ]
+                    })
+    
+            const chatCount:number = chat.length
+            
+            return chatCount
+        } catch (error) {
+            console.log("🚀 ~ ChatService ~ chatCount ~ error:", error)
+            throw HttpException.badRequest
+            
+        }
+      
+    }
+
+    async unreadChat(userId:string, senderId:string) {
+        try {
+            const auth = await this.AuthRepo.findOneBy({id:userId})
+            if(!auth) throw HttpException.unauthorized
+
+            const receiver = await this.AuthRepo.findOneBy({id:senderId})
+            if(!receiver) throw HttpException.notFound
+
+            const getundearChat = await this.chatRepo.find({
+                where:[
+                    {
+                         receiver:{id:userId},read:false
+                    },
+                ],relations:['receiver']
+            })
+            if(!getundearChat) throw HttpException.notFound
+            console.log("unread unread")
+            return getundearChat
+    
+        } catch (error) {
+            console.log("🚀 ~ ChatService ~ unreadMessage ~ error:", error)
+            throw HttpException.notFound
+        }
+    }
+
+    async readChat(userId:string, senderId:string) {
+        console.log("🚀 ~ ChatService ~ readChat ~ senderId:", senderId)
+        console.log("🚀 ~ ChatService ~ readChat ~ userId:", userId)
+        
+        const auth = await this.AuthRepo.findOneBy({id:userId})
+            if(!auth) throw HttpException.unauthorized
+
+            const sender = await this.AuthRepo.findOneBy({id:senderId})
+            if(!sender) throw HttpException.notFound
+
+            const readChat =   await this.chatRepo.update(
+                {
+                    sender: { id: senderId },
+                    receiver: { id: userId },
+                    read: false
+                },
+                { read: true }
+            );
+            console.log('clicked')
+            return readChat
     }
 }

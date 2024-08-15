@@ -3,6 +3,7 @@ import { ChatService } from "../services/utils/chat.service";
 import { StatusCodes } from "../constant/StatusCodes";
 import { ChatDTO } from "../dto/chat.dto";
 import { RoomService } from "../services/utils/room.service";
+import { Message } from "../constant/message";
 const chat = new ChatService()
 export class ChatController {
     async sendChat(req: Request, res: Response) {
@@ -40,38 +41,57 @@ export class ChatController {
             
         }
     }
+
+    async chatCount(req:Request, res:Response) {
+        try {
+            const userId = req.user?.id
+            const receiverId = req.params.id
+            const getCount = await chat.chatCount(userId as string, receiverId)
+            res.status(StatusCodes.SUCCESS).json({
+                getCount,
+                message:Message.success
+            })
+        } catch (error) {
+            res.status(StatusCodes.BAD_REQUEST).json({
+                message:Message.error
+            })
+        }
+    }
+
+    async getUndreadChat(req:Request, res:Response) {
+        try {
+            const userId = req.user?.id
+            const senderId = req.params.id
+            const unreadchat = await chat.unreadChat(userId as string, senderId)
+            res.status(StatusCodes.SUCCESS).json({
+                message:Message.success,
+                unreadchat
+            })
+         } catch (error) {
+            console.log("🚀 ~ ChatController ~ getUndreadChat ~ error:", error)
+            res.status(StatusCodes.BAD_REQUEST).json({
+                message:Message.error
+            })
+        }
+    }
+
+    async readChat(req:Request, res:Response) {
+        try {
+            const userId = req.user?.id
+            const senderId = req.params.id
+            const read = await chat.readChat(userId as string, senderId)
+            res.status(StatusCodes.SUCCESS).json({
+                message:Message.success,
+                read
+            })
+        } catch (error) {
+            console.log("🚀 ~ ChatController ~ getUndreadChat ~ error:", error)
+            res.status(StatusCodes.BAD_REQUEST).json({
+                message:Message.error
+            })
+        }
+       
+
+    }
 }
 
-/*  async chat(senders: string,  roomId:string, receiverId:string, data: ChatDTO) {
-        try {
-            console.log(senders, "ahdah")
-
-            const auth = await this.AuthRepo.findOneBy({id:senders})
-            console.log("🚀 ~ ChatService ~ chat ~ auth:", auth)
-            
-            if(!auth) throw HttpException.unauthorized
-
-            const receiver = await this.AuthRepo.findOneBy({id:receiverId})
-            console.log("🚀 ~ ChatService ~ chat ~ receiver:", receiver)
-            if(!receiver) throw HttpException.notFound
-           
-
-            const room = await this.roomRepo.findOneBy({id:roomId})
-            console.log("🚀 ~ ChatService ~ chat ~ room:", room)
-            
-            if(!room) throw HttpException.notFound('room not found')
-            const chat = this.chatRepo.create({
-                message: data.message,
-                room:room,
-                sender:auth,
-                receiver:receiver
-            })
-            const saveChat = await this.chatRepo.save(chat)
-            console.log("🚀 ~ ChatService ~ chat ~ saveChat:", saveChat)
-            
-            return saveChat
-        } catch (error: any) {
-            console.log(error?.message)
-            throw new Error(error?.message)
-        }
-    } */

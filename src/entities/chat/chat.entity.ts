@@ -8,6 +8,10 @@ export class Chat extends Base {
     @Column({ name: 'message' })
     message: string;
 
+
+    @Column({ default:false})
+    read:boolean
+
     @ManyToOne(() => Auth, (auth) => auth.sendMessage, { cascade: true })
     @JoinColumn({ name: 'sender_id' })
     sender: Auth;

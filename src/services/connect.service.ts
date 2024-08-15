@@ -5,12 +5,15 @@ import HttpException from '../utils/HttpException.utils'
 import { Gender, Status } from '../constant/enum'
 import { Message } from '../constant/message'
 import { Room } from '../entities/chat/room.entity'
+import { Chat } from '../entities/chat/chat.entity'
 
 export class ConnectService {
   constructor(
     private readonly connectRepo = AppDataSource.getRepository(Connect),
     private readonly AuthRepo = AppDataSource.getRepository(Auth),
-    private readonly RoomRepo = AppDataSource.getRepository(Room)
+    private readonly RoomRepo = AppDataSource.getRepository(Room),
+    private readonly chatRepo = AppDataSource.getRepository(Chat)
+
   ) { }
 
   async connect(sender: string, receiver: string): Promise<Connect> {
@@ -115,17 +118,25 @@ export class ConnectService {
 
   async removeConnection(userId: string, connectId: string): Promise<string> {
     try {
-        await this.connectRepo.createQueryBuilder('connect')
-            .delete()
-            .where('connect.sender_id = :userId AND connect.receiver_id = :connectId', { userId, connectId })
-            .orWhere('connect.sender_id = :connectId AND connect.receiver_id = :userId', { userId, connectId })
-            .execute();
+      await this.chatRepo.createQueryBuilder('chat')
+      .delete()
+      .where('chat.sender_id =:userId AND chat.receiver_id =:connectId',{userId, connectId})
+      .orWhere('chat.sender_id =:connectId AND chat.receiver_id =:userId',{userId, connectId})
+      .execute()
 
-        await this.RoomRepo.createQueryBuilder('room')
-            .delete()
-            .where('room.sender_id = :userId AND room.receiver_id = :connectId', { userId, connectId })
-            .orWhere('room.sender_id = :connectId AND room.receiver_id = :userId', { userId, connectId })
-            .execute();
+
+      await this.RoomRepo.createQueryBuilder('room')
+      .delete()
+      .where('room.sender_id = :userId AND room.receiver_id = :connectId', { userId, connectId })
+      .orWhere('room.sender_id = :connectId AND room.receiver_id = :userId', { userId, connectId })
+      .execute();
+      await this.connectRepo.createQueryBuilder('connect')
+      .delete()
+      .where('connect.sender_id = :userId AND connect.receiver_id = :connectId', { userId, connectId })
+      .orWhere('connect.sender_id = :connectId AND connect.receiver_id = :userId', { userId, connectId })
+      .execute();
+
+       
 
         return 'Connection and associated room removed successfully';
     } catch (error) {
@@ -184,7 +195,6 @@ export class ConnectService {
       .leftJoinAndSelect('auth.details', 'details')
       .leftJoinAndSelect('auth.profile', 'profile')
       .where('auth.id != :userId', { userId })
-      .andWhere('details.gender != :gender', { gender })
 
       .andWhere(qb => {
         const subQuery = qb.subQuery()
