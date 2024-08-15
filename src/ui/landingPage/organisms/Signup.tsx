@@ -174,3 +174,13 @@ const Signup: React.FC = () => {
 };
 
 export default Signup;
+
+
+
+/* {/* <NavLink
+                to={``}
+
+                ///message/${connect.id}
+                className={({ isActive }) =>
+                  isActive ? 'rounded-2xl bg-blue-500 p-3 text-white' : ''
+                }  */

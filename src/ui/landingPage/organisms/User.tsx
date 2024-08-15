@@ -65,44 +65,41 @@ const User = () => {
 
   return (
     <div>
-      <div className=" flex justify-center">
+      <div className=" flex justify-center ml-32">
         <h1 className="mr-64 font-poppins font-medium">people may you know</h1>
       </div>
-      <div className="justify-start flex flex-wrap gap-8 overflow-hidden">
-        {error && <p>{error}</p>}
-        {users?.map((user) => (
-          <div
-            key={user?.id}
-            className=" flex flex-col p-5 mb-10 justify-center items-center w-64 shadow-xl"
-          >
-            <div onClick={() => handleUserClick(user.id)}>
-              {user?.profile?.path ? (
-                <img
-                  className="h-44 w-44 rounded-2xl mb-3"
-                  src={user?.profile?.path}
-                  alt="Profile"
-                />
-              ) : (
-                <img
-                  className="h-44 w-44 rounded-2xl mb-3"
-                  src="/profilenull.jpg"
-                  alt="Default Profile"
-                />
-              )}
-              <div className=" gap-2 mb-5 flex mr-16 font-poppins font-medium">
-                <p>{user?.details?.first_name}</p>
-                <p>{user?.details?.last_name}</p>
-              </div>
+      <div className="overflow-x-auto">
+  <div className="min-w-full bg-white shadow-md rounded-lg">
+    {error && <p className="text-red-500 p-4">{error}</p>}
+    <ul className="divide-y divide-gray-200">
+      {users?.map((user) => (
+        <li key={user?.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
+          <div className="flex items-center space-x-4 cursor-pointer" onClick={() => handleUserClick(user.id)}>
+            {user?.profile?.path ? (
+              <img
+                className="h-12 w-12 rounded-full object-cover"
+                src={user?.profile?.path}
+                alt="Profile"
+              />
+            ) : (
+              <img className="h-12 w-12 rounded-full object-cover" src="/profilenull.jpg" alt="Default Profile" />
+            )}
+            <div className="text-left">
+              <p className="font-semibold text-lg">{user?.details?.first_name} {user?.details?.last_name}</p>
             </div>
-            <button
-              className="border border-blue-400 bg-blue-600 text-white rounded-lg w-40"
-              onClick={() => sendRequest(user?.id)}
-            >
-              Send
-            </button>
           </div>
-        ))}
-      </div>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            onClick={() => sendRequest(user?.id)}
+          >
+            Send
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
     </div>
   );
 };

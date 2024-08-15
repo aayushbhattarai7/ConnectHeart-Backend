@@ -7,7 +7,6 @@ import axios from 'axios';
 import Post from './Post';
 import { useNavigate } from 'react-router-dom';
 import Like from './Like';
-import { Socket } from 'socket.io-client';
 
 interface Post {
   id: string;
@@ -190,7 +189,7 @@ const ShowPost = () => {
   }, []);
 
   return (
-    <div className="mt-20 flex flex-col ">
+    <div className="mt-20 flex flex-col h-screen ">
       <div
         className="flex flex-col justify-start items-center overflow-y-auto h-screen mt-30  w-maxx ml-72 
             shadow-xl   p-10 mb-16 bg-gray-100"
@@ -202,7 +201,6 @@ const ShowPost = () => {
         <div className="flex justify-end items-start">
           <Post postId={posts[0]?.id || ''} refresh={getPost} />
         </div>
-        {/* <Like postId={posts[0]?.id} userId={currentUserId}/> */}
 
         {error && <p>{error}</p>}
         {posts.map((post) => (

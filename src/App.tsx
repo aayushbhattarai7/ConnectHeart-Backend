@@ -7,7 +7,6 @@ import ShowPost from './ui/landingPage/organisms/ShowPost';
 import Request from './ui/landingPage/organisms/Request';
 import Connection from './ui/landingPage/organisms/Connection';
 import User from './ui/landingPage/organisms/User';
-import Message from './ui/landingPage/organisms/Message';
 import Profile from './ui/landingPage/organisms/Profile';
 import Settings from './ui/landingPage/organisms/Settings';
 import Support from './ui/landingPage/organisms/Support';
@@ -42,10 +41,10 @@ const router = createBrowserRouter([
         element: <User />,
       },
 
-      {
-        path: '/message/:receiverId',
-        element: <Message />,
-      },
+      // {
+      //   path: '/message/:receiverId',
+      //   element: <Message />,
+      // },
        {
         path:'/message',
         element: <MessageUser/>

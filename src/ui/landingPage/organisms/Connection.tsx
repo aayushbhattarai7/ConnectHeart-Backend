@@ -63,9 +63,7 @@ const Connection = () => {
     navigate(`/userProfile/${userId}`);
   };
 
-  const handleChatClick = (userId: string) => {
-    navigate(`/message/${userId}`);
-  };
+  
 
   useEffect(() => {
     showConnection();
@@ -74,41 +72,44 @@ const Connection = () => {
     <div>
       <div className=" ml-96 justify-start w-fit  p-8 items-start h-screen">
         <div className="justify-center items-center mt-10 flex p-5">
-          <h1 className="ml-20 font-poppins font-medium">Connection</h1>
+          <h1 className="mr-20 font-poppins font-medium">Connection</h1>
         </div>
-        <div className="justify-start flex flex-wrap gap-8 mb-10 overflow-hidden">
-          {error && <p>{error}</p>}
-          {connects?.map((connect) => (
-            <div
-              key={connect?.id}
-              className=" flex flex-col p-5 mb-10 justify-center items-center w-64 shadow-xl"
-            >
-              <div className="" onClick={() => handleUserClick(connect?.id)}>
-                {connect?.profile?.path ? (
-                  <img
-                    className="h-44 w-44 rounded-2xl mb-3"
-                    src={connect?.profile?.path}
-                    alt="Profile"
-                  />
-                ) : (
-                  <img className="" src="/profilenull.jpg" alt="Default Profile" />
-                )}
-                <div key={connect?.id} className="gap-2 mb-5 flex mr-16 font-poppins font-medium">
-                  <p>{connect?.details?.first_name}</p>
-                  <p>{connect?.details?.last_name}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => Remove(connect?.id)}
-                className="border border-blue-400 bg-blue-600 text-white rounded-lg w-40"
-              >
-                Remove
-              </button>
-              <button onClick={() => handleChatClick(connect?.id)}>Chat</button>
+        <div className="overflow-x-auto">
+  <div className="min-w-full bg-white shadow-md rounded-lg">
+    {error && <p className="text-red-500 p-4">{error}</p>}
+    <ul className="divide-y divide-gray-200">
+      {connects?.map((connect) => (
+        <li key={connect?.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
+          <div className="flex items-center space-x-4">
+            <div onClick={() => handleUserClick(connect?.id)} className="cursor-pointer">
+              {connect?.profile?.path ? (
+                <img
+                  className="h-12 w-12 rounded-full object-cover"
+                  src={connect?.profile?.path}
+                  alt="Profile"
+                />
+              ) : (
+                <img className="h-12 w-12 rounded-full" src="/profilenull.jpg" alt="Default Profile" />
+              )}
             </div>
-          ))}
-        </div>
+            <div className='flex p-2 justify-around  w-[70rem]'>
+              <p className="text-lg font-poppins">{connect?.details?.first_name} {connect?.details?.last_name}</p>
+              <p className="p-1">{connect?.details?.phone_number}</p>
+              <p>{connect?.email}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => Remove(connect?.id)}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+          >
+            Remove
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
 
         <div className="border border-gray-300 mb-10"></div>
         <User />

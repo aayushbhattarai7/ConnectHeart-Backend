@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../../service/instance';
 import { useParams } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useForm } from 'react-hook-form';
-import { BsFillSendFill } from "react-icons/bs";
+import { BsFillSendFill } from 'react-icons/bs';
 import { io, Socket as IOSocket } from 'socket.io-client';
-import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import MessageUser from './MessageUser';
-
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 interface DecodedToken {
   id: string;
   email: string;
@@ -36,18 +36,34 @@ interface Messages {
   };
 }
 
+interface UnreadMessage {
+  id: string;
+  message: string;
+  isRead: boolean;
+  sender: {
+    id: string;
+  };
+  receiver: {
+    id: string;
+  };
+}
+
 const Message = () => {
   const { receiverId } = useParams<{ receiverId: string }>();
   const [chats, setChats] = useState<Messages[]>([]);
+  const [toggleEmoji, setToggleEmoji] = useState<boolean>(false);
   const [decodedToken, setDecodedToken] = useState<DecodedToken | null>(null);
+  const [unread, setUnread] = useState<UnreadMessage | null>(null);
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { isSubmitting },
   } = useForm<FormData>();
   const [socket, setSocket] = useState<IOSocket | null>(null);
-
+  const message = watch('message');
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (token) {
@@ -70,7 +86,7 @@ const Message = () => {
       return;
     }
 
-    const newSocket = io( 'http://localhost:4000', {
+    const newSocket = io('http://localhost:4000', {
       auth: {
         token: token,
       },
@@ -112,6 +128,20 @@ const Message = () => {
     }
   };
 
+  // const unreadChat = async (id: string) => {
+  //   const response = await axiosInstance.get(`/chat/unread/${id}`, {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   });
+  //   setUnread(response?.data?.unreadChat);
+  //   console.log(response, 'xyzbca');
+  // };
+
+  // useEffect(()=> {
+  //   unreadChat(receiverId!)
+  // })
+
   const onSubmit = async (data: FormData) => {
     if (!decodedToken?.id) {
       console.error('User not authenticated');
@@ -123,25 +153,31 @@ const Message = () => {
       receiverId: receiverId,
     });
     reset();
+    setToggleEmoji(false);
+  };
+
+  const emojiHandleSelect = (selectEmoji: EmojiClickData) => {
+    const emoji = selectEmoji.emoji;
+    setValue('message', message + emoji);
   };
 
   return (
     <div className="h-screen flex flex-col bg-gray-100 overflow-hidden">
-      <div className='p-4 flex items-center justify-between bg-white'>
-        <MessageUser />
+      <div className="p-4 flex items-center justify-between bg-white">
+        {/* <MessageUser /> */}
       </div>
       <div className=" ml-[63rem] p-4 mt-14 justify-end items-end mb-12 mx-auto w-[60rem] max-w-4xl border border-gray-300 bg-white rounded-lg shadow-lg overflow-y-auto flex-grow">
         <div className="flex flex-col justify-end w-full overflow-auto items-end space-y-4">
           {chats?.map((chat, index) => (
             <div
               key={`${chat.id} ${index}`}
-              className={`mb-2 p-4 rounded-lg shadow-md flex ${
+              className={`mb-2 p-4 rounded-lg shadow-md flex justify-end items-end ${
                 decodedToken?.id === chat?.sender?.id
                   ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
                   : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
               }`}
             >
-              <div className=''>
+              <div className="">
                 <img src="" alt="" />
                 <p className="font-semibold">{chat?.sender?.details?.first_name}</p>
                 <div className="flex flex-col">
@@ -151,6 +187,12 @@ const Message = () => {
             </div>
           ))}
         </div>
+        <div className="flex w-full justify-end">
+          <div className="fixed bottom-20 left-90 justify-end flex ">
+            {toggleEmoji && <EmojiPicker onEmojiClick={emojiHandleSelect} />}
+          </div>
+        </div>
+
         <div className="w-[56rem] fixed bottom-0 left-[63rem] p-4 bg-white border border-gray-300">
           <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-4xl mx-auto">
             <input
@@ -160,8 +202,11 @@ const Message = () => {
               className="flex-grow p-2 rounded-l-lg outline-none"
               required
             />
-            <div className='flex gap-12'>
-              <button className='text-2xl'><MdOutlineEmojiEmotions /></button>
+            <div className="flex gap-12">
+              <p className="text-2xl" onClick={() => setToggleEmoji(!toggleEmoji)}>
+                <MdOutlineEmojiEmotions />
+              </p>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
