@@ -4,6 +4,7 @@ import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 interface LikeProps {
   postId: string;
+  userId: string;
 }
 
 interface Auth {
@@ -21,8 +22,9 @@ interface GetLike {
   likes: Like[];
 }
 
-const Like: React.FC<LikeProps> = ({ postId }) => {
+const Like: React.FC<LikeProps> = ({ postId, userId }) => {
   const [like, setLike] = useState<boolean>(false);
+  const [user, setUser] = useState<string | null>(null);
   const [allLikes, setAllLikes] = useState<GetLike | null>(null);
 
   const toggleLike = async () => {
@@ -41,6 +43,7 @@ const Like: React.FC<LikeProps> = ({ postId }) => {
       );
       setLike(!like);
       getLike(postId);
+      setUser(userId);
       console.log(response);
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -50,12 +53,14 @@ const Like: React.FC<LikeProps> = ({ postId }) => {
   const getLike = async (postId: string) => {
     try {
       const response = await axiosInstance.get(`/like/${postId}`);
-      const likes = response?.data?.likes || [];
+      const likes = response?.data?.likes;
       setAllLikes(response.data);
 
       const userId = sessionStorage.getItem('accessToken');
-      const userLiked = likes.some((like: Like) => like.auth.id === userId);
-      setLike(userLiked);
+      if (user === userId) {
+        const userLiked = likes.some((like: Like) => like.auth.id === userId);
+        setLike(userLiked);
+      }
 
       console.log(response?.data?.likes);
     } catch (error) {

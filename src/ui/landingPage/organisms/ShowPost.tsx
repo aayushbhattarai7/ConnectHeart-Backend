@@ -67,7 +67,7 @@ const ShowPost = () => {
   const [error, setError] = useState<string | null>(null);
   const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<boolean>(false);
-  const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const getPost = async () => {
@@ -80,7 +80,8 @@ const ShowPost = () => {
       console.log('🚀 ~ getPost ~ response:', response);
 
       setPosts(response.data?.posts);
-      setCurrentUserId(response.data?.userId || '');
+      const userId = sessionStorage.getItem('accessToken');
+      setCurrentUserId(userId);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || 'Error while fetching posts');
@@ -181,7 +182,6 @@ const ShowPost = () => {
 
   const handleUserClick = (userId: string) => {
     navigate(`/userProfile/${userId}`);
-    //
   };
 
   useEffect(() => {
@@ -189,7 +189,7 @@ const ShowPost = () => {
   }, []);
 
   return (
-    <div className="mt-20 flex flex-col h-screen ">
+    <div className="mt-20 flex flex-col h-screen bg-gray-100 ">
       <div
         className="flex flex-col justify-start items-center overflow-y-auto h-screen mt-30  w-maxx ml-72 
             shadow-xl   p-10 mb-16 bg-gray-100"
@@ -198,10 +198,8 @@ const ShowPost = () => {
           scrollbarWidth: 'none',
         }}
       >
-        <div className="flex justify-end items-start">
-          <Post postId={posts[0]?.id || ''} refresh={getPost} />
-        </div>
-
+        <div className="flex justify-end items-start"></div>
+        <Post postId={posts[0]?.id || ''} refresh={getPost} />
         {error && <p>{error}</p>}
         {posts.map((post) => (
           <div className="shadow-xl p-10 mb-16 text-ellipsis bg-white" key={post.id}>
@@ -261,7 +259,7 @@ const ShowPost = () => {
             </div>
 
             <div className="flex gap-10">
-              <Like postId={post?.id} />
+              <Like postId={post?.id} userId={currentUserId!} />
               <button
                 className="rounded-xl bg-blue-700 h-7 pl-5 text-white w-14"
                 onClick={showComment}

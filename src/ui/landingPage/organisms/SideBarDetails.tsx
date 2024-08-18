@@ -65,7 +65,7 @@ const SideBarDetails = () => {
   return (
     <>
       { location.pathname !== '/login' && location.pathname !== '/signup'&& (
-        <div className="fixed top-20 left-0 w-72 h-screen bg-white shadow-xl">
+        <div className="fixed top-20 left-0 w-72 h-screen bg-gray-100 shadow-xl border">
           <div className="p-8 flex-col sticky top-0 h-full">
             <div key={user?.id} className="flex-col justify-center ml-4 flex mb-10 ">
               {user?.profile?.path ? (
@@ -79,7 +79,7 @@ const SideBarDetails = () => {
                 </Link>
               ) : (
                 <Link to="/profile">
-                  <img className="" src="/profilenull.jpg" alt="Default Profile" />
+                  <img className="h-44 w-44 rounded-2xl mb-3" src="/profilenull.jpg" alt="Default Profile" />
                 </Link>
               )}
               <div className="flex gap-1 ml-2 mb-3">
