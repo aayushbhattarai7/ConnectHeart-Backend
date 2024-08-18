@@ -14,10 +14,10 @@ export class RoomService {
 
             
             const user = await this.authrepo.findOneBy({id:userId})
-            if(!user) throw HttpException.notFound
+            if(!user) return null;
 
             const receiver = await this.authrepo.findOneBy({id:receiverId})
-            if(!receiver) throw HttpException.notFound
+            if(!receiver) return null;
 
 
             const findRoom = await this.roomrepo.find({
@@ -26,8 +26,7 @@ export class RoomService {
                     { sender: { id: receiverId }, receiver: { id: userId } }
                 ]
             });
-            if (!findRoom || findRoom.length === 0) {
-                console.log("Room not found, returning null");
+            if (!findRoom) {
                 return null;
             }
             return findRoom;

@@ -6,15 +6,15 @@ import { RoomService } from "../services/utils/room.service";
 import { ChatService } from "../services/utils/chat.service";
 import userService from "../services/user.service";
 
-const roomservice = new RoomService();
+const roomService = new RoomService();
 const chatService = new ChatService();
 
 export class Socket {
     async ChatSocket(server: any) {
         const io = new Server(server, {
             cors: {
-                origin: '*'
-            }
+                origin: '*',
+            },
         });
 
         io.use((socket, next) => {
@@ -30,7 +30,6 @@ export class Socket {
                     next(new Error('You are not authorized'));
                 }
             } catch (error) {
-                console.log("🚀 ~ Socket ~ io.use ~ error:", error);
                 next(new Error('Invalid token'));
             }
         });
@@ -41,77 +40,109 @@ export class Socket {
             socket.on("room", async ({ receiverId }) => {
                 const userId = socket.data.user.id;
                 try {
-                    const rooms = await roomservice.checkRoom(userId, receiverId);
+                    const rooms = await roomService.checkRoom(userId, receiverId);
                     if (rooms) {
                         rooms?.forEach((room) => {
                             if (room && room?.id) {
                                 socket.join(room.id);
-                                console.log(`User ${userId} joined room ${room.id}`);
                             }
                         });
-                    }else{
-                        console.log("room not found")
-                        throw new Error("room not found")
+                    } else {
+                        console.log("Room not found")
                     }
                 } catch (error) {
                     console.error("Error joining room:", error);
                 }
             });
 
-            socket.on("message", async({ message, receiverId }) => {
+            socket.on("message", async ({ message, receiverId }) => {
                 try {
                     if (!socket.data.user) {
                         throw new Error('User is not authenticated');
                     }
-
+            
                     const userId = socket.data.user.id;
-                    const rooms = await roomservice.checkRoom(userId, receiverId);
+                    const rooms = await roomService.checkRoom(userId, receiverId);
                     if (rooms) {
-                        const roomId = rooms?.find((room) => room?.id)?.id
-                        if(roomId){
+                        const roomId = rooms?.find((room) => room?.id)?.id;
+                        if (roomId) {
                             const chat = await chatService.chat(userId, roomId, receiverId, { message });
                             const senders = await userService.getById(userId);
                             const receiver = await userService.getById(receiverId);
-                        
-
-                        rooms.forEach( (room) => {
+            
+                            rooms.forEach((room) => {
                                 const messagePayload = {
                                     id: socket.data.user.id,
-                                    message:chat.message,
+                                    message: chat.message,
                                     sender: {
                                         id: senders.id,
                                         details: {
                                             first_name: senders.details.first_name,
                                             last_name: senders.details.last_name,
-                                        }
+                                        },
                                     },
                                     receiver: {
                                         id: receiverId,
                                         first_name: receiver.details.first_name,
                                         last_name: receiver.details.last_name,
-                                    }
+                                    },
                                 };
-
+            
                                 io.to(room.id).emit('message', messagePayload);
             
-                        });
-                    }
+                                chatService.unreadChat(receiverId, senders.id).then(unreadCount => {
+                                    io.to(receiverId).emit('unreadCounts', {
+                                        senderId: senders.id,
+                                        unreadCount: unreadCount,
+                                    });
+                                });
+                            });
+                        }
+                    }else{
+                        console.log('Room not found')
                     }
                 } catch (error) {
                     console.error("Error sending message:", error);
                 }
             });
+            
 
-            socket.on("readed", async({senderId})=> {
-                console.log("🚀 ~ Socket ~ socket.on ~ senderId:", senderId)
+            socket.on("readed", async ({ senderId }) => {
                 try {
-                    if(!socket.data.user.id) throw HttpException.unauthorized
-                    const userId = socket.data.user.id
-                    
-                    const chat = await chatService.readChat(userId, senderId)
-                    io.to(socket.id).emit('read',{ read:true})
+                    const userId = socket.data.user.id;
+                    if (!userId) throw HttpException.unauthorized;
+            
+                    await chatService.readChat(userId, senderId);
+            
+                    const unreadCount = await chatService.unreadChat(userId, senderId);
+                    io.to(senderId).emit('unreadCounts', {
+                        senderId: userId,
+                        unreadCount: unreadCount,
+                    });
                 } catch (error) {
-                    console.log("🚀 ~ Socket ~ socket.on ~ error:", error)   
+                    console.error("Error marking messages as read:", error);
+                }
+            });
+            
+
+            socket.on("getUnreadCounts", async ({ senderId }) => {
+                try {
+                    const receiverId = socket.data.user.id;
+                    const unreadCount = await chatService.unreadChat(receiverId, senderId);
+
+                    io.to(socket.id).emit('unreadCounts', { senderId, unreadCount });
+                } catch (error) {
+                    console.error('Error fetching unread counts:', error);
+                }
+            });
+
+            socket.on('typing',async({receiverId}) => {
+                const userId = socket.data.user.id
+                const findRoom = await roomService.checkRoom(userId, receiverId)
+                if(findRoom){
+                    const roomId = findRoom?.find((room) => room?.id)?.id;
+                    if(!roomId) return null
+                    io.to(roomId).emit('typing', {userId})
                 }
             })
 

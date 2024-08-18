@@ -76,22 +76,22 @@ export class ChatController {
     }
 
     async readChat(req:Request, res:Response) {
-        try {
-            const userId = req.user?.id
-            const senderId = req.params.id
-            const read = await chat.readChat(userId as string, senderId)
-            res.status(StatusCodes.SUCCESS).json({
-                message:Message.success,
-                read
-            })
-        } catch (error) {
-            console.log("🚀 ~ ChatController ~ getUndreadChat ~ error:", error)
-            res.status(StatusCodes.BAD_REQUEST).json({
-                message:Message.error
-            })
-        }
+    //     try {
+    //         const userId = req.user?.id
+    //         const senderId = req.params.id
+    //         const read = await chat.readChat(userId as string, senderId)
+    //         res.status(StatusCodes.SUCCESS).json({
+    //             message:Message.success,
+    //             read
+    //         })
+    //     } catch (error) {
+    //         console.log("🚀 ~ ChatController ~ getUndreadChat ~ error:", error)
+    //         res.status(StatusCodes.BAD_REQUEST).json({
+    //             message:Message.error
+    //         })
+    //     }
        
 
-    }
+     }
 }
 

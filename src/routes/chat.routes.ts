@@ -13,7 +13,6 @@ router.use(authorization([Role.USER]))
 
 router.post('/:id', wrapper(chat.sendChat))
 router.get('/:id', wrapper(chat.displayChat))
-router.get('/count/:id', wrapper(chat.chatCount))
 router.get('/unread/:id', wrapper(chat.getUndreadChat))
 router.patch('/read/:id', wrapper(chat.readChat))
 

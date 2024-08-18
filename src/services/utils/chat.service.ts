@@ -98,30 +98,31 @@ export class ChatService {
       
     }
 
-    async unreadChat(userId:string, senderId:string) {
+    async unreadChat(userId: string, senderId: string) {
         try {
-            const auth = await this.AuthRepo.findOneBy({id:userId})
-            if(!auth) throw HttpException.unauthorized
-
-            const receiver = await this.AuthRepo.findOneBy({id:senderId})
-            if(!receiver) throw HttpException.notFound
-
-            const getundearChat = await this.chatRepo.find({
-                where:[
-                    {
-                         receiver:{id:userId},read:false
-                    },
-                ],relations:['receiver']
-            })
-            if(!getundearChat) throw HttpException.notFound
-            console.log("unread unread")
-            return getundearChat
+            const auth = await this.AuthRepo.findOneBy({ id: userId });
+            if (!auth) throw HttpException.unauthorized;
     
+            const receiver = await this.AuthRepo.findOneBy({ id: senderId });
+            if (!receiver) throw HttpException.notFound;
+    
+            const getUnreadChat = await this.chatRepo.find({
+                where: [
+                    { receiver: { id: userId }, sender: { id: senderId }, read: false },
+                ],
+                relations: ['receiver', 'sender'],
+            });
+    
+            const getUnread = getUnreadChat.length;
+            console.log(`Unread count for user ${userId} from sender ${senderId}:`, getUnread);
+    
+            return getUnread;
         } catch (error) {
-            console.log("🚀 ~ ChatService ~ unreadMessage ~ error:", error)
-            throw HttpException.notFound
+            console.log("🚀 ~ ChatService ~ unreadChat ~ error:", error);
+            throw HttpException.notFound;
         }
     }
+    
 
     async readChat(userId:string, senderId:string) {
         console.log("🚀 ~ ChatService ~ readChat ~ senderId:", senderId)
