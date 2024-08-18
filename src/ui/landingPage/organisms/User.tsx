@@ -34,7 +34,7 @@ const User = () => {
       console.log(response);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || 'Error while fetching post');
+        setError(error.response?.data?.message || 'Error while fetching users');
       } else {
         setError('Error while fetching users');
       }
@@ -48,9 +48,9 @@ const User = () => {
       console.log(response);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || 'Error while fetching post');
+        setError(error.response?.data?.message || 'Error while sending request');
       } else {
-        setError('Error while fetching post');
+        setError('Error while sending request');
       }
     }
   };
@@ -64,43 +64,47 @@ const User = () => {
   }, []);
 
   return (
-    <div>
-      <div className=" flex justify-center ml-32">
-        <h1 className="mr-64 font-poppins font-medium">people may you know</h1>
+    <div className="flex flex-col items-center mt-4">
+      <div className="flex justify-center mb-4">
+        <h1 className="text-xl font-poppins font-medium text-gray-800">People You May Know</h1>
       </div>
-      <div className="overflow-x-auto">
-  <div className="min-w-full bg-white shadow-md rounded-lg">
-    {error && <p className="text-red-500 p-4">{error}</p>}
-    <ul className="divide-y divide-gray-200">
-      {users?.map((user) => (
-        <li key={user?.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
-          <div className="flex items-center space-x-4 cursor-pointer" onClick={() => handleUserClick(user.id)}>
-            {user?.profile?.path ? (
-              <img
-                className="h-12 w-12 rounded-full object-cover"
-                src={user?.profile?.path}
-                alt="Profile"
-              />
-            ) : (
-              <img className="h-12 w-12 rounded-full object-cover" src="/profilenull.jpg" alt="Default Profile" />
-            )}
-            <div className="text-left">
-              <p className="font-semibold text-lg">{user?.details?.first_name} {user?.details?.last_name}</p>
-            </div>
-          </div>
-          <button
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
-            onClick={() => sendRequest(user?.id)}
-          >
-            Send
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-
+      <div className="w-full max-w-md lg:max-w-2xl bg-white shadow-md rounded-lg overflow-hidden">
+        {error && <p className="text-red-500 p-4">{error}</p>}
+        <ul className="divide-y divide-gray-200">
+          {users?.map((user) => (
+            <li
+              key={user?.id}
+              className="flex flex-col sm:flex-row items-center sm:justify-between p-4 hover:bg-gray-50"
+            >
+              <div className="flex items-center space-x-4 cursor-pointer" onClick={() => handleUserClick(user.id)}>
+                {user?.profile?.path ? (
+                  <img
+                    className="h-16 w-16 rounded-full object-cover"
+                    src={user?.profile?.path}
+                    alt="Profile"
+                  />
+                ) : (
+                  <img className="h-16 w-16 rounded-full object-cover" src="/profilenull.jpg" alt="Default Profile" />
+                )}
+                <div className="text-center sm:text-left mt-2 sm:mt-0">
+                  <p className="font-semibold text-lg text-gray-700">
+                    {user?.details?.first_name} {user?.details?.last_name}
+                  </p>
+                  {user?.email && <p className="text-gray-500 text-sm">{user?.email}</p>}
+                </div>
+              </div>
+              <button
+                className="mt-4 sm:mt-0 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                onClick={() => sendRequest(user?.id)}
+              >
+                Send
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
+
 export default User;

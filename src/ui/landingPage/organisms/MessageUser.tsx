@@ -189,7 +189,6 @@ const MessageUser = () => {
     }
   };
 
-
   const onSubmit = async (data: FormData) => {
     if (!decodedToken?.id) {
       console.error('User not authenticated');
