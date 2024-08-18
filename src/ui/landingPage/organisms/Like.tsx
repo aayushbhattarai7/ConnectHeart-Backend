@@ -4,7 +4,7 @@ import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 interface LikeProps {
   postId: string;
-  userId: string;
+  userId: string; // ID of the currently logged-in user
 }
 
 interface Auth {
@@ -24,51 +24,49 @@ interface GetLike {
 
 const Like: React.FC<LikeProps> = ({ postId, userId }) => {
   const [like, setLike] = useState<boolean>(false);
-  const [user, setUser] = useState<string | null>(null);
   const [allLikes, setAllLikes] = useState<GetLike | null>(null);
 
+  // Function to toggle like status
   const toggleLike = async () => {
     try {
-      const userId = sessionStorage.getItem('accessToken');
+      const token = sessionStorage.getItem('accessToken');
 
-      const response = await axiosInstance.post(
+      // Post request to toggle like
+      await axiosInstance.post(
         `/like/${postId}`,
         {},
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${userId}`,
+            Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
-      setLike(!like);
+
+      // Fetch the latest like status
       getLike(postId);
-      setUser(userId);
-      console.log(response);
     } catch (error) {
       console.error('Error toggling like:', error);
     }
   };
 
+  // Function to get the like status for the post
   const getLike = async (postId: string) => {
     try {
       const response = await axiosInstance.get(`/like/${postId}`);
-      const likes = response?.data?.likes;
+      const likes = response.data.likes;
       setAllLikes(response.data);
 
-      const userId = sessionStorage.getItem('accessToken');
-      if (user === userId) {
-        const userLiked = likes.some((like: Like) => like.auth.id === userId);
-        setLike(userLiked);
-      }
-
-      console.log(response?.data?.likes);
+      // Check if the current user has liked the post
+      const userLiked = likes.some((like: Like) => like.auth.id === userId);
+      setLike(userLiked);
     } catch (error) {
       console.error('Error fetching likes:', error);
     }
   };
 
   useEffect(() => {
+    // Fetch the like status when the component mounts or postId changes
     getLike(postId);
   }, [postId]);
 
