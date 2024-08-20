@@ -41,10 +41,7 @@ const router = createBrowserRouter([
         element: <User />,
       },
 
-      // {
-      //   path: '/message/:receiverId',
-      //   element: <Message />,
-      // },
+  
        {
         path:'/message',
         element: <MessageUser/>

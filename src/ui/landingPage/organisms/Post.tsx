@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { FaImage, FaSmile, FaVideo, FaFlag, FaEllipsisH } from 'react-icons/fa';
+import { FaImage, FaSmile, FaVideo } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
 import { useLang } from '../../../hooks/useLang';
 import axiosInstance from '../../../service/instance';
@@ -66,61 +66,67 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
       data.append('feeling', formData.feeling);
       data.append('type', 'POST');
       formData.files?.forEach((file) => data.append('files', file));
-      const res = await axiosInstance.post('/post', data, {
+       await axiosInstance.post('/post', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       reset();
       refresh(postId);
+      setImagePreviews([])
     } catch (err) {
       console.error('Error while submitting:', err);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setformData((prevData) => ({ ...prevData, [name]: value }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setformData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
   };
-
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setformData((prevData) => ({ ...prevData, files }));
-
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    setformData((prevData) => ({
+      ...prevData,
+      files,
+    }));
+  
+    setImagePreviews(files.map(URL.createObjectURL));
   };
+  
 
   useEffect(() => {
     getUserDetails();
   });
 
   return (
-    <div className="w-full  mb-10  max-w-2xl bg-white rounded-lg shadow-md p-4">
+    <div className="w-[56rem]  mb-10   bg-white rounded-lg shadow-md p-4">
       <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
-        <div className="flex gap-4 items-start mb-4" key={user?.id}>
+        <div className="flex gap-10 items-start mb-4" key={user?.id}>
           {user?.profile?.path ? (
             <Link to="/profile">
               {' '}
-              <img className="w-10 h-10 rounded-full" src={user?.profile?.path} alt="Profile" />
+              <img className="w-20 h-20 rounded-full" src={user?.profile?.path} alt="Profile" />
             </Link>
           ) : (
             <Link to="/profile">
               <img
-                className="w-10 h-10 rounded-full"
+                className="w-16 h-16 rounded-full"
                 src="/profilenull.jpg"
                 alt="Default Profile"
               />
             </Link>
           )}
-          <div className="flex-grow">
-            <textarea
-              placeholder={authLabel.thought[lang]}
+          <div className="flex mt-3 gap-8 ">
+            <input
+              placeholder="What on your mind?"
               name="thought"
               onChange={handleChange}
-              rows={3}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-[34rem] p-2 pl-6 border bg-gray-100 border-gray-300 rounded-2xl focus:outline-none resize-none"
             />
-            <div className="flex items-center justify-between mt-2">
-              <div className="flex gap-2"></div>
+            <div className="flex items-center justify-between">
               <Button
                 buttonText={authLabel.post[lang]}
                 name=""
@@ -132,10 +138,10 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
           </div>
         </div>
 
-        <div className="flex justify-between mt-2 border-t border-gray-300 pt-2">
-          <div className="flex gap-4">
-            <label className="cursor-pointer flex items-center gap-1 text-blue-500">
-              <FaImage className="text-xl" />
+        <div className="flex justify-around  mt-2 border-t border-gray-300 pt-2">
+          <div className="flex gap-20 font-poppins font-medium">
+            <label className="cursor-pointer flex items-center gap-1 text-green-500">
+              <FaImage className="text-2xl" />
               <input
                 type="file"
                 name="files"
@@ -143,7 +149,7 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <span className="text-sm">Photo/Video</span>
+              <span className="text-sm text-gray-600">Media</span>
             </label>
             <button type="button" className="flex items-center gap-1 text-yellow-500">
               <FaSmile className="text-xl" />
@@ -151,7 +157,7 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
                 id="feeling"
                 {...register('feeling')}
                 onChange={handleChange}
-                className=" rounded-md shadow-sm w-24 py-2  focus:outline-none bg-white text-yellow-500"
+                className=" rounded-md  w-24 py-2  focus:outline-none bg-white text-yellow-500"
               >
                 <option value="">Feeling</option>
                 <option value="Happy">😊 Happy</option>
@@ -164,20 +170,15 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
                 <option value="Anxious">😰 Anxious</option>
                 <option value="Romantic">💘 Romantic</option>
                 <option value="Cheerful">😁 Cheerful</option>
-              </select>{' '}
+              </select>
             </button>
-            <button type="button" className="flex items-center gap-1 text-red-500">
-              <FaFlag className="text-xl" />
-              <span className="text-sm">Tag Friends</span>
-            </button>
+           
             <button type="button" className="flex items-center gap-1 text-green-500">
               <FaVideo className="text-xl" />
               <span className="text-sm">Live Video</span>
             </button>
           </div>
-          <button type="button" className="flex items-center text-gray-500">
-            <FaEllipsisH className="text-xl" />
-          </button>
+         
         </div>
 
         <div className="flex gap-2 mt-2">

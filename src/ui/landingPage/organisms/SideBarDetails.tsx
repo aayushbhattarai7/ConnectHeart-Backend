@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { FaHeart, FaUserFriends, FaUser, FaUserClock } from 'react-icons/fa';
-import { RiHeart2Fill } from 'react-icons/ri';
+import { RiHome2Fill } from 'react-icons/ri';
+
 import { AiFillMessage } from 'react-icons/ai';
 import { IoMdFemale, IoMdMale, IoMdSettings } from 'react-icons/io';
 import { useEffect, useState } from 'react';
@@ -64,8 +65,8 @@ const SideBarDetails = () => {
 
   return (
     <>
-      { location.pathname !== '/login' && location.pathname !== '/signup'&& (
-        <div className="fixed top-20 left-0 w-72 h-screen bg-gray-100 shadow-xl border">
+      {location.pathname !== '/login' && location.pathname !== '/signup' && (
+        <div className="fixed top-20 left-2 w-72 h-screen bg-gray-100">
           <div className="p-8 flex-col sticky top-0 h-full">
             <div key={user?.id} className="flex-col justify-center ml-4 flex mb-10 ">
               {user?.profile?.path ? (
@@ -79,7 +80,11 @@ const SideBarDetails = () => {
                 </Link>
               ) : (
                 <Link to="/profile">
-                  <img className="h-44 w-44 rounded-2xl mb-3" src="/profilenull.jpg" alt="Default Profile" />
+                  <img
+                    className="h-44 w-44 rounded-2xl mb-3"
+                    src="/profilenull.jpg"
+                    alt="Default Profile"
+                  />
                 </Link>
               )}
               <div className="flex gap-1 ml-2 mb-3">
@@ -119,55 +124,66 @@ const SideBarDetails = () => {
 
             <div className="flex flex-col gap-6 text-black">
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
+                className={`flex gap-3  h-14 justify-center items-center pr-10 ${isActive('/') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <NavLink to={'/'} className="p-1.5 text-2xl">
-                  <RiHeart2Fill />
-                </NavLink>
+                <div className=" flex items-center  justify-center hover:bg-blue-200 hover:rounded-full hover:border hover:border-blue-200 w-[2.5rem] h-[2.5rem]">
+                  <NavLink to={'/'} className="   text-2xl">
+                    <RiHome2Fill />
+                  </NavLink>
+                </div>
+
                 <NavLink to={'/'} className="p-1 text-xl">
-                  Dating Feed
+                  Date Feed
                 </NavLink>
               </div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/connect') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
+                className={`flex gap-3  h-14 justify-center items-center pr-7 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg  ${isActive('/connect') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <NavLink to={'/connect'} className="p-1 text-2xl">
-                  <FaUserFriends />
-                </NavLink>
+                <div className="border border-blue-200 flex items-center  justify-center bg-blue-200 rounded-full w-[2.5rem] h-[2.5rem]">
+                  <NavLink to={'/connect'} className="p-1 text-2xl ">
+                    <FaUserFriends />
+                  </NavLink>
+                </div>
                 <NavLink to={'/connect'} className="p-1 text-xl">
                   Connection
                 </NavLink>
               </div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/requests') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
+                className={`flex gap-3  h-14 justify-center items-center pr-12 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/requests') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <NavLink to={'/requests'} className="p-1 text-2xl">
-                  <FaUserClock />
-                </NavLink>
+                <div className=" flex items-center  justify-center  rounded-full w-[2.5rem] h-[2.5rem]">
+                  <NavLink to={'/requests'} className="p-1 text-2xl">
+                    <FaUserClock />
+                  </NavLink>
+                </div>
                 <NavLink to={'/requests'} className="p-1 text-xl">
                   Requests
                 </NavLink>
               </div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/message') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
+                className={`flex gap-3  h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/message') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <NavLink to={'/message'} className="p-1 text-2xl">
-                  <AiFillMessage />
-                </NavLink>
+                <div className=" flex items-center  justify-center  rounded-full w-[2.7rem] h-[2.7rem]">
+                  <NavLink to={'/message'} className="p-1   text-2xl">
+                    <AiFillMessage />
+                  </NavLink>
+                </div>
                 <NavLink to={'/message'} className="p-1 text-xl">
                   Messages
                 </NavLink>
               </div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/profile') ? 'rounded-lg bg-blue-500 text-white' : ''}}`}
+                className={`flex gap-3  h-14 justify-center items-center pr-16 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/profile') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <NavLink to={'/profile'} className="p-1 text-2xl">
-                  <FaUser />
-                </NavLink>
+                <div className=" flex items-center  justify-center  rounded-full w-[2.7rem] h-[2.7rem]">
+                  <NavLink to={'/profile'} className="p-1  text-2xl">
+                    <FaUser />
+                  </NavLink>
+                </div>
                 <NavLink to={'/profile'} className="p-1 text-xl">
                   Profile
                 </NavLink>
@@ -176,7 +192,7 @@ const SideBarDetails = () => {
               <div className="border border-gray-300"></div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 ${isActive('/settings') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
+                className={`flex gap-3 mb-2 h-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/settings') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
               >
                 <NavLink to={'/settings'} className="p-1 text-2xl">
                   <IoMdSettings />

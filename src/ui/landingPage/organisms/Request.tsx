@@ -89,8 +89,8 @@ const Request = () => {
     showRequest();
   }, []);
   return (
-    <div>
-      <div className="justify-center items-center flex p-5">
+    <div className='bg-gray-100 h-screen'>
+      <div className="justify-center items-center flex p-5 bg-gray-200">
         <h1 className="ml-20 font-poppins font-medium">Connect Requests</h1>
       </div>
       <div className="ml-96 mt-10 justify-start w-[92rem] h-auto p-8 items-start bg-gray-100">

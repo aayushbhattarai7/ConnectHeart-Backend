@@ -110,7 +110,7 @@ const Connection = () => {
             </div>
             <button
               onClick={() => Remove(connect?.id)}
-              className="mt-4 sm:mt-0 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
+              className="mt-4 sm:mt-0 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
             >
               Remove
             </button>
