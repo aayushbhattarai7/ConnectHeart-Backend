@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import EditPost from './EditPost';
+
 interface Post {
   postId: string;
   refresh: (postId: string) => void;
-  thought:string, 
-  feeling:string
+  thought: string;
+  feeling: string;
 }
 const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [edit, setEdit] = useState(false)
+  const [edit, setEdit] = useState(false);
+  const [isDelete, setIsDelete] = useState('');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -26,12 +28,16 @@ const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
   }, []);
 
   const handleEditClick = () => {
-    setEdit(true)
-    setIsOpen(false)
+    setEdit(true);
+    setIsOpen(false);
   };
 
   const handleClose = () => {
     setEdit(false);
+  };
+
+  const handleDelete = () => {
+    return <p></p>;
   };
 
   return (
@@ -59,19 +65,23 @@ const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
             <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
               Delete
             </button>
+            <button onClick={handleDelete}>hhh</button>
           </div>
         </div>
       )}
       {edit ? (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-4 rounded-lg shadow-lg">
-      <EditPost postId={postId} refresh={refresh} onClose={handleClose} thought={thought} feeling={feeling}/>
-    </div>
-  </div>
-) : (
-null)}
-
-
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <EditPost
+              postId={postId}
+              refresh={refresh}
+              onClose={handleClose}
+              thought={thought}
+              feeling={feeling}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

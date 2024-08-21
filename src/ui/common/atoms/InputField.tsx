@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FieldError, UseFormRegister } from 'react-hook-form';
-import { FaEye, FaEyeSlash } from 'react-icons/fa6';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface InputFieldProps {
   placeholder?: string;
@@ -13,12 +13,13 @@ interface InputFieldProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   className: string;
   required?: boolean;
-  maxlength?: string;
+  maxLength?: number;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
   placeholder,
-  type,
+  type = 'text',
   name,
   readOnly,
   error,
@@ -27,31 +28,37 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   className,
   required,
-  maxlength,
+  maxLength,
+  onKeyDown,
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
   const toggleField = () => {
     setShowPassword((prev) => !prev);
   };
 
   return (
-    <div className="flex">
+    <div className="flex relative">
       <input
-        type={type && type === 'password' ? (showPassword ? 'text' : 'password') : 'text'}
+        type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
         readOnly={readOnly}
         placeholder={placeholder}
         multiple={multiple}
-        {...register(name)}
+        {...register(name, { required })}
         onChange={onChange}
-        className={`border rounded-lg  p-2 outline-none ${className}`}
-        required
-        maxLength={200}
+        className={`border rounded-lg p-2 outline-none ${className}`}
+        maxLength={maxLength}
+        onKeyDown={onKeyDown}
       />
       {type === 'password' && (
-        <span className="icon p-4" onClick={toggleField}>
+        <span
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          onClick={toggleField}
+        >
           {showPassword ? <FaEye /> : <FaEyeSlash />}
         </span>
       )}
+      {error && <p className="text-red-500 text-xs">{error.message}</p>}
     </div>
   );
 };

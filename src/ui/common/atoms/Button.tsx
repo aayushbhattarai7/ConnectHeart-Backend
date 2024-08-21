@@ -1,10 +1,12 @@
 import { image } from '../../../config/constant/image';
 interface ButtonProps {
   name: string;
-  type?: 'submit' | 'reset' | 'button' | undefined;
+  type?: 'submit' | 'reset' | 'button';
   disabled?: boolean;
   buttonText: string;
   className: string;
+
+
 }
 
 const Button: React.FC<ButtonProps> = ({

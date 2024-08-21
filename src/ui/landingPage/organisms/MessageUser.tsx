@@ -32,6 +32,7 @@ interface DecodedToken {
 
 interface FormData {
   message: string;
+  files: FileList;
 }
 
 interface Messages {

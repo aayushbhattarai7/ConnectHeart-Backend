@@ -121,10 +121,10 @@ const ShowPost = () => {
     if (!visibleCommentsPostId) return null;
 
     return comments.map((cmt) => (
-      <div key={cmt?.id} className="flex justify-start items-center">
+      <div key={cmt?.id} className="flex justify-start  items-center">
         <div
           key={cmt.id}
-          className={`relative mb-4 ${isChild ? 'ml-7' : 'ml-4'}
+          className={`relative mb-4 ${isChild ? 'ml-1' : 'ml-1'}
                  p-4 rounded-md bg-gray-50 shadow-sm `}
         >
           {isChild && (
@@ -146,9 +146,13 @@ const ShowPost = () => {
                   alt="Default Profile"
                 />
               )}
-              <p className="mt-1">
+              <div className='flex flex-col'>
+              <p className="mt-1 font-medium">
                 {cmt?.commentAuth?.details?.first_name} {cmt?.commentAuth?.details?.last_name}{' '}
               </p>
+              <p>{cmt?.comment}</p>
+              </div>
+              
             </div>
 
             <button
@@ -226,7 +230,6 @@ const ShowPost = () => {
               <div key={post.postIt?.id} className="bg-white  mb-5">
                 <div className="flex bg-white  p-4">
                   <div className="flex gap-1">
-                    {/* onClick={() => handleUserClick(post?.postIt?.id)} */}
                     {post?.postIt?.profile?.path ? (
                       <img
                         className="w-14 h-14  rounded-full "
@@ -286,7 +289,7 @@ const ShowPost = () => {
               </div>
               {visibleCommentsPostId === post.id && post.comment && (
                 <div className="">
-                  <div className="w-[52rem]">
+                  <div className="w-[50.5rem]">
                     <Comments postId={post?.id || ''} refresh={getPost} />
                   </div>
                   {renderComments(post.comment)}

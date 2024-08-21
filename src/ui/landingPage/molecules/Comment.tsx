@@ -2,15 +2,16 @@ import axiosInstance from '../../../service/instance';
 import { useState } from 'react';
 import InputField from '../../common/atoms/InputField';
 import Button from '../../common/atoms/Button';
-import axios from 'axios';
 import { authLabel } from '../../../localization/auth';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLang } from '../../../hooks/useLang';
 import Label from '../../common/atoms/Label';
+import axios from 'axios';
 
 interface FormData {
   comment?: string;
 }
+
 interface CommentProps {
   postId: string;
   refresh: (postId: string) => void;
@@ -48,12 +49,20 @@ const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
       }
     }
   };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSubmit(onSubmit)();
+    }
+  };
+
   return (
     <div className="w-fit">
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)} action="">
         <Label name={'comment'} label={authLabel.comment[lang]} required></Label>
-        <div className=" w-60 rounded-md mb-4">
+        <div className="w-60 rounded-md mb-4">
           <InputField
             placeholder={authLabel.comment[lang]}
             type="text"
@@ -61,17 +70,18 @@ const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
             register={register}
             className=""
             required
-          ></InputField>
+            onKeyDown={handleKeyPress}
+          />
         </div>
 
-        <div className="mb-3 ">
+        <div className="mb-3">
           <Button
             buttonText={authLabel.comment[lang]}
             name=""
             type="submit"
             disabled={isSubmitting}
             className=""
-          ></Button>
+          />
         </div>
       </form>
     </div>
