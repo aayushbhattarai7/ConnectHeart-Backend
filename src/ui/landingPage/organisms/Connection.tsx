@@ -69,55 +69,71 @@ const Connection = () => {
   }, []);
 
   return (
-    <div className="p-4 sm:p-8 lg:ml-96 bg-gray-100 min-h-screen">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-800">Connections</h1>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {error && <p className="text-red-500 p-4">{error}</p>}
-        {connects?.map((connect) => (
-          <div
-            key={connect?.id}
-            className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:justify-between transform hover:scale-105 transition-transform duration-300"
-          >
-            <div className="flex items-center space-x-4 w-full sm:w-auto">
-              <div
-                onClick={() => handleUserClick(connect?.id)}
-                className="cursor-pointer"
-              >
-                {connect?.profile?.path ? (
-                  <img
-                    className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover"
-                    src={connect?.profile?.path}
-                    alt="Profile"
-                  />
-                ) : (
-                  <img
-                    className="h-16 w-16 sm:h-20 sm:w-20 rounded-full"
-                    src="/profilenull.jpg"
-                    alt="Default Profile"
-                  />
-                )}
+    <div className="p-4 sm:p-8  bg-gray-100 ">
+      <div className="bg-gray-100 ">
+        <div className="justify-center items-center flex p-5 bg-gray-200">
+          <h1 className="ml-20 font-poppins font-medium">Connections</h1>
+        </div>
+        <div className="ml-96 mt-10 justify-start w-[92rem] h-auto p-8 items-start bg-gray-100">
+          <div className="justify-start flex flex-wrap gap-8 mb-10 overflow-hidden">
+            {error && <p>{error}</p>}
+            {connects.length === 0 ? (
+              <div className="flex flex-col mt-14 items-center justify-center w-full h-[75vh] bg-gray-100">
+                <div className="shadow-lg rounded-lg p-6 max-w-md text-center">
+                  <div className="text-4xl text-gray-500 mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="w-16 h-16 mx-auto"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m13 4a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-semibold text-gray-700">No Connections Yet</h2>
+                  <p className="text-gray-600 mt-2">You haven't connected with anyone yet.</p>
+                </div>
               </div>
-              <div className="flex flex-col mt-2 sm:mt-0">
-                <p className="text-lg sm:text-xl font-semibold text-gray-700">
-                  {connect?.details?.first_name} {connect?.details?.last_name}
-                </p>
-                <p className="text-sm sm:text-base text-gray-500">{connect?.details?.phone_number}</p>
-                <p className="text-sm sm:text-base text-gray-500">{connect?.email}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => Remove(connect?.id)}
-              className="mt-4 sm:mt-0 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
-            >
-              Remove
-            </button>
+            ) : (
+              connects.map((connect) => (
+                <div
+                  key={connect.id}
+                  className="flex flex-col p-5 mb-5 justify-center items-center w-64 bg-white shadow-lg rounded-lg"
+                >
+                  <div onClick={() => handleUserClick(connect.id)}>
+                    <div className="h-44 w-44 mb-5 shadow-lg">
+                      {connect?.profile?.path ? (
+                        <img className="rounded h-44 w-44" src={connect.profile.path} alt="" />
+                      ) : (
+                        <img className="rounded-full" src="/profilenull.jpg" alt="" />
+                      )}
+                    </div>
+                    <div className="gap-2 mb-5 flex flex-col font-poppins font-medium">
+                      <p>
+                        {connect.details.first_name} {connect.details.last_name}
+                      </p>
+                      <p>{connect.details.phone_number}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => Remove(connect.id)}
+                    className="mt-4 border border-blue-400 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-32 p-2 "
+                    type="button"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))
+            )}
           </div>
-        ))}
+        </div>
       </div>
-
       <div className="border-t border-gray-300 mt-10"></div>
 
       <User />

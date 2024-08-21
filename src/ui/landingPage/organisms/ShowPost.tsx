@@ -8,6 +8,8 @@ import Post from './Post';
 import Like from './Like';
 import Dropdown from '../molecules/DropDownMenu';
 import { jwtDecode } from 'jwt-decode';
+import Notification from './Notification';
+import User from './User';
 
 interface Post {
   id: string;
@@ -198,15 +200,14 @@ const ShowPost = () => {
     );
   };
 
-
   useEffect(() => {
     getPost();
   }, []);
 
   return (
-    <div className="mt-20 flex flex-col h-full bg-gray-100 ">
+    <div className="mt-20 mb-10 flex justify-evenly h-full bg-gray-100 ">
       <div
-        className="flex flex-col justify-start items-center overflow-y-auto h-fit mt-30  w-[60rem] ml-[27rem] 
+        className="flex flex-col justify-start items-center overflow-y-auto h-fit mt-30  w-[60rem] ml-[5rem] 
                p-10 mb-16 bg-gray-100"
         style={{
           msOverflowStyle: 'none',
@@ -221,11 +222,11 @@ const ShowPost = () => {
             className=" flex justify-between shadow-xl p-10 w-[56rem] rounded-xl  mb-16 text-ellipsis bg-white"
             key={post.id}
           >
-            <div className='items-start'>
+            <div className="items-start">
               <div key={post.postIt?.id} className="bg-white  mb-5">
                 <div className="flex bg-white  p-4">
-                  <div  className="flex gap-1">
-                  {/* onClick={() => handleUserClick(post?.postIt?.id)} */}
+                  <div className="flex gap-1">
+                    {/* onClick={() => handleUserClick(post?.postIt?.id)} */}
                     {post?.postIt?.profile?.path ? (
                       <img
                         className="w-14 h-14  rounded-full "
@@ -292,13 +293,25 @@ const ShowPost = () => {
                 </div>
               )}
             </div>
-            <div className="flex justify-end">
-            </div>
+            <div className="flex justify-end"></div>
             {decodedToken?.id === post.postIt?.id && (
-              <Dropdown postId={post.id} refresh={getPost} thought={post.thought} feeling={post.feeling!}/>
+              <Dropdown
+                postId={post.id}
+                refresh={getPost}
+                thought={post.thought}
+                feeling={post.feeling!}
+              />
             )}
           </div>
         ))}
+      </div>
+      <div className="mt-10 mb-12 flex flex-col">
+        <Notification />
+        <div className="fixed top-[38rem] w-[29.2rem] right-1 bg-white shadow-lg rounded-lg">
+          <div className="overflow-y-auto max-h-[21rem]">
+            <User />
+          </div>
+        </div>
       </div>
     </div>
   );

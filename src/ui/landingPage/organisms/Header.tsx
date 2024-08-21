@@ -7,7 +7,7 @@ const Header = () => {
     location.pathname !== '/login' && location.pathname !== '/signup' ? '/' : '/login';
   return (
     <div className="relative">
-      <header className="fixed top-0 left-0 w-full h-20 bg-white shadow-md z-50">
+      <header className="fixed top-0 left-0 w-full h-[11vh] bg-white shadow-md z-50">
         <div
           className="font-poppins font-medium flex items-center justify-between 
         p-4 h-full"

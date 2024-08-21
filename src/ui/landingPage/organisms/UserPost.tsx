@@ -151,82 +151,90 @@ const UserPost = () => {
   }, []);
 
   return (
-    <div>
-      <div className="flex flex-col justify-start mt-60 w-maxx items-center overflow-hidden ml-56">
-        {error && <p>{error}</p>}
-        {posts.map((post) => (
-          <div
-            className="shadow-xl   p-10 mb-16 bg-gray-100"
-            style={{
-              msOverflowStyle: 'none',
-              scrollbarWidth: 'none',
-            }}
-            key={post.id}
-          >
-            <div key={post.postIt?.id} className="bg-white  mb-5">
-              <div className="flex bg-gray-100">
-                <div className="flex gap-2 p-2">
-                  {post?.postIt?.profile?.path ? (
-                    <img
-                      className="w-16 h-16  rounded-full "
-                      src={post?.postIt?.profile?.path}
-                      alt="Profile"
-                    />
-                  ) : (
-                    <img
-                      className="w-16 h-16  rounded-full "
-                      src="/profilenull.jpg"
-                      alt="Default Profile"
-                    />
-                  )}
-                </div>
-                <div className="flex gap-1 p-5 mb-3 ">
-                  <p className="font-medium font-poppins text-lg">
-                    {post.postIt?.details?.first_name}
-                  </p>
-                  <p className="font-medium font-poppins text-lg">
-                    {post.postIt?.details?.last_name}
-                  </p>
-                </div>
-              </div>
-              <div className=" border border-gray-100 mb-3 p-2 rounded-2xl">
-                <div
-                  className="flex flex-col justify-start items-start mb-4 rounded-lg"
-                  key={post.id}
-                >
-                  <p className="font-poppins font-medium">{post.thought}</p>
+    <div className=''>
+      <div className="flex flex-col justify-center w-[59rem] pr-64 mt-16 items-center">
+        {posts.length > 0? (
+          <div>
+{posts.map((post) => (
 
-                  <p className="font-poppins font-medium">{post.feeling}</p>
-                </div>
-                <div className="flex flex-col  justify-center items-center w-imgw rounded-2xl ">
-                  <div className="flex w-imgw overflow-hidden rounded-lg pr-4">
-                    {post.postImage?.map((image) => (
-                      <div className="rounded-lg" key={image.id}>
-                        {post?.postImage && MediaList(post.postImage)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+  <div
+    className="shadow-xl p-10 mb-16 bg-gray-100"
+    style={{
+      msOverflowStyle: 'none',
+      scrollbarWidth: 'none',
+    }}
+    key={post.id}
+  >
+    <div key={post.postIt?.id} className="bg-white  mb-5">
+      <div className="flex bg-gray-100">
+        <div className="flex gap-2 p-2">
+          {post?.postIt?.profile?.path ? (
+            <img
+              className="w-16 h-16  rounded-full "
+              src={post?.postIt?.profile?.path}
+              alt="Profile"
+            />
+          ) : (
+            <img
+              className="w-16 h-16  rounded-full "
+              src="/profilenull.jpg"
+              alt="Default Profile"
+            />
+          )}
+        </div>
+        <div className="flex gap-1 p-5 mb-3 ">
+          <p className="font-medium font-poppins text-lg">
+            {post.postIt?.details?.first_name}
+          </p>
+          <p className="font-medium font-poppins text-lg">
+            {post.postIt?.details?.last_name}
+          </p>
+        </div>
+      </div>
+      <div className=" border border-gray-100 mb-3 p-2 rounded-2xl">
+        <div
+          className="flex flex-col justify-start items-start mb-4 rounded-lg"
+          key={post.id}
+        >
+          <p className="font-poppins font-medium">{post.thought}</p>
+
+          <p className="font-poppins font-medium">{post.feeling}</p>
+        </div>
+        <div className="flex flex-col  justify-center items-center w-imgw rounded-2xl ">
+          <div className="flex w-imgw overflow-hidden rounded-lg pr-4">
+            {post.postImage?.map((image) => (
+              <div className="rounded-lg" key={image.id}>
+                {post?.postImage && MediaList(post.postImage)}
               </div>
-            </div>
-            <button
-              className="rounded-xl bg-blue-700 h-7 pl-5 text-white w-14"
-              onClick={showComment}
-            >
-              {showComments ? <FaComment /> : <FaComment />}
-            </button>
-            {post.comment && (
-              <div className="">
-                <div className="w-fit h-auto">
-                  {showComments && <Comments postId={post.id || ''} refresh={getPost} />}
-                </div>
-                {renderComments(post.comment)}
-              </div>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
+    <button
+      className="rounded-xl bg-blue-700 h-7 pl-5 text-white w-14"
+      onClick={showComment}
+    >
+      {showComments ? <FaComment /> : <FaComment />}
+    </button>
+    {post.comment && (
+      <div className="">
+        <div className="w-fit h-auto">
+          {showComments && <Comments postId={post.id || ''} refresh={getPost} />}
+        </div>
+        {renderComments(post.comment)}
+      </div>
+    )}
+  </div>
+))}
+</div>
+        ):(
+          <p>No Post Yet</p>
+        )}
+        
+    </div>
+    </div>
+
   );
 };
 

@@ -4,8 +4,9 @@ import axiosInstance from '../../../service/instance';
 import { jwtDecode } from 'jwt-decode';
 import { useForm } from 'react-hook-form';
 import { BsFillSendFill } from 'react-icons/bs';
-import { io, Socket as IOSocket } from 'socket.io-client';
+import { connect, io, Socket as IOSocket } from 'socket.io-client';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
+import { FiSearch } from 'react-icons/fi';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { image } from '../../../config/constant/image';
 
@@ -36,6 +37,10 @@ interface FormData {
 interface Messages {
   id: string;
   message: string;
+  image?: {
+    id: string;
+    path: string;
+  };  
   read: boolean;
   createdAt: string;
   receiver: {
@@ -51,6 +56,10 @@ interface Messages {
       first_name: string;
       last_name: string;
     };
+    profile: {
+      id: string;
+      path: string;
+    };
   };
 }
 
@@ -62,7 +71,6 @@ const MessageUser = () => {
   const [decodedToken, setDecodedToken] = useState<DecodedToken | null>(null);
   const [senders, setSenders] = useState('');
   const [type, setType] = useState<boolean>(false);
-  const [selectedConnectionId, setSelectedConnectionId] = useState('');
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({});
 
   const {
@@ -166,9 +174,9 @@ const MessageUser = () => {
         'Content-Type': 'application/json',
       },
     });
+
     socket?.emit('readed', { senderId, userId: decodedToken?.id });
     setSenders(senderId);
-    setSelectedConnectionId(senderId);
     console.log(response);
     console.log(senderId, 'this is senderId');
     socket?.emit('getUnreadCounts', { senderId, receiverId: decodedToken?.id });
@@ -232,9 +240,24 @@ const MessageUser = () => {
   }, []);
 
   return (
-    <div className="bg-gray-100">
-      <div className=" ml-[18rem] mt-24 justify-start fixed top-0 w-[39rem] bg-gray-100  p-8 items-start h-screen border">
-        <div className="justify-start flex flex-col gap-2 mb-2 overflow-hidden">
+    <div className=" font-poppins">
+      <div className=" ml-[18rem] mt-20 justify-start  fixed top-0 w-[25rem] bg-white pt-5 items-start h-screen ">
+        <div className=" flex flex-col  mb-2 overflow-none w-[25rem] border h-screen pt-5">
+          <div className="mb-6">
+            <h1 className="text-blue-500 font-medium pl-7">Messages</h1>
+          </div>
+          <div className=" w-[22rem] mb-10 flex gap-5 ml-6 h-10 border bg-gray-100 rounded-lg">
+            <button>
+              <FiSearch />
+            </button>
+            <input
+              className="outline-none bg-gray-100 w-[20rem]"
+              type="text"
+              name=""
+              id=""
+              placeholder="Search"
+            />
+          </div>
           {error && <p>{error}</p>}
           {connects?.map((connect) => {
             const unreadCount = unreadCounts[connect.id] || 0;
@@ -242,42 +265,44 @@ const MessageUser = () => {
             return (
               <div
                 key={connect?.id}
-                className={`flex flex-col p-10 h-20 mb-10 justify-center border border-white items-start w-[30rem] cursor-pointer rounded-xl ${
-                  selectedConnectionId === connect.id
-                    ? 'bg-blue-500 text-white hover:bg-blue-700 border border-blue-500'
-                    : ' hover:bg-gray-200 border border-white'
+                className={`flex flex-col p-8 h-11 mb-10 justify-center overflow-hidden w-[24.9rem]  items-center cursor-pointer${
+                  senders === connect.id
+                    ? ' text-black hover:bg-gray-100 bg-gray-100 border-t-2 border-b-2 '
+                    : ' hover:bg-gray-100'
                 }`}
                 onClick={() => handleChatClick(connect?.id)}
               >
-                <div className="">
+                <div className="flex items-center justify-center">
                   <div className="flex pt-2">
                     {connect?.profile?.path ? (
                       <img
-                        className="h-16 w-16 rounded-full mb-3"
+                        className="h-12 w-12 rounded-full mb-3"
                         src={connect?.profile?.path}
                         alt="Profile"
                       />
                     ) : (
                       <img
-                        className="w-16 h-16 rounded-full"
+                        className="w-12 h-12 rounded-full"
                         src="/profilenull.jpg"
                         alt="Default Profile"
                       />
                     )}
-                    <div className="flex justify-center w-[20rem] pl-3 items-center">
-                      <div className="mb-3 mt-2 w-[10rem] mr-16 flex flex-col font-medium">
+                    <div className="flex justify-start w-[18rem] pl-3 items-center">
+                      <div className="mb-3 mt-2 w-[10rem]  flex flex-col font-medium">
                         <p className="font-medium">
                           {connect?.details?.first_name} {connect?.details?.last_name}
                         </p>
-
-                        <p></p>
-                        {unreadCount > 0 && (
-                          <span className="bg-red-500 text-white rounded-full text-xs w-5 py-[2px] px-[6px] h-5">
-                            {unreadCount}
-                          </span>
-                        )}
+                        {type && senders === connect.id && <p>Typing...</p>}
                       </div>
                     </div>
+                  </div>
+                  <div className="pr-7">
+                    <p className="">5:30</p>
+                    {unreadCount > 0 && (
+                      <span className="bg-red-500 text-white rounded-full text-xs w-9 px-[8px] h-5">
+                        {unreadCount}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -286,14 +311,60 @@ const MessageUser = () => {
         </div>
       </div>
 
-      <div className="h-screen flex flex-col  overflow-hidden">
+      <div className="h-[58rem]  flex flex-col  overflow-hidden">
         <div className="p-4 flex items-center justify-between bg-white"></div>
-        <div className=" ml-[63rem] p-4 mt-14 justify-end items-end mb-12 mx-auto w-[60rem] max-w-4xl  bg-white rounded-lg shadow-lg overflow-y-auto flex-grow">
-          <div className="flex flex-col justify-end w-full overflow-auto items-end space-y-4">
+        <div className=" ml-[43rem] p-4 mb-10 justify-start items-start mt-[4.7rem]  overflow-auto mx-auto w-[60rem] max-w-4xl bg-white shadow-lg overflow-y-auto border  flex-grow">
+          {connects?.map((connect) => {
+            return (
+              <div>
+                {senders === connect.id ? (
+                  <div>
+                    <div
+                      key={senders}
+                      className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black bg-white border w-[56rem]"
+                    >
+                      <div>
+                        {senders ? (
+                          <div
+                            key={senders}
+                            className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black border w-[56rem]"
+                          >
+                            {connect?.profile?.path ? (
+                              <img
+                                className="h-12 w-12 rounded-full mb-3"
+                                src={connect?.profile?.path}
+                                alt=""
+                              />
+                            ) : (
+                              <img
+                                className="w-12 h-12 rounded-full"
+                                src="/profilenull.jpg"
+                                alt="Default Profile"
+                              />
+                            )}
+
+                            <div className="">
+                              <div className="flex pt-2 flex-col">
+                                <p className="font-medium text-xl">
+                                  {connect?.details?.first_name} {connect?.details.last_name}
+                                </p>
+                                {type && senders === connect.id && <p>Typing...</p>}
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+          <div className="flex flex-col pt-72 justify-end w-full overflow-auto mt-20 items-end  space-y-4">
             {chats?.map((chat, index) => (
               <div
                 key={`${chat.id} ${index}`}
-                className={`mb-2 p-4 rounded-lg shadow-md flex justify-end items-end ${
+                className={`mb-2 p-4 rounded-lg shadow-md  flex justify-end items-end  ${
                   decodedToken?.id === chat?.sender?.id
                     ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
                     : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
@@ -317,12 +388,12 @@ const MessageUser = () => {
             </div>
           </div>
           <div className="flex w-full justify-end">
-            <div className="fixed bottom-20 left-90 justify-end flex ">
+            <div className="fixed bottom-20 left-72 justify-end flex ">
               {toggleEmoji && <EmojiPicker onEmojiClick={emojiHandleSelect} />}
             </div>
           </div>
 
-          <div className="w-[56rem] fixed bottom-0 left-[63rem] p-4 bg-white border border-gray-300">
+          <div className="w-[56rem] fixed bottom-0 left-[43rem] p-4 bg-white border border-gray-300">
             <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-4xl mx-auto">
               <input
                 type="text"

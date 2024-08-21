@@ -66,8 +66,8 @@ const SideBarDetails = () => {
   return (
     <>
       {location.pathname !== '/login' && location.pathname !== '/signup' && (
-        <div className="fixed top-20 left-2 w-72 h-screen bg-gray-100">
-          <div className="p-8 flex-col sticky top-0 h-full">
+        <div className="fixed top-20 left-2 w-72 h-screen bg-white">
+          <div className="p-8 flex-col sticky top-0 h-full ">
             <div key={user?.id} className="flex-col justify-center ml-4 flex mb-10 ">
               {user?.profile?.path ? (
                 <Link to="/profile">
@@ -87,7 +87,7 @@ const SideBarDetails = () => {
                   />
                 </Link>
               )}
-              <div className="flex gap-1 ml-2 mb-3">
+              <div className="flex gap-1 ml-2 mb-2">
                 <h1 className="text-xl text-blue-950">{user?.details?.first_name}</h1>
                 <h1 className="text-xl text-blue-950">{user?.details?.last_name}</h1>
               </div>
@@ -122,11 +122,11 @@ const SideBarDetails = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 text-black">
+            <div className="flex flex-col gap-5 text-black">
               <div
-                className={`flex gap-3  h-14 justify-center items-center pr-10 ${isActive('/') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                className={`group flex gap-3 h-14 justify-center items-center pr-7 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <div className=" flex items-center  justify-center hover:bg-blue-200 hover:rounded-full hover:border hover:border-blue-200 w-[2.5rem] h-[2.5rem]">
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] group-hover:bg-gray-300 group-hover:border-blue-300">
                   <NavLink to={'/'} className="   text-2xl">
                     <RiHome2Fill />
                   </NavLink>
@@ -138,10 +138,10 @@ const SideBarDetails = () => {
               </div>
 
               <div
-                className={`flex gap-3  h-14 justify-center items-center pr-7 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg  ${isActive('/connect') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                className={`group flex gap-3 h-14 justify-center items-center pr-7 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/connect') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <div className="border border-blue-200 flex items-center  justify-center bg-blue-200 rounded-full w-[2.5rem] h-[2.5rem]">
-                  <NavLink to={'/connect'} className="p-1 text-2xl ">
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                  <NavLink to={'/connect'} className="p-1 text-2xl">
                     <FaUserFriends />
                   </NavLink>
                 </div>
@@ -151,10 +151,10 @@ const SideBarDetails = () => {
               </div>
 
               <div
-                className={`flex gap-3  h-14 justify-center items-center pr-12 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/requests') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
-              >
-                <div className=" flex items-center  justify-center  rounded-full w-[2.5rem] h-[2.5rem]">
-                  <NavLink to={'/requests'} className="p-1 text-2xl">
+                className={`group flex gap-3 h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/requests') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                >
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <NavLink to={'/requests'} className="p-1 text-2xl">
                     <FaUserClock />
                   </NavLink>
                 </div>
@@ -164,10 +164,10 @@ const SideBarDetails = () => {
               </div>
 
               <div
-                className={`flex gap-3  h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/message') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
-              >
-                <div className=" flex items-center  justify-center  rounded-full w-[2.7rem] h-[2.7rem]">
-                  <NavLink to={'/message'} className="p-1   text-2xl">
+                className={`group flex gap-3 h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/message') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                >
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <NavLink to={'/message'} className="p-1   text-2xl">
                     <AiFillMessage />
                   </NavLink>
                 </div>
@@ -177,10 +177,10 @@ const SideBarDetails = () => {
               </div>
 
               <div
-                className={`flex gap-3  h-14 justify-center items-center pr-16 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/profile') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
-              >
-                <div className=" flex items-center  justify-center  rounded-full w-[2.7rem] h-[2.7rem]">
-                  <NavLink to={'/profile'} className="p-1  text-2xl">
+                className={`group flex gap-3 h-14 justify-center items-center pr-16 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/profile') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                >
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <NavLink to={'/profile'} className="p-1  text-2xl">
                     <FaUser />
                   </NavLink>
                 </div>
@@ -189,17 +189,20 @@ const SideBarDetails = () => {
                 </NavLink>
               </div>
 
-              <div className="border border-gray-300"></div>
+              <div className="border  border-gray-300"></div>
 
               <div
-                className={`flex gap-3 mb-2 h-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/settings') ? 'rounded-lg bg-blue-500 text-white' : ''}`}
-              >
+                className={`group flex gap-3 h-14 justify-center items-center pr-36 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/settings') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                >
+                <div className=" flex items-center justify-start rounded-full w-[2.5rem] h-[2.5rem]">
                 <NavLink to={'/settings'} className="p-1 text-2xl">
                   <IoMdSettings />
                 </NavLink>
                 <NavLink to={'/settings'} className="p-1 text-xl">
                   Settings
                 </NavLink>
+                </div>
+               
               </div>
             </div>
           </div>

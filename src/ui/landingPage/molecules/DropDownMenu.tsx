@@ -28,7 +28,6 @@ const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
   const handleEditClick = () => {
     setEdit(true)
     setIsOpen(false)
-    console.log(postId)
   };
 
   const handleClose = () => {

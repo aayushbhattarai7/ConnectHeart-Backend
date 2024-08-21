@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../../service/instance';
 import { IoMdMale, IoMdFemale } from 'react-icons/io';
 import { FaUserFriends } from 'react-icons/fa';
+import { BiEditAlt } from 'react-icons/bi';
 import UserPost from './UserPost';
 
 interface User {
@@ -59,9 +60,9 @@ const Profile = () => {
   }, []);
 
   return (
-    <div className="min-h-screen  flex flex-col border border-black w-full  mt-10 px-5 sm:px-10 lg:px-20 ">
-      <div className="max-w-3xl mx-auto bg-white p-20 w-max2  rounded-lg shadow-lg">
-        <div className="flex flex-col justify-center items-center">
+    <div className="min-h-screen  flex flex-col bg-gray-100 w-full justify-center  mt-10 px-5 sm:px-10 lg:px-20 ml-32 ">
+      <div className="max-w-5xl mx-auto bg-white p-20 w-max2 mt-20 rounded-xl shadow-lg">
+        <div className="flex  justify-start items-start gap-8 mb-7">
           <div className="relative  mb-6">
             {user?.profile?.path ? (
               <img
@@ -71,7 +72,7 @@ const Profile = () => {
               />
             ) : (
               <img
-                className="h-32 w-32 rounded-full object-cover"
+                className="h-32 w-32 rounded-full object-cover border border-gray-200"
                 src="/profilenull.jpg"
                 alt="Default Profile"
               />
@@ -83,8 +84,14 @@ const Profile = () => {
               )}
             </div>
           </div>
+          <div>
+            <button className="border border-gray-200 p-3 rounded-2xl mb-3">
+              Upload new photo
+            </button>
+            <p className="text-gray-500 font-poppins text-sm">JPG, JPEG or PNG is allowed</p>
+          </div>
 
-          <div className="text-center">
+          {/* <div className="text-center">
             <h2 className="text-2xl font-semibold text-gray-800">
               {user?.details?.first_name} {user?.details?.last_name}
             </h2>
@@ -95,10 +102,53 @@ const Profile = () => {
               <h3 className="text-xl font-semibold text-gray-800">{count?.counts}</h3>
               <FaUserFriends className="text-blue-900 text-4xl mt-1" />
             </div>
+          </div> */}
+        </div>
+        <div className="h-[1px] w-full bg-gray-200  mb-10"></div>
+        <div className="border border-gray-200 rounded-xl flex justify-between font-poppins mb-7">
+          <div>
+            <div className="mb-10 flex justify-between  w-[53rem] mt-4 p-3 pl-10">
+              <h1 className="font-medium text-xl">Personal Info</h1>
+              <div>
+                <button className="justify-end flex border border-gray-200 p-2 rounded-lg">
+                  <span className="pt-[4px]">
+                    <BiEditAlt />
+                  </span>
+                  Edit
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-around">
+              <div className="p-7">
+                <h1 className="text-gray-500">Full Name</h1>
+                <p>
+                  {user?.details?.first_name} {user?.details?.last_name}
+                </p>
+              </div>
+              <div className="p-7">
+                <h1 className="text-gray-500">Email</h1>
+                <p>{user?.email}</p>
+              </div>
+              <div className="p-7">
+                <h1 className="text-gray-500">Phone</h1>
+                <p>{user?.details?.phone_number}</p>
+              </div>
+            </div>
           </div>
+
+          <div className="border border-gray-100 rounded-lg"></div>
+        </div>
+        <div className="border border-gray-200 rounded-xl flex justify-between font-poppins ">
+          <div className='flex justify-start items-start'>
+          <div className='mb-10 flex justify-start items-start  w-[53rem] mt-5 p-3 pl-10'>
+              <h1 className="font-medium text-xl">Posts</h1>
+            <div className='flex justify-start'>
+            <UserPost />
+            </div>
+            </div>
+            </div>
         </div>
       </div>
-      <UserPost />
     </div>
   );
 };
