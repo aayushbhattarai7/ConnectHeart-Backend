@@ -46,15 +46,21 @@ class AuthService {
       await this.getDetails.save(details)
       let profilepic = null
       if(image) {
-        profilepic = this.getMediaRepo.create({
-          name:image?.name,
-          mimetype:image?.mimetype,
-          type:image?.type,
-          auth:auth
-        })
-  
-        const saveProfile = await this.getMediaRepo?.save(profilepic)
-        saveProfile?.transferProfileToUpload(auth.id, saveProfile.type)
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+        if( allowedMimeTypes.includes(image?.mimetype)) {
+          profilepic = this.getMediaRepo.create({
+            name:image?.name,
+            mimetype:image?.mimetype,
+            type:image?.type,
+            auth:auth
+          })
+          const saveProfile = await this.getMediaRepo?.save(profilepic)
+          saveProfile?.transferProfileToUpload(auth.id, saveProfile.type)
+        }  else{
+          throw HttpException.badRequest("Invalid file type. Only jpg, jpeg, and png are accepted.")
+        }      
+     
       }
        
       await this.mailService.sendMail({

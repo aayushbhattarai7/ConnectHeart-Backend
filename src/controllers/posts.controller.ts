@@ -3,7 +3,6 @@ import { Message } from '../constant/message'
 import { StatusCodes } from '../constant/StatusCodes'
 import PostService from '../services/post.service'
 import { PostDTO } from '../dto/post.dto'
-import HttpException from '../utils/HttpException.utils'
 export class PostController {
   async create(req: Request, res: Response) {
     try {

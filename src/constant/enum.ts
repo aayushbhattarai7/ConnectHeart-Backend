@@ -5,7 +5,8 @@ export enum Environment {
 
 export enum MediaType {
     PROFILE = 'PROFILE',
-    POST = 'POST'
+    POST = 'POST',
+    CHAT = 'CHAT'
 }
 
 export enum Role {

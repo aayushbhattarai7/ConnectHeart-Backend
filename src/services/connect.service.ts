@@ -61,6 +61,7 @@ export class ConnectService {
         .leftJoinAndSelect('sender.profile', 'profile')
         .where('connect.receiver.id = :userId', { userId })
         .andWhere('connect.status = :status', { status: Status.PENDING })
+        .orderBy('connect.createdAt', 'DESC')
         .getMany();
 
         

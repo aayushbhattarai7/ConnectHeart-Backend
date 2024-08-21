@@ -9,16 +9,3 @@ export class PostDTO extends AuthDTO {
   @IsString()
   feeling: string
 }
-
-export class updatePostDTO {
-  @IsUUID()
-  @IsString()
-  id: string
-
-  @IsString()
-  @IsNotEmpty()
-  thought: string
-
-  @IsString()
-  feeling: string
-}

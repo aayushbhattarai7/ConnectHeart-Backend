@@ -39,7 +39,6 @@ class PostService {
         const savedImage = await this.postMediaRepository.save(postImage)
         savedImage.transferImageFromTempToUpload(post.id, savedImage.type)
       }
-
       return Message.created
     } catch (error: any) {
       console.log(error?.message, 'error message')
@@ -63,10 +62,10 @@ class PostService {
         relations: ['posts'],
       })
 
-      if(media) {
+      if(data.length>0) {
         if (media.length > 0) {
           for (const mediaItem of media) {
-            transferImageFromUploadToTemp(post.id, mediaItem.name, mediaItem.type)
+            transferImageFromUploadToTemp(mediaItem.id, mediaItem.name, mediaItem.type)
           }
   
           await this.postMediaRepository

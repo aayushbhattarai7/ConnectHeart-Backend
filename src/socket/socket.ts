@@ -146,6 +146,10 @@ export class Socket {
                 }
             })
 
+            socket.on('notify', ({receiverId}) => {
+                
+            })
+
             socket.on("disconnect", () => {
                 console.log("User Disconnected", socket.id);
             });

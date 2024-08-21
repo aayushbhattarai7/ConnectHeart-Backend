@@ -19,6 +19,14 @@ export const getUploadFolderpathForPost = (): string => {
   return path.join(__dirname, '..', '..', 'public', 'files')
 }
 
+export const getTempFolderPathForChat = (): string => {
+  return path.resolve(process.cwd(), 'public', 'files', 'temp')
+}
+export const getUploadFolderpathForChat = (): string => {
+  if (process.env.NODE_ENV === Environment.PRODUCTION) return path.resolve(process.cwd(), 'public', 'files')
+  return path.join(__dirname, '..', '..', 'public', 'files')
+}
+
 export const transferImageFromUploadToTemp = (id: string, name: string, type: string): void => {
   const UPLOAD_FOLDER_PATH = path.join(getUploadFolderpathForPost(), type.toLowerCase(), id.toString())
   const TEMP_FOLDER_PATH = path.join(getTempFolderPathForPost(),id.toString())
@@ -27,8 +35,6 @@ export const transferImageFromUploadToTemp = (id: string, name: string, type: st
   console.log("🚀 ~ transferImageFromUploadToTemp ~ imageName:", imageName)
   try {
     fs.renameSync(path.join(UPLOAD_FOLDER_PATH,imageName),path.join(TEMP_FOLDER_PATH, imageName))
-
-
   } catch (err) {
     console.log('🚀 ~ transferImageFromUploadTOTempFolder ~ err', err)
   }
