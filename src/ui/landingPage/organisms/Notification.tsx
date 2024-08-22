@@ -50,7 +50,7 @@ const Notification = () => {
   return (
     <div className=' fixed top-[7.5rem] rounded-lg right-2 h-[50vh] shadow-lg w-[29rem]  bg-white flex justify-center items-start '>
     <div className="w-[30rem] flex flex-col justify-center items-center overflow-y-auto">
-    <h1 className='mt-5 text-xl font-poppins font-medium'>Notification</h1>
+    <h1 className='mt-6 text-xl font-poppins font-medium'>Connect Request Alert</h1>
     {requests.length ===0 ? (
       <div className='h-[40vh] flex justify-center items-center'>
       <p>No Notification Yet</p>

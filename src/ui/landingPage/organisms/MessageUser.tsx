@@ -4,11 +4,14 @@ import axiosInstance from '../../../service/instance';
 import { jwtDecode } from 'jwt-decode';
 import { useForm } from 'react-hook-form';
 import { BsFillSendFill } from 'react-icons/bs';
-import { connect, io, Socket as IOSocket } from 'socket.io-client';
+import { io, Socket as IOSocket } from 'socket.io-client';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import { FiSearch } from 'react-icons/fi';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { image } from '../../../config/constant/image';
+import { PiPhoneCallFill } from 'react-icons/pi';
+import { FaVideo } from 'react-icons/fa6';
+import { IoMdMail } from 'react-icons/io';
 
 interface Connection {
   id: string;
@@ -18,6 +21,7 @@ interface Connection {
     first_name?: string;
     last_name?: string;
     phone_number?: string;
+    gender: string;
   };
   profile: {
     id?: string;
@@ -41,7 +45,7 @@ interface Messages {
   image?: {
     id: string;
     path: string;
-  };  
+  };
   read: boolean;
   createdAt: string;
   receiver: {
@@ -241,9 +245,9 @@ const MessageUser = () => {
   }, []);
 
   return (
-    <div className=" font-poppins">
+    <div className=" font-poppins flex justify-between">
       <div className=" ml-[18rem] mt-20 justify-start  fixed top-0 w-[25rem] bg-white pt-5 items-start h-screen ">
-        <div className=" flex flex-col  mb-2 overflow-none w-[25rem] border h-screen pt-5">
+        <div className=" flex flex-col  mb-2 overflow-none w-[25rem] border border-gray-200 h-[53.66rem] pt-5">
           <div className="mb-6">
             <h1 className="text-blue-500 font-medium pl-7">Messages</h1>
           </div>
@@ -319,16 +323,14 @@ const MessageUser = () => {
             return (
               <div>
                 {senders === connect.id ? (
-                  <div>
                     <div
                       key={senders}
-                      className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black bg-white border w-[56rem]"
+                      className="flex gap-6 fixed top-[6.9rem] h-16 rounded right-[22rem] text-black w-[55rem]"
                     >
-                      <div>
                         {senders ? (
                           <div
                             key={senders}
-                            className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black border w-[56rem]"
+                            className="flex gap-6 fixed top-[6.78rem] h-16 rounded right-[22rem] text-black bg-white border w-[55rem]"
                           >
                             {connect?.profile?.path ? (
                               <img
@@ -354,38 +356,40 @@ const MessageUser = () => {
                             </div>
                           </div>
                         ) : null}
-                      </div>
+                    
                     </div>
-                  </div>
+                 
                 ) : null}
               </div>
             );
           })}
-          <div className="flex flex-col pt-72 justify-end w-full overflow-auto mt-20 items-end  space-y-4">
-            {chats?.map((chat, index) => (
-              <div
-                key={`${chat.id} ${index}`}
-                className={`mb-2 p-4 rounded-lg shadow-md  flex justify-end items-end  ${
-                  decodedToken?.id === chat?.sender?.id
-                    ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
-                    : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
-                }`}
-              >
-                <div className="">
-                  <img src="" alt="" />
-                  <p className="font-semibold">{chat?.sender?.details?.first_name}</p>
-                  <div className="flex flex-col">
-                    <p>{chat.message}</p>
+          <div className="flex mt-20 justify-end items-end overflow-auto  ">
+            <div className="flex flex-col justify-end w-full overflow-auto hide-scrollbar mt-20 items-end  ">
+              {chats?.map((chat, index) => (
+                <div
+                  key={`${chat.id} ${index}`}
+                  className={`mb-2 p-4 rounded-lg shadow-md  flex justify-end items-end  ${
+                    decodedToken?.id === chat?.sender?.id
+                      ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
+                      : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
+                  }`}
+                >
+                  <div className="">
+                    <img src="" alt="" />
+                    <p className="font-semibold">{chat?.sender?.details?.first_name}</p>
+                    <div className="flex flex-col">
+                      <p>{chat.message}</p>
+                    </div>
                   </div>
                 </div>
+              ))}
+              <div className="w-full justify-start items-start flex">
+                {type && (
+                  <p>
+                    <img src={image?.typing} alt="" />
+                  </p>
+                )}
               </div>
-            ))}
-            <div className="w-full justify-start items-start flex">
-              {type && (
-                <p>
-                  <img src={image?.typing} alt="" />
-                </p>
-              )}
             </div>
           </div>
           <div className="flex w-full justify-end">
@@ -420,6 +424,71 @@ const MessageUser = () => {
             </form>
           </div>
         </div>
+      </div>
+      <div className="pt-32 pr-56">
+        <div>
+          {connects?.map((connect) => {
+            return (
+              <div className="w-20">
+                {senders === connect.id ? (
+                  <div
+                    key={senders}
+                    className="flex flex-col justify-start items-center gap-6  h-[40rem] w-72 rounded  text-black"
+                  >
+                    {connect?.profile?.path ? (
+                      <img
+                        className="h-44 w-44 rounded-full mb-3"
+                        src={connect?.profile?.path}
+                        alt=""
+                      />
+                    ) : (
+                      <img
+                        className="w-44 h-44 rounded-full border mb-3"
+                        src="/profilenull.jpg"
+                        alt="Default Profile"
+                      />
+                    )}
+                    <p className="font-medium text-xl pl-2">
+                      {connect?.details?.first_name} {connect?.details.last_name}
+                    </p>
+                    <div className="flex gap-7 justify-center  mb-5">
+                      <p className="text-xl bg-gray-200 p-2 rounded-full">
+                        <PiPhoneCallFill />
+                      </p>
+                      <p className="text-xl bg-gray-200 p-2 rounded-full">
+                        <FaVideo />
+                      </p>
+                      <p className="text-xl bg-gray-200 p-2 rounded-full">
+                        <IoMdMail />
+                      </p>
+                    </div>
+                    <div className="">
+                      <div className="flex pt-2 flex-col mr-24">
+                        <div className="mb-5">
+                          <p className="text-gray-500">Gender</p>
+                          <p>{connect?.details?.gender}</p>
+                        </div>
+                        <div className="mb-5">
+                          <p className="text-gray-500">Email</p>
+                          <p>{connect?.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Phone</p>
+                          <p>{connect?.details?.phone_number}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <button className="bg-red-200 p-3 rounded-lg text-red-500 w-32 hover:bg-red-300 hover:text-red-600">
+                        Block
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>{' '}
       </div>
     </div>
   );

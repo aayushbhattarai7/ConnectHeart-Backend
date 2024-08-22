@@ -145,7 +145,7 @@ const SideBarDetails = () => {
 
               <NavLink
                 to={'/requests'}
-                className={`group flex gap-3 h-14 font-medium justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/requests') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
+                className={`group flex gap-3 h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/requests') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
                 <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.8rem] group-hover:bg-gray-300 group-hover:border-blue-300">
                   <FaUserClock />
@@ -157,8 +157,8 @@ const SideBarDetails = () => {
                 to={'/message'}
                 className={`group flex gap-3 h-14 justify-center items-center pr-10 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/message') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.7rem] group-hover:bg-gray-300 group-hover:border-blue-300">
-                  <AiFillMessage />
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.8rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <AiFillMessage />
                 </div>
                 <p className='text-xl'> Message</p>
               </NavLink>
@@ -167,8 +167,8 @@ const SideBarDetails = () => {
                 to={'/profile'}
                 className={`group flex gap-3 h-14 justify-center items-center pr-16 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/profile') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.6rem] group-hover:bg-gray-300 group-hover:border-blue-300">
-                  <FaUser />
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.8rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <FaUser />
                 </div>
                 <p className='text-xl'> Profile</p>
 
@@ -180,8 +180,8 @@ const SideBarDetails = () => {
                 to={'/settings'}
                 className={`group flex gap-3 h-14 justify-center items-center pr-16 hover:border-blue-200 hover:bg-gray-200 hover:text-blue-600 hover:rounded-lg ${isActive('/settings') ? 'rounded-lg w-[14rem] bg-gray-200 text-black' : ''}`}
               >
-                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem]  group-hover:bg-gray-300 group-hover:border-blue-300">
-                  <IoMdSettings />
+                <div className=" flex items-center justify-center rounded-full w-[2.5rem] h-[2.5rem] text-[1.8rem] group-hover:bg-gray-300 group-hover:border-blue-300">
+                <IoMdSettings />
                 </div>
                 <p className='text-xl'> Settings</p>
 

@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import { RxCross2 } from 'react-icons/rx';
 import EditPost from './EditPost';
+import axiosInstance from '../../../service/instance';
 
 interface Post {
   postId: string;
@@ -8,11 +10,12 @@ interface Post {
   thought: string;
   feeling: string;
 }
+
 const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [edit, setEdit] = useState(false);
-  const [isDelete, setIsDelete] = useState('');
+  const [isDelete, setIsDelete] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,12 +35,27 @@ const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
     setIsOpen(false);
   };
 
-  const handleClose = () => {
+  const handleDeleteClick = () => {
+    setIsDelete(true);
+    setIsOpen(false);
+  };
+
+  const handleCloseEdit = () => {
     setEdit(false);
   };
 
-  const handleDelete = () => {
-    return <p></p>;
+  const handleCloseDelete = () => {
+    setIsDelete(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axiosInstance.delete(`/post/${postId}`);
+      refresh(postId);
+      setIsDelete(false);
+    } catch (err) {
+      console.error('Error deleting post:', err);
+    }
   };
 
   return (
@@ -60,28 +78,62 @@ const Dropdown: React.FC<Post> = ({ postId, refresh, thought, feeling }) => {
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
               onClick={handleEditClick}
             >
+                
               Edit
             </button>
-            <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+            <button
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+              onClick={handleDeleteClick}
+            >
               Delete
             </button>
-            <button onClick={handleDelete}>hhh</button>
           </div>
         </div>
       )}
-      {edit ? (
+      {edit && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg">
             <EditPost
               postId={postId}
               refresh={refresh}
-              onClose={handleClose}
+              onClose={handleCloseEdit}
               thought={thought}
               feeling={feeling}
             />
           </div>
         </div>
-      ) : null}
+      )}
+      {isDelete && (
+        <div className="fixed inset-0 flex items-center justify-center font-poppins bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold">Confirm Deletion</h2>
+              <button onClick={handleCloseDelete} className="text-gray-500">
+                <RxCross2 />
+              </button>
+            </div>
+            <p className="mb-4">Are you sure you want to delete this post?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                name="Cancel"
+                type="button"
+                onClick={handleCloseDelete}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                name="Confirm"
+                type="button"
+                onClick={handleConfirmDelete}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

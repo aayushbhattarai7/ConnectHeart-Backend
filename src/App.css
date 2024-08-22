@@ -1,0 +1,20 @@
+
+.navlink-icon {
+  @apply p-2 text-xl;
+}
+
+:-webkit-scrollbar {
+  width: 5px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F1F1F1;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 50px;
+}
+
+*{
+  scroll-behavior: smooth;
+}

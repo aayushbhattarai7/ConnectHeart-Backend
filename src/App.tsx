@@ -13,6 +13,7 @@ import Support from './ui/landingPage/organisms/Support';
 import Faq from './ui/landingPage/organisms/Faq';
 import UserProfile from './ui/landingPage/organisms/UserProfile';
 import MessageUser from './ui/landingPage/organisms/MessageUser';
+import './App.css'
 
 const router = createBrowserRouter([
   {

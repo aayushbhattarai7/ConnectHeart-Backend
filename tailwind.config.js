@@ -25,7 +25,12 @@ export default {
       height: {
         postborder: '34.5rem',
       },
+      scrollbar: ['rounded'],
+
     },
+    safelist: [
+      'hide-scrollbar',
+    ],
   },
   plugins: [],
 };

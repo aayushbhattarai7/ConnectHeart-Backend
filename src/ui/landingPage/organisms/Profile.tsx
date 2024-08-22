@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../../service/instance';
 import { IoMdMale, IoMdFemale } from 'react-icons/io';
-import { FaUserFriends } from 'react-icons/fa';
+import { FaImage, FaUserFriends } from 'react-icons/fa';
 import { BiEditAlt } from 'react-icons/bi';
 import UserPost from './UserPost';
+import EditUser from '../molecules/EditUser';
 
 interface User {
   id?: string;
@@ -27,7 +28,7 @@ interface Count {
 const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [count, setCount] = useState<Count | null>(null);
-
+  const [edit, setEdit] = useState(false);
   const profile = async () => {
     try {
       const response = await axiosInstance.get('/user/user', {
@@ -54,6 +55,13 @@ const Profile = () => {
     }
   };
 
+  const handleUpdateClick = () => {
+    setEdit(true);
+  };
+  const handleCloseEdit = () => {
+    setEdit(false);
+  };
+
   useEffect(() => {
     profile();
     getFriendCount();
@@ -66,7 +74,7 @@ const Profile = () => {
           <div className="relative  mb-6">
             {user?.profile?.path ? (
               <img
-                className="h-32 w-32 rounded-full object-cover"
+                className="h-32 w-32 rounded-full object-cover border bordre-gray-200"
                 src={user?.profile?.path}
                 alt="Profile"
               />
@@ -84,25 +92,15 @@ const Profile = () => {
               )}
             </div>
           </div>
-          <div>
-            <button className="border border-gray-200 p-3 rounded-2xl mb-3">
+          <div className="mt-5">
+            <button
+              className="border border-blue-200 p-3 bg-blue-500 rounded-xl text-white hover:bg-blue-600 mb-3"
+              onClick={handleUpdateClick}
+            >
               Upload new photo
             </button>
             <p className="text-gray-500 font-poppins text-sm">JPG, JPEG or PNG is allowed</p>
           </div>
-
-          {/* <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-800">
-              {user?.details?.first_name} {user?.details?.last_name}
-            </h2>
-            <p className="text-gray-600">{user?.email}</p>
-            <p className="text-gray-600">{user?.details?.phone_number}</p>
-
-            <div className="flex flex-col items-center mt-4">
-              <h3 className="text-xl font-semibold text-gray-800">{count?.counts}</h3>
-              <FaUserFriends className="text-blue-900 text-4xl mt-1" />
-            </div>
-          </div> */}
         </div>
         <div className="h-[1px] w-full bg-gray-200  mb-10"></div>
         <div className="border border-gray-200 rounded-xl flex justify-between font-poppins mb-7">
@@ -110,7 +108,10 @@ const Profile = () => {
             <div className="mb-10 flex justify-between  w-[53rem] mt-4 p-3 pl-10">
               <h1 className="font-medium text-xl">Personal Info</h1>
               <div>
-                <button className="justify-end flex border border-gray-200 p-2 rounded-lg">
+                <button
+                  className="justify-end flex border  p-2 rounded-lg  bg-blue-500 border-blue-400 text-white hover:bg-blue-600"
+                  onClick={handleUpdateClick}
+                >
                   <span className="pt-[4px]">
                     <BiEditAlt />
                   </span>
@@ -139,16 +140,31 @@ const Profile = () => {
           <div className="border border-gray-100 rounded-lg"></div>
         </div>
         <div className="border border-gray-200 rounded-xl flex justify-between font-poppins ">
-          <div className='flex justify-start items-start'>
-          <div className='mb-10 flex justify-start items-start  w-[53rem] mt-5 p-3 pl-10'>
+          <div className="flex justify-start items-start">
+            <div className="mb-10 flex justify-start items-start  w-[53rem] mt-5 p-3 pl-10">
               <h1 className="font-medium text-xl">Posts</h1>
-            <div className='flex justify-start'>
-            <UserPost />
+              <div className="flex justify-start">
+                <UserPost />
+              </div>
             </div>
-            </div>
-            </div>
+          </div>
         </div>
       </div>
+      {edit && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <EditUser
+              id={user?.id!}
+              refresh={profile}
+              onClose={handleCloseEdit}
+              first_name={user?.details?.first_name!}
+              last_name={user?.details?.last_name!}
+              email={user?.email}
+              phone_number={user?.details?.phone_number!}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

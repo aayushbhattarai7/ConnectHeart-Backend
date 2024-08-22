@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../../service/instance';
 import Comments from '../molecules/Comment';
 import ReplyComment from '../molecules/ReplyComment';
-import { FaComment } from 'react-icons/fa';
+import { FaComment, FaShare } from 'react-icons/fa';
 import axios from 'axios';
 import Post from './Post';
 import Like from './Like';
@@ -10,6 +10,7 @@ import Dropdown from '../molecules/DropDownMenu';
 import { jwtDecode } from 'jwt-decode';
 import Notification from './Notification';
 import User from './User';
+import { FaHeart } from 'react-icons/fa';
 
 interface Post {
   id: string;
@@ -77,6 +78,7 @@ const ShowPost = () => {
   const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [visibleCommentsPostId, setVisibleCommentsPostId] = useState<string | null>(null);
+  const [commentForm, setCommentForm] = useState<string | null>(null);
 
   const getPost = async () => {
     try {
@@ -117,15 +119,23 @@ const ShowPost = () => {
     setVisibleCommentsPostId((prevPostId) => (prevPostId === postId ? null : postId));
   };
 
+  const toggleCommentForm = (postId: string) => {
+    setCommentForm((prevPostId) => (prevPostId === postId ? null : postId));
+  };
+
+  const toggleReplyForm = (comment: string) => {
+    setReplyCommentId((prevCmtId) => (prevCmtId === comment ? null : comment));
+  };
+
   const renderComments = (comments: Comment[], isChild: boolean = false) => {
     if (!visibleCommentsPostId) return null;
 
     return comments.map((cmt) => (
-      <div key={cmt?.id} className="flex justify-start  items-center">
+      <div key={cmt?.id} className="flex  bg-gray-100 justify-start ">
         <div
           key={cmt.id}
-          className={`relative mb-4 ${isChild ? 'ml-1' : 'ml-1'}
-                 p-4 rounded-md bg-gray-50 shadow-sm `}
+          className={`relative mb-4 ${isChild ? 'ml-6' : 'ml-1'}
+                 p-4 rounded-md  shadow-sm `}
         >
           {isChild && (
             <div className="absolute top-0 left-0 w-1 border-l-2 border-gray-300 h-full"></div>
@@ -146,24 +156,15 @@ const ShowPost = () => {
                   alt="Default Profile"
                 />
               )}
-              <div className='flex flex-col'>
-              <p className="mt-1 font-medium">
-                {cmt?.commentAuth?.details?.first_name} {cmt?.commentAuth?.details?.last_name}{' '}
-              </p>
-              <p>{cmt?.comment}</p>
+              <div className="flex flex-col">
+                <p className="mt-1 font-medium">
+                  {cmt?.commentAuth?.details?.first_name} {cmt?.commentAuth?.details?.last_name}{' '}
+                </p>
+                <p>{cmt?.comment}</p>
               </div>
-              
             </div>
-
-            <button
-              onClick={() => setReplyCommentId(cmt.id || null)}
-              className="mt-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2"
-            >
-              Reply
-            </button>
-
             {replyCommentId === cmt.id && (
-              <div className="mt-2  p-4 rounded-md">
+              <div className=" p-4 rounded-md">
                 <ReplyComment
                   postId={posts[0]?.id || ''}
                   commentId={cmt.id || ''}
@@ -171,6 +172,12 @@ const ShowPost = () => {
                 />
               </div>
             )}
+            <button
+              onClick={() => toggleReplyForm(cmt.id!)}
+              className=" text-black hover:bg-blue-700 p-1 hover:text-white rounded-md"
+            >
+              Reply
+            </button>
           </div>
           {cmt.childComment && renderComments(cmt.childComment, true)}
         </div>
@@ -277,25 +284,70 @@ const ShowPost = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="flex gap-10">
-                <Like postId={post?.id} userId={currentUserId!} />
-                <button
-                  className="rounded-xl bg-blue-700 h-7 pl-5 text-white w-14"
-                  onClick={() => toggleComments(post.id)}
-                >
-                  {visibleCommentsPostId === post.id ? <FaComment /> : <FaComment />}
-                </button>
+              <div className=" flex justify-between pl-20 mb-1">
+                <div>
+                  <p className="pl-5 text-xl text-red-500">
+                    <FaHeart />
+                  </p>
+                  <p>1000 Likes</p>
+                </div>
+                <div className="flex flex-col font-poppins">
+                  <button
+                    className="rounded-xl bg-blue-700 h-7 pl-5 ml-6 text-white w-14"
+                    onClick={() => toggleComments(post.id)}
+                  >
+                    {visibleCommentsPostId === post.id ? <FaComment /> : <FaComment />}
+                  </button>
+                  <p>view comments</p>
+                </div>
               </div>
-              {visibleCommentsPostId === post.id && post.comment && (
-                <div className="">
-                  <div className="w-[50.5rem]">
+
+              <div className="flex  ml-10 mb-4 w-full border "></div>
+
+              <div className="flex gap-20 justify-around">
+                <div className="flex flex-col font-poppins">
+                  <Like postId={post?.id} userId={currentUserId!} />
+                  <p>Like</p>
+                </div>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col font-poppins">
+                    <button
+                      className="rounded-xl bg-blue-700 h-7 ml-2 pl-5 text-white w-14"
+                      onClick={() => toggleCommentForm(post.id)}
+                    >
+                      {commentForm === post.id ? <FaComment /> : <FaComment />}
+                    </button>
+                    <p>Comment</p>
+                  </div>
+                  <div></div>
+                </div>
+
+                <div className="flex flex-col font-poppins">
+                  <button className="ml-2">
+                    <FaShare className="text-xl" />
+                  </button>
+                  <p>Share</p>
+                </div>
+              </div>
+              {visibleCommentsPostId === post.id && (
+                post.comment && post.comment.length > 0 ? (
+                  <div>{renderComments(post.comment)}</div>
+                ) : (
+                  <p className='ml-10'>No comments yet</p>
+                )
+              ) 
+             
+              }
+
+              <div className="w-full">
+                {commentForm === post.id && (
+                  <div className="flex  gap-10">
                     <Comments postId={post?.id || ''} refresh={getPost} />
                   </div>
-                  {renderComments(post.comment)}
-                </div>
-              )}
+                )}
+              </div>
             </div>
+
             <div className="flex justify-end"></div>
             {decodedToken?.id === post.postIt?.id && (
               <Dropdown

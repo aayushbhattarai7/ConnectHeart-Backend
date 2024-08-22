@@ -9,8 +9,8 @@ interface PostProps {
   postId: string;
   refresh: (postId: string) => void;
   onClose: () => void;
-  thought:string,
-  feeling:string
+  thought: string;
+  feeling: string;
 }
 
 interface FormData {
@@ -42,7 +42,7 @@ const EditPost: React.FC<PostProps> = ({ postId, refresh, onClose, thought, feel
       if (formData.thought) data.append('thought', formData?.thought);
       if (formData.feeling) data.append('feeling', formData?.feeling);
       data.append('type', 'POST');
-      if(formData.files) formData.files?.forEach((file) => data.append('files', file));
+      if (formData.files) formData.files?.forEach((file) => data.append('files', file));
       await axiosInstance.patch(`/post/${postId}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -70,16 +70,15 @@ const EditPost: React.FC<PostProps> = ({ postId, refresh, onClose, thought, feel
         ...prevData,
         files,
       }));
-    
-    setImagePreviews(files.map(URL.createObjectURL));
-  }else{
+
+      setImagePreviews(files.map(URL.createObjectURL));
+    } else {
       setformData((prevData) => ({
         ...prevData,
-        
       }));
       setImagePreviews(files.map(URL.createObjectURL));
-
-  }};
+    }
+  };
 
   return (
     <div className="flex">
@@ -152,7 +151,7 @@ const EditPost: React.FC<PostProps> = ({ postId, refresh, onClose, thought, feel
         </form>
       </div>
       <p onClick={onClose}>
-        <RxCross2 />
+        <RxCross2 className='text-red-500' />
       </p>
     </div>
   );
