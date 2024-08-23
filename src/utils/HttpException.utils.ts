@@ -1,38 +1,38 @@
-import { StatusCodes } from '../constant/StatusCodes'
+import { StatusCodes } from '../constant/StatusCodes';
 
 class HttpException extends Error {
-  statusCode: number
-  isCustom: boolean
+  statusCode: number;
+  isCustom: boolean;
   constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-    this.isCustom = true
-    Error.captureStackTrace(this, this.constructor)
+    super(message);
+    this.statusCode = statusCode;
+    this.isCustom = true;
+    Error.captureStackTrace(this, this.constructor);
   }
 
   static badRequest(message: string): HttpException {
-    return new HttpException(message, StatusCodes.BAD_REQUEST)
+    return new HttpException(message, StatusCodes.BAD_REQUEST);
   }
 
   static unauthorized(message: string): HttpException {
-    return new HttpException(message, StatusCodes.UNAUTHORIZED)
+    return new HttpException(message, StatusCodes.UNAUTHORIZED);
   }
 
   static notFound(message: string): HttpException {
-    return new HttpException(message, StatusCodes.NOT_FOUND)
+    return new HttpException(message, StatusCodes.NOT_FOUND);
   }
 
   static conflict(message: string): HttpException {
-    return new HttpException(message, StatusCodes.CONFLICT)
+    return new HttpException(message, StatusCodes.CONFLICT);
   }
 
   static forbidden(message: string): HttpException {
-    return new HttpException(message, StatusCodes.FORBIDDEN)
+    return new HttpException(message, StatusCodes.FORBIDDEN);
   }
 
   static internalServerError(message: string): HttpException {
-    return new HttpException(message, StatusCodes.INTERNAL_SERVER_ERROR)
+    return new HttpException(message, StatusCodes.INTERNAL_SERVER_ERROR);
   }
 }
 
-export default HttpException
+export default HttpException;

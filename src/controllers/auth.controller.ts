@@ -1,43 +1,45 @@
-import { type Request, type Response } from 'express'
-import { Message } from '../constant/message'
-import { StatusCodes } from '../constant/StatusCodes'
-import authService from '../services/auth.service'
-import { AuthDTO, ResetPasswordDTO } from '../dto/user.dto'
-import webTokenService from '../utils/webToken.service'
-import userService from '../services/user.service'
-import HttpException from '../utils/HttpException.utils'
-import { EmailService } from '../services/email.service'
-const emailservice = new EmailService()
+import { type Request, type Response } from 'express';
+import { Message } from '../constant/message';
+import { StatusCodes } from '../constant/StatusCodes';
+import authService from '../services/auth.service';
+import { AuthDTO, ResetPasswordDTO } from '../dto/user.dto';
+import webTokenService from '../utils/webToken.service';
+import userService from '../services/user.service';
+import HttpException from '../utils/HttpException.utils';
+import { EmailService } from '../services/email.service';
+const emailservice = new EmailService();
 export class AuthController {
   async create(req: Request, res: Response) {
     try {
-      const file = req?.file
-      const image = file? {
-        name: file?.filename,
-          mimetype: file?.mimetype,
-          type: req.body?.type
-      }:null;
+      const file = req?.file;
+      const image = file
+        ? {
+            name: file?.filename,
+            mimetype: file?.mimetype,
+            type: req.body?.type,
+          }
+        : null;
 
-      await authService.create(image as any, req.body as AuthDTO)
-      res.status(StatusCodes.CREATED).json({ message: Message.created })
-    } catch (error:any) {
-      console.log('🚀 ~ AuthController ~ create ~ error:', error?.message)
+      await authService.create(image as any, req.body as AuthDTO);
+      res.status(StatusCodes.CREATED).json({ message: Message.created });
+    } catch (error: any) {
+      console.log('🚀 ~ AuthController ~ create ~ error:', error?.message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: error?.message
-      })
+        message: error?.message,
+      });
     }
   }
 
   async login(req: Request, res: Response) {
     try {
-      const data = await authService.login(req.body)
-      console.log(req.body)
+      const data = await authService.login(req.body);
+      console.log(req.body);
       const tokens = webTokenService.generateTokens(
         {
           id: data.id,
         },
-        data.role
-      )
+        data.role,
+      );
       res.status(StatusCodes.SUCCESS).json({
         data: {
           id: data.id,
@@ -53,26 +55,26 @@ export class AuthController {
           },
           message: Message.loginSuccessfully,
         },
-      })
-    } catch (error:any) {
-      console.log('🚀 ~ AuthController ~ login ~ error:', error?.message)
+      });
+    } catch (error: any) {
+      console.log('🚀 ~ AuthController ~ login ~ error:', error?.message);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: error?.message,
-      })
+      });
     }
   }
   async googleLogin(req: Request, res: Response) {
-    const googleId = req.body.googleId
-    console.log('🚀 ~ AuthController ~ googleLogin ~ googleId:', googleId)
-    const data = await authService.googleLogin(googleId)
-    console.log('🚀 ~ AuthController ~ googleLogin ~ data:', data)
+    const googleId = req.body.googleId;
+    console.log('🚀 ~ AuthController ~ googleLogin ~ googleId:', googleId);
+    const data = await authService.googleLogin(googleId);
+    console.log('🚀 ~ AuthController ~ googleLogin ~ data:', data);
 
     const tokens = webTokenService.generateTokens(
       {
         id: data.id,
       },
-      data.role
-    )
+      data.role,
+    );
     res.status(StatusCodes.SUCCESS).json({
       data: {
         user: {
@@ -91,122 +93,153 @@ export class AuthController {
         },
       },
       message: Message.loginSuccessfully,
-    })
+    });
   }
 
   async update(req: Request, res: Response) {
     try {
-      const userId = req.params.id
-      const body = req.body
-      await userService.update(body, userId)
-      res.status(StatusCodes.CREATED).json(Message.created)
+      const userId = req.params.id;
+      const body = req.body;
+      await userService.update(body, userId);
+      res.status(StatusCodes.CREATED).json(Message.created);
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ update ~ error:', error)
+      console.log('🚀 ~ AuthController ~ update ~ error:', error);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      })
+      });
     }
   }
 
   async getId(req: Request, res: Response) {
     try {
-      const id = req.params.id
-      console.log(id)
-      const data = await userService.getById(id as string)
-      console.log(data)
+      const id = req.params.id;
+      console.log(id);
+      const data = await userService.getById(id as string);
+      console.log(data);
       res.status(StatusCodes.SUCCESS).json({
         status: true,
         data,
         message: Message.created,
-      })
+      });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ getId ~ error:', error)
+      console.log('🚀 ~ AuthController ~ getId ~ error:', error);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      })
+      });
     }
   }
 
   async searchUser(req: Request, res: Response) {
     try {
-      const userId = req.user?.id
-      const { firstName, middleName, lastName } = req.query
+      const userId = req.user?.id;
+      const { firstName, middleName, lastName } = req.query;
 
       const search = await userService.searchUser(
         userId as string,
         firstName as string,
         middleName as string,
-        lastName as string
-      )
+        lastName as string,
+      );
       res.status(StatusCodes.SUCCESS).json({
         search,
-      })
+      });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ searchUser ~ error:', error)
+      console.log('🚀 ~ AuthController ~ searchUser ~ error:', error);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      })
+      });
     }
   }
-  async getEmail(req:Request, res:Response) {
-    try{
-      const {email} = req.body
-      if(!email) throw HttpException.notFound(Message.notFound)
-      const details = await authService.getEmail({email})
-      res.json({details})
-    }catch(error) {
-      console.log("🚀 ~ AuthController ~ getEmail ~ error:", error)
-      res.json({message:Message.error})
+  async getEmail(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      if (!email) throw HttpException.notFound(Message.notFound);
+      const details = await authService.getEmail({ email });
+      res.json({ details });
+    } catch (error) {
+      console.log('🚀 ~ AuthController ~ getEmail ~ error:', error);
+      res.json({ message: Message.error });
     }
   }
 
   async resetPassword(req: Request, res: Response) {
     try {
-      const userId = req.user?.id
-      console.log("🚀 ~ AuthController ~ resetPassword ~ userId:", userId)
-      
+      const userId = req.user?.id;
+      console.log('🚀 ~ AuthController ~ resetPassword ~ userId:', userId);
+
       console.log(req.body);
-      const reset = await authService.passwordReset(userId as string, req.body as ResetPasswordDTO)
+      const reset = await authService.passwordReset(
+        userId as string,
+        req.body as ResetPasswordDTO,
+      );
       res.status(StatusCodes.SUCCESS).json({
         message: Message.success,
         reset,
-      })
+      });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error)
+      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error);
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      })
+      });
     }
   }
 
-  async getUser(req:Request, res:Response) {
+  async getUser(req: Request, res: Response) {
     try {
-      const userId = req.user?.id
-      const getuser = await authService.getUser(userId as string)
+      const userId = req.user?.id;
+      const getuser = await authService.getUser(userId as string);
       res.status(StatusCodes.SUCCESS).json({
         getuser,
-        message:Message.success
-      })
+        message: Message.success,
+      });
     } catch (error) {
-      console.log("🚀 ~ AuthController ~ getUser ~ error:", error)
-      
+      console.log('🚀 ~ AuthController ~ getUser ~ error:', error);
     }
   }
 
-  async getUserProfile(req:Request, res:Response) {
+  async getUserProfile(req: Request, res: Response) {
     try {
-      const userId = req.user?.id
-      const friendId = req?.params?.id
-      const getUser = await authService.getUserProfile(userId as string, friendId)
+      const userId = req.user?.id;
+      const friendId = req?.params?.id;
+      const getUser = await authService.getUserProfile(
+        userId as string,
+        friendId,
+      );
       res.status(StatusCodes.SUCCESS).json({
         getUser,
-        message:Message.success
-      })
-    } catch (error:any) {
-      console.log(error?.message)
+        message: Message.success,
+      });
+    } catch (error: any) {
+      console.log(error?.message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message:error?.message
-      })
+        message: error?.message,
+      });
+    }
+  }
+
+  async updateUser(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const file = req?.file;
+      const image = file
+        ? {
+            name: file?.filename,
+            mimetype: file?.mimetype,
+            type: req.body?.type,
+          }
+        : null;
+      console.log(req.body, 'la');
+      await authService.updateUser(
+        userId as string,
+        image as any,
+        req.body as AuthDTO,
+      );
+      res.status(StatusCodes.SUCCESS).json(Message.updated);
+    } catch (error) {
+      console.log(error);
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: 'User Update Failed',
+      });
     }
   }
 }

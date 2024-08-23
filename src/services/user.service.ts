@@ -1,83 +1,114 @@
-import { AppDataSource } from '../config/database.config'
-import { UserDetails } from '../entities/auth/details.entities'
-import { Message } from '../constant/message'
-import { Auth } from '../entities/auth/auth.entity'
-import { UpdateDTO } from '../dto/user.dto'
-import { EmailService } from './email.service'
-import HttpException from '../utils/HttpException.utils'
-import { generateHtml } from '../utils/mail.template'
+import { AppDataSource } from '../config/database.config';
+import { UserDetails } from '../entities/auth/details.entities';
+import { Message } from '../constant/message';
+import { Auth } from '../entities/auth/auth.entity';
+import { UpdateDTO } from '../dto/user.dto';
+import { EmailService } from './email.service';
+import HttpException from '../utils/HttpException.utils';
+import { generateHtml } from '../utils/mail.template';
 
 class UserService {
   constructor(
     private readonly getDet = AppDataSource.getRepository(UserDetails),
     private readonly getDetails = AppDataSource.getRepository(Auth),
-    private readonly mailService = new EmailService()
+    private readonly mailService = new EmailService(),
   ) {}
   async getById(id: string): Promise<Auth> {
     try {
-      const query = this.getDetails.createQueryBuilder('auth')
-      .leftJoinAndSelect('auth.details', 'details')
-      .where('auth.id = :id', { id })
+      const query = this.getDetails
+        .createQueryBuilder('auth')
+        .leftJoinAndSelect('auth.details', 'details')
+        .where('auth.id = :id', { id });
 
-       
-      const users = await query.getOne()
+      const users = await query.getOne();
       if (!users) {
-        throw HttpException.notFound('User not found')
+        throw HttpException.notFound('User not found');
       }
-      return users
+      return users;
     } catch (error) {
-      console.error('Error:', error)
-      throw HttpException.internalServerError('Internal server error')
+      console.error('Error:', error);
+      throw HttpException.internalServerError('Internal server error');
     }
   }
 
   async update(body: UpdateDTO, userId: string): Promise<string> {
     try {
-      const id = userId
+      const id = userId;
       const user = await this.getById(id);
-        (user.details.first_name = body.first_name),
+      (user.details.first_name = body.first_name),
         (user.details.last_name = body.last_name),
         (user.details.phone_number = body.phone_number),
         (user.email = body.email),
-        await this.getDet.save(user.details)
-      await this.getDetails.save(user)
-      await this.getById(user.id)
+        await this.getDet.save(user.details);
+      await this.getDetails.save(user);
+      await this.getById(user.id);
       await this.mailService.sendMail({
         to: user.email,
-        text:'Profile Updated Successfully',
-        subject:'Profile Updated Successfully',
-        html:generateHtml(`Profile Updated Successfully`)
-      })
-      return Message.updated
+        text: 'Profile Updated Successfully',
+        subject: 'Profile Updated Successfully',
+        html: generateHtml(`Profile Updated Successfully`),
+      });
+      return Message.updated;
     } catch (error) {
-      console.log(error, 'error in update')
-      return Message.error
+      console.log(error, 'error in update');
+      return Message.error;
     }
   }
 
-  async searchUser(userId: string, firstName: string, middleName: string, lastName: string) {
+  async searchUser(
+    userId: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+  ) {
     try {
-      const auth = await this.getDetails.findOneBy({ id: userId })
-      if (!auth) throw HttpException.unauthorized
+      const auth = await this.getDetails.findOneBy({ id: userId });
+      if (!auth) throw HttpException.unauthorized;
 
-      const searchUser = this.getDet.createQueryBuilder('user')
+      const searchUser = this.getDet.createQueryBuilder('user');
 
       if (firstName) {
-        searchUser.andWhere('user.first_name ILIKE :firstName', { firstName: `%${firstName}%` })
+        searchUser.andWhere('user.first_name ILIKE :firstName', {
+          firstName: `%${firstName}%`,
+        });
       }
 
       if (lastName) {
-        searchUser.andWhere('user.last_name ILIKE :lastName', { lastName: `%${lastName}%` })
+        searchUser.andWhere('user.last_name ILIKE :lastName', {
+          lastName: `%${lastName}%`,
+        });
       }
-      const search = await searchUser.getMany()
-      console.log('🚀 ~ UserService ~ searchUser ~ search:', search)
+      const search = await searchUser.getMany();
+      console.log('🚀 ~ UserService ~ searchUser ~ search:', search);
 
-      return search
+      return search;
     } catch (error) {
-      console.log('🚀 ~ UserService ~ searchUser ~ error:', error)
-      throw HttpException.internalServerError
+      console.log('🚀 ~ UserService ~ searchUser ~ error:', error);
+      throw HttpException.internalServerError;
     }
   }
 }
 
-export default new UserService()
+export default new UserService();
+
+/* try {
+        const id = userId
+        const user = await UserService.getById(id);
+          (user.details.first_name = body.first_name),
+          (user.details.last_name = body.last_name),
+          (user.details.phone_number = body.phone_number),
+          (user.email = body.email),
+          await this.getDetails.save(user.details)
+        await this.getDetails.save(user)
+        await UserService.getById(user.id)
+        await this.mailService.sendMail({
+          to: user.email,
+          text:'Profile Updated Successfully',
+          subject:'Profile Updated Successfully',
+          html:generateHtml(`Profile Updated Successfully`)
+        })
+        return Message.updated
+      } catch (error) {
+        console.log(error, 'error in update')
+        return Message.error
+      } */
