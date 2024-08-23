@@ -3,7 +3,6 @@ import axiosInstance from '../../../service/instance';
 import { useEffect, useState } from 'react';
 import User from './User';
 import { useNavigate } from 'react-router-dom';
-import { image } from '../../../config/constant/image';
 
 interface Connection {
   id: string;
@@ -13,6 +12,7 @@ interface Connection {
     first_name?: string;
     last_name?: string;
     phone_number?: string;
+    gender:string
   };
   profile: {
     id?: string;
@@ -94,18 +94,18 @@ const Connection = () => {
                   className="flex flex-col p-5 mb-5 justify-center items-center w-64 bg-white shadow-lg rounded-lg"
                 >
                   <div onClick={() => handleUserClick(connect.id)}>
-                    <div className="h-44 w-44 mb-5 shadow-lg">
+                    <div className="h-44 w-44 mb-5 shadow-md">
                       {connect?.profile?.path ? (
                         <img className="rounded h-44 w-44" src={connect.profile.path} alt="" />
                       ) : (
-                        <img className="rounded-full" src="/profilenull.jpg" alt="" />
+                        <img className="rounded" src="/profilenull.jpg" alt="" />
                       )}
                     </div>
                     <div className="gap-2 mb-5 flex flex-col font-poppins font-medium">
                       <p>
                         {connect.details.first_name} {connect.details.last_name}
                       </p>
-                      <p>{connect.details.phone_number}</p>
+                      <p className='font-normal'>{connect.details.gender}</p>
                     </div>
                   </div>
                   <button

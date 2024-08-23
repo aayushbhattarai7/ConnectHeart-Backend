@@ -4,7 +4,7 @@ import InputField from '../../common/atoms/InputField';
 import { authLabel } from '../../../localization/auth';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLang } from '../../../hooks/useLang';
-import { BsFillSendFill } from "react-icons/bs";
+import { BsFillSendFill } from 'react-icons/bs';
 import axios from 'axios';
 
 interface FormData {
@@ -59,7 +59,7 @@ const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
   return (
     <div className=" ">
       {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit(onSubmit)} action="" >
+      <form onSubmit={handleSubmit(onSubmit)} action="">
         <div className="flex shadow-xl h-16 w-[40rem] bg-gray-200 rounded-lg border border-gray-200 ml-20">
           <div className=" rounded-lg mb-4  h-10 ">
             <InputField
@@ -80,8 +80,7 @@ const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
               disabled={isSubmitting}
               className="h-16 p-0 w-16  rounded-lg rounded-r-md text-blue-600 rounded-l-none"
             >
-              <BsFillSendFill className='text-2xl'/>
-              
+              <BsFillSendFill className="text-2xl" />
             </button>
           </div>
         </div>

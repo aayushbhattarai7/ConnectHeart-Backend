@@ -44,6 +44,9 @@ importers:
       socket.io-client:
         specifier: ^4.7.5
         version: 4.7.5
+      validator:
+        specifier: ^13.12.0
+        version: 13.12.0
     devDependencies:
       '@types/jwt-decode':
         specifier: ^3.1.0
@@ -1963,6 +1966,10 @@ packages:
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+
+  validator@13.12.0:
+    resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
+    engines: {node: '>= 0.10'}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -4130,6 +4137,8 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1:
     optional: true
+
+  validator@13.12.0: {}
 
   vary@1.1.2: {}
 

@@ -325,12 +325,12 @@ const MessageUser = () => {
                 {senders === connect.id ? (
                     <div
                       key={senders}
-                      className="flex gap-6 fixed top-[6.9rem] h-16 rounded right-[22rem] text-black w-[55rem]"
+                      className="flex gap-6 fixed top-[6.9rem] h-20 rounded right-[22rem] text-black w-[56rem]"
                     >
                         {senders ? (
                           <div
                             key={senders}
-                            className="flex gap-6 fixed top-[6.78rem] h-16 rounded right-[22rem] text-black bg-white border w-[55rem]"
+                            className="flex pl-3 pt-3 gap-6 fixed top-[6.78rem] h-20 border-r-none rounded right-[21rem] text-black bg-white border w-[56rem]"
                           >
                             {connect?.profile?.path ? (
                               <img

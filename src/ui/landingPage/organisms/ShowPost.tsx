@@ -11,6 +11,7 @@ import { jwtDecode } from 'jwt-decode';
 import Notification from './Notification';
 import User from './User';
 import { FaHeart } from 'react-icons/fa';
+import CommentOptions from '../molecules/CommentOption';
 
 interface Post {
   id: string;
@@ -100,6 +101,12 @@ const ShowPost = () => {
       }
     }
   };
+
+  // const isValidURL = (text: string): boolean => {
+  //   new URL(text);
+  //   return true;
+  // };
+
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
 
@@ -125,6 +132,12 @@ const ShowPost = () => {
 
   const toggleReplyForm = (comment: string) => {
     setReplyCommentId((prevCmtId) => (prevCmtId === comment ? null : comment));
+  };
+
+  const getPostUserForComment = (postId: string) => {
+    posts.map((post) => {
+      post.id === postId;
+    });
   };
 
   const renderComments = (comments: Comment[], isChild: boolean = false) => {
@@ -160,7 +173,13 @@ const ShowPost = () => {
                 <p className="mt-1 font-medium">
                   {cmt?.commentAuth?.details?.first_name} {cmt?.commentAuth?.details?.last_name}{' '}
                 </p>
-                <p>{cmt?.comment}</p>
+                <div className="flex gap-4">
+                  <p>{cmt?.comment}</p>
+                  {(decodedToken?.id === cmt?.commentAuth.id ||
+                    posts.some((post) => post.postIt.id === decodedToken?.id)) && (
+                    <CommentOptions commentId={cmt?.id!} refresh={getPost} commentUser={cmt?.commentAuth.id}  comment={cmt.comment!} />
+                  )}
+                </div>
               </div>
             </div>
             {replyCommentId === cmt.id && (
@@ -329,15 +348,12 @@ const ShowPost = () => {
                   <p>Share</p>
                 </div>
               </div>
-              {visibleCommentsPostId === post.id && (
-                post.comment && post.comment.length > 0 ? (
-                  <div>{renderComments(post.comment)}</div>
+              {visibleCommentsPostId === post.id &&
+                (post.comment && post.comment.length > 0 ? (
+                  <div className='mb-3'>{renderComments(post.comment)}</div>
                 ) : (
-                  <p className='ml-10'>No comments yet</p>
-                )
-              ) 
-             
-              }
+                  <p className="ml-10 mb-3">No comments yet</p>
+                ))}
 
               <div className="w-full">
                 {commentForm === post.id && (
