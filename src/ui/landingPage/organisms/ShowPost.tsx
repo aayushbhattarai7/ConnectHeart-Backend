@@ -12,6 +12,7 @@ import Notification from './Notification';
 import User from './User';
 import { FaHeart } from 'react-icons/fa';
 import CommentOptions from '../molecules/CommentOption';
+import { FaCircleArrowLeft, FaCircleArrowRight } from 'react-icons/fa6';
 
 interface Post {
   id: string;
@@ -80,6 +81,7 @@ const ShowPost = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [visibleCommentsPostId, setVisibleCommentsPostId] = useState<string | null>(null);
   const [commentForm, setCommentForm] = useState<string | null>(null);
+  const [sideMenu, setSideMenu] = useState(false);
 
   const getPost = async () => {
     try {
@@ -134,10 +136,8 @@ const ShowPost = () => {
     setReplyCommentId((prevCmtId) => (prevCmtId === comment ? null : comment));
   };
 
-  const getPostUserForComment = (postId: string) => {
-    posts.map((post) => {
-      post.id === postId;
-    });
+  const handleSideClick = () => {
+    setSideMenu(true);
   };
 
   const renderComments = (comments: Comment[], isChild: boolean = false) => {
@@ -177,7 +177,12 @@ const ShowPost = () => {
                   <p>{cmt?.comment}</p>
                   {(decodedToken?.id === cmt?.commentAuth.id ||
                     posts.some((post) => post.postIt.id === decodedToken?.id)) && (
-                    <CommentOptions commentId={cmt?.id!} refresh={getPost} commentUser={cmt?.commentAuth.id}  comment={cmt.comment!} />
+                    <CommentOptions
+                      commentId={cmt?.id!}
+                      refresh={getPost}
+                      commentUser={cmt?.commentAuth.id}
+                      comment={cmt.comment!}
+                    />
                   )}
                 </div>
               </div>
@@ -234,156 +239,328 @@ const ShowPost = () => {
     getPost();
   }, []);
 
-  return (
-    <div className="mt-20 mb-10 flex justify-evenly h-full bg-gray-100 ">
-      <div
-        className="flex flex-col justify-start items-center overflow-y-auto h-fit mt-30  w-[60rem] ml-[5rem] 
-               p-10 mb-16 bg-gray-100"
-        style={{
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-        }}
-      >
-        <div className="flex justify-end items-start "></div>
-        <Post postId={posts[0]?.id || ''} refresh={getPost} />
-        {error && <p>{error}</p>}
-        {posts.map((post) => (
-          <div
-            className=" flex justify-between shadow-xl p-10 w-[56rem] rounded-xl  mb-16 text-ellipsis bg-white"
-            key={post.id}
-          >
-            <div className="items-start">
-              <div key={post.postIt?.id} className="bg-white  mb-5">
-                <div className="flex bg-white  p-4">
-                  <div className="flex gap-1">
-                    {post?.postIt?.profile?.path ? (
-                      <img
-                        className="w-14 h-14  rounded-full "
-                        src={post?.postIt?.profile?.path}
-                        alt="Profile"
-                      />
-                    ) : (
-                      <img className="w-14 h-14  rounded-full " src="/profilenull.jpg" alt="" />
-                    )}
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1034) {
+        setSideMenu(false);
+      }
+    };
 
-                    <div className="flex gap-1 p-3 mb-3 ">
-                      <p className="font-medium font-poppins text-lg">
-                        {post.postIt?.details?.first_name}
-                      </p>
-                      <p className="font-medium font-poppins text-lg">
-                        {post.postIt?.details?.last_name}{' '}
-                      </p>
-                      {post?.feeling ? (
-                        <p className="font-poppins pt-[2px] ">
-                          {' '}
-                          is feeling{' '}
-                          <span className="font-poppins font-medium">{post?.feeling}</span>{' '}
-                        </p>
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="mt-6 flex flex-col lg:flex-row justify-evenly items-start mx-auto p-1 lg:p-6 bg-gray-100 ">
+      {sideMenu ? (
+        <div
+          className="flex flex-col justify-start items-center overflow-y-auto h-fit  mt-30 2xl:w-[52rem] xl:w-[52rem]  lg:w-[45rem] md:w-[35rem] sm:w-[33rem] mx-auto blur-sm  lg:min-w-20 p-4 lg:p-10 mb-16 bg-gray-100"
+          style={{
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}
+        >
+          <Post postId={posts[0]?.id || ''} refresh={getPost} />
+          {error && <p>{error}</p>}
+          {posts.map((post) => (
+            <div
+              className=" flex justify-center shadow-xl p-10 w-full rounded-xl   mb-16 text-ellipsis bg-white"
+              key={post.id}
+            >
+              <div className="items-start sm:flex-row ">
+                <div key={post.postIt?.id} className="bg-white  mb-5">
+                  <div className="flex bg-white  p-4">
+                    <div className="flex gap-1">
+                      {post?.postIt?.profile?.path ? (
+                        <img
+                          className="w-14 h-14  rounded-full "
+                          src={post?.postIt?.profile?.path}
+                          alt="Profile"
+                        />
                       ) : (
-                        <p className=" text-lg font-poppins">shared the post</p>
+                        <img className="w-14 h-14  rounded-full " src="/profilenull.jpg" alt="" />
                       )}
+
+                      <div className="flex gap-1 p-3 mb-3 text-nowrap ">
+                        <p className="font-medium font-poppins text-lg">
+                          {post.postIt?.details?.first_name}
+                        </p>
+                        <p className="font-medium font-poppins text-lg">
+                          {post.postIt?.details?.last_name}{' '}
+                        </p>
+                        {post?.feeling ? (
+                          <p className="font-poppins pt-[2px] ">
+                            {' '}
+                            is feeling{' '}
+                            <span className="font-poppins font-medium">{post?.feeling}</span>{' '}
+                          </p>
+                        ) : (
+                          <p className=" text-lg font-poppins">shared the post</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className=" mb-3 max-w-[45rem] p-2 rounded-2xl break-words">
-                  <div
-                    className="flex flex-col justify-start items-start mb-4 rounded-lg"
-                    key={post.id}
-                  >
-                    <p className="font-poppins font-medium">{post.thought}</p>
-                  </div>
+                  <div className=" mb-3 p-2 rounded-2xl break-words">
+                    <div
+                      className="flex flex-col justify-start items-start mb-4 rounded-lg"
+                      key={post.id}
+                    >
+                      <p className="font-poppins font-medium">{post.thought}</p>
+                    </div>
 
-                  <div className="flex flex-col  justify-center items-center w-[51rem] rounded-2xl">
-                    <div className="flex w-[48rem] overflow-hidden rounded-lg pr-4">
-                      <div className="rounded-lg ">
-                        {post?.postImage && MediaList(post.postImage)}
+                    <div className="flex flex-col  justify-center items-center pl-10 rounded-2xl">
+                      <div className="flex  overflow-hidden rounded-lg pl-10">
+                        <div className="rounded-lg ">
+                          {post?.postImage && MediaList(post.postImage)}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className=" flex justify-between pl-20 mb-1">
-                <div>
-                  <p className="pl-5 text-xl text-red-500">
-                    <FaHeart />
-                  </p>
-                  <p>1000 Likes</p>
-                </div>
-                <div className="flex flex-col font-poppins">
-                  <button
-                    className="rounded-xl bg-blue-700 h-7 pl-5 ml-6 text-white w-14"
-                    onClick={() => toggleComments(post.id)}
-                  >
-                    {visibleCommentsPostId === post.id ? <FaComment /> : <FaComment />}
-                  </button>
-                  <p>view comments</p>
-                </div>
-              </div>
-
-              <div className="flex  ml-10 mb-4 w-full border "></div>
-
-              <div className="flex gap-20 justify-around">
-                <div className="flex flex-col font-poppins">
-                  <Like postId={post?.id} userId={currentUserId!} />
-                  <p>Like</p>
-                </div>
-                <div className="flex flex-col gap-5">
+                <div className=" flex justify-between  mb-1">
+                  <div>
+                    <p className="pl-5 text-xl text-red-500">
+                      <FaHeart />
+                    </p>
+                    <p>1000 Likes</p>
+                  </div>
                   <div className="flex flex-col font-poppins">
                     <button
-                      className="rounded-xl bg-blue-700 h-7 ml-2 pl-5 text-white w-14"
-                      onClick={() => toggleCommentForm(post.id)}
+                      className="rounded-xl bg-blue-700 h-7 pl-5 ml-6 text-white w-14"
+                      onClick={() => toggleComments(post.id)}
                     >
-                      {commentForm === post.id ? <FaComment /> : <FaComment />}
+                      {visibleCommentsPostId === post.id ? <FaComment /> : <FaComment />}
                     </button>
-                    <p>Comment</p>
+                    <p>view comments</p>
                   </div>
-                  <div></div>
                 </div>
 
-                <div className="flex flex-col font-poppins">
-                  <button className="ml-2">
-                    <FaShare className="text-xl" />
-                  </button>
-                  <p>Share</p>
+                <div className="flex  ml-10 mb-4 w-full border "></div>
+
+                <div className="flex gap-20 justify-around">
+                  <div className="flex flex-col font-poppins">
+                    <Like postId={post?.id} userId={currentUserId!} />
+                    <p>Like</p>
+                  </div>
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col font-poppins">
+                      <button
+                        className="rounded-xl bg-blue-700 h-7 ml-2 pl-5 text-white w-14"
+                        onClick={() => toggleCommentForm(post.id)}
+                      >
+                        {commentForm === post.id ? <FaComment /> : <FaComment />}
+                      </button>
+                      <p>Comment</p>
+                    </div>
+                    <div></div>
+                  </div>
+
+                  <div className="flex flex-col font-poppins">
+                    <button className="ml-2">
+                      <FaShare className="text-xl" />
+                    </button>
+                    <p>Share</p>
+                  </div>
+                </div>
+                {visibleCommentsPostId === post.id &&
+                  (post.comment && post.comment.length > 0 ? (
+                    <div className="mb-3">{renderComments(post.comment)}</div>
+                  ) : (
+                    <p className="mb-3">No comments yet</p>
+                  ))}
+
+                <div className="w-full">
+                  {commentForm === post.id && (
+                    <div className="flex  gap-7">
+                      <Comments postId={post?.id || ''} refresh={getPost} />
+                    </div>
+                  )}
                 </div>
               </div>
-              {visibleCommentsPostId === post.id &&
-                (post.comment && post.comment.length > 0 ? (
-                  <div className='mb-3'>{renderComments(post.comment)}</div>
-                ) : (
-                  <p className="ml-10 mb-3">No comments yet</p>
-                ))}
 
-              <div className="w-full">
-                {commentForm === post.id && (
-                  <div className="flex  gap-10">
-                    <Comments postId={post?.id || ''} refresh={getPost} />
-                  </div>
-                )}
-              </div>
+              <div className="flex justify-end"></div>
+              {decodedToken?.id === post.postIt?.id && (
+                <Dropdown
+                  postId={post.id}
+                  refresh={getPost}
+                  thought={post.thought}
+                  feeling={post.feeling!}
+                />
+              )}
             </div>
+          ))}
+        </div>
+      ) : (
+        <div
+          className="flex flex-col justify-start items-center overflow-y-auto h-fit  mt-30 2xl:w-[52rem] xl:w-[52rem]  lg:w-[45rem] md:w-[40rem] sm:w-[35rem] mx-auto  lg:min-w-20   mb-16 bg-gray-100"
+          style={{
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}
+        >
+          <Post postId={posts[0]?.id || ''} refresh={getPost} />
+          {error && <p>{error}</p>}
+          {posts.map((post) => (
+            <div
+              className=" flex justify-center shadow-xl  w-full rounded-xl mx-auto   mb-14 text-ellipsis bg-white"
+              key={post.id}
+            >
+              <div className="items-start sm:mr-20 sm:flex-row w-full p-10">
+                <div key={post.postIt?.id} className="bg-white  mb-5">
+                  <div className="flex bg-white  p-4">
+                    <div className="flex gap-1">
+                      {post?.postIt?.profile?.path ? (
+                        <img
+                          className="w-14 h-14  rounded-full "
+                          src={post?.postIt?.profile?.path}
+                          alt="Profile"
+                        />
+                      ) : (
+                        <img className="w-14 h-14  rounded-full " src="/profilenull.jpg" alt="" />
+                      )}
 
-            <div className="flex justify-end"></div>
-            {decodedToken?.id === post.postIt?.id && (
-              <Dropdown
-                postId={post.id}
-                refresh={getPost}
-                thought={post.thought}
-                feeling={post.feeling!}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-      <div className="mt-10 mb-12 flex flex-col">
+                      <div className="flex gap-1 mb-3 text-nowrap py-3 px-2">
+                        <p className="font-medium font-poppins text-lg ">
+                          {post.postIt?.details?.first_name}
+                        </p>
+                        <p className="font-medium font-poppins text-lg">
+                          {post.postIt?.details?.last_name}{' '}
+                        </p>
+                        {post?.feeling ? (
+                          <p className="font-poppins pt-[2px] ">
+                            {' '}
+                            is feeling{' '}
+                            <span className="font-poppins font-medium">{post?.feeling}</span>{' '}
+                          </p>
+                        ) : (
+                          <p className=" text-lg font-poppins">shared the post</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" mb-3  rounded-2xl break-words">
+                    <div
+                      className="flex flex-col justify-start items-start mb-4 rounded-lg"
+                      key={post.id}
+                    >
+                      <p className="font-poppins font-medium">{post.thought}</p>
+                    </div>
+
+                    <div className="flex flex-col  justify-center items-center pl-10 rounded-2xl">
+                      <div className="flex  overflow-hidden rounded-lg pl-10">
+                        <div className="rounded-lg ">
+                          {post?.postImage && MediaList(post.postImage)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className=" flex justify-between pl-10 mx-auto mb-1">
+                  <div>
+                    <p className="pl-5 text-xl text-red-500">
+                      <FaHeart />
+                    </p>
+                    <p>1000 Likes</p>
+                  </div>
+                  <div className="flex flex-col font-poppins">
+                    <button
+                      className="rounded-xl bg-blue-700 h-7 pl-5 ml-6 text-white w-14"
+                      onClick={() => toggleComments(post.id)}
+                    >
+                      {visibleCommentsPostId === post.id ? <FaComment /> : <FaComment />}
+                    </button>
+                    <p>view comments</p>
+                  </div>
+                </div>
+
+                <div className="flex  ml-10 mb-4 w-full border "></div>
+
+                <div className="flex gap-20 justify-around ml-10">
+                  <div className="flex flex-col font-poppins">
+                    <Like postId={post?.id} userId={currentUserId!} />
+                    <p>Like</p>
+                  </div>
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col font-poppins">
+                      <button
+                        className="rounded-xl bg-blue-700 h-7 ml-2 pl-5 text-white w-14"
+                        onClick={() => toggleCommentForm(post.id)}
+                      >
+                        {commentForm === post.id ? <FaComment /> : <FaComment />}
+                      </button>
+                      <p>Comment</p>
+                    </div>
+                    <div></div>
+                  </div>
+
+                  <div className="flex flex-col font-poppins">
+                    <button className="ml-2">
+                      <FaShare className="text-xl" />
+                    </button>
+                    <p>Share</p>
+                  </div>
+                </div>
+                {visibleCommentsPostId === post.id &&
+                  (post.comment && post.comment.length > 0 ? (
+                    <div className="mb-3">{renderComments(post.comment)}</div>
+                  ) : (
+                    <p className="ml-10 mb-3">No comments yet</p>
+                  ))}
+
+                <div className="w-full">
+                  {commentForm === post.id && (
+                    <div className="flex  gap-10">
+                      <Comments postId={post?.id || ''} refresh={getPost} />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end"></div>
+              {decodedToken?.id === post.postIt?.id && (
+                <Dropdown
+                  postId={post.id}
+                  refresh={getPost}
+                  thought={post.thought}
+                  feeling={post.feeling!}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-10 mb-1 flex-col hidden xl:block ">
         <Notification />
-        <div className="fixed top-[38rem] w-[29.2rem] right-1 bg-white shadow-lg rounded-lg">
-          <div className="overflow-y-auto max-h-[21rem]">
+        <div className="fixed top-[38rem]  right-1 bg-white shadow-lg rounded-lg">
+          <div className="overflow-y-auto max-h-[21rem] w-96 xl:w-80 ">
             <User />
           </div>
         </div>
+        <div></div>
       </div>
+      {sideMenu && (
+        <div className="mt-10 mb-7 xl:w-80 flex-col ">
+          <Notification />
+          <div className="fixed top-[38rem]  right-1 bg-white shadow-lg rounded-lg">
+            <div className="overflow-y-auto max-h-[21rem] w-96 xl:w-80 rounded-lg ">
+              <User />
+            </div>
+          </div>
+          <div></div>
+        </div>
+      )}
+      <button
+        className="fixed right-2 z-50 top-8 text-2xl block xl:hidden"
+        onClick={() => setSideMenu(!sideMenu)}
+      >
+        {sideMenu ? <FaCircleArrowRight /> : <FaCircleArrowLeft />}
+      </button>
     </div>
   );
 };

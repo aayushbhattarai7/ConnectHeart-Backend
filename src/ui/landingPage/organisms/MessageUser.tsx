@@ -77,6 +77,7 @@ const MessageUser = () => {
   const [senders, setSenders] = useState('');
   const [type, setType] = useState<boolean>(false);
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({});
+  const[profile, setProfile] = useState(false)
 
   const {
     register,
@@ -244,9 +245,23 @@ const MessageUser = () => {
     showConnection();
   }, []);
 
+   useEffect(() => {
+     const handleResize = () => {
+       if (window.innerWidth > 480) {
+         setProfile(false);
+       }
+     };
+
+     handleResize();
+
+     window.addEventListener('resize', handleResize);
+
+     return () => window.removeEventListener('resize', handleResize);
+   }, []);
+
   return (
     <div className=" font-poppins flex justify-between">
-      <div className=" ml-[18rem] mt-20 justify-start  fixed top-0 w-[25rem] bg-white pt-5 items-start h-screen ">
+      <div className=" lg:ml-[18rem] mt-20 justify-start  lg:fixed top-0 w-[25rem] bg-white pt-5 items-start h-screen ">
         <div className=" flex flex-col  mb-2 overflow-none w-[25rem] border border-gray-200 h-[53.66rem] pt-5">
           <div className="mb-6">
             <h1 className="text-blue-500 font-medium pl-7">Messages</h1>
@@ -316,21 +331,21 @@ const MessageUser = () => {
         </div>
       </div>
 
-      <div className="h-[58rem]  flex flex-col  overflow-hidden">
+      <div className="lg:h-[58rem]  flex flex-col  overflow-hidden">
         <div className="p-4 flex items-center justify-between bg-white"></div>
-        <div className=" ml-[43rem] p-4 mb-10 justify-start items-start mt-[4.7rem]  overflow-auto mx-auto w-[60rem] max-w-4xl bg-white shadow-lg overflow-y-auto border  flex-grow">
+        <div className=" 2xl:ml-[43rem] ml-0 p-4 mb-10 justify-start items-start mt-[4.7rem] lg:w-full xs:hidden overflow-auto mx-auto w-[60rem] max-w-4xl bg-white shadow-lg overflow-y-auto border  flex-grow">
           {connects?.map((connect) => {
             return (
               <div>
                 {senders === connect.id ? (
                     <div
                       key={senders}
-                      className="flex gap-6 fixed top-[6.9rem] h-20 rounded right-[22rem] text-black w-[56rem]"
+                      className="flex gap-6 lg:fixed lg:top-[6.9rem] h-20 rounded right-[22rem] text-black w-[56rem]"
                     >
                         {senders ? (
                           <div
                             key={senders}
-                            className="flex pl-3 pt-3 gap-6 fixed top-[6.78rem] h-20 border-r-none rounded right-[21rem] text-black bg-white border w-[56rem]"
+                            className="flex pl-3 pt- gap-6 fixed top-[6.78rem] h-20 border-r-none rounded right-[21rem] text-black bg-white border w-[56rem]"
                           >
                             {connect?.profile?.path ? (
                               <img
@@ -363,8 +378,8 @@ const MessageUser = () => {
               </div>
             );
           })}
-          <div className="flex mt-20 justify-end items-end overflow-auto  ">
-            <div className="flex flex-col justify-end w-full overflow-auto hide-scrollbar mt-20 items-end  ">
+          <div className="flex mt-20 2xl:justify-end 2xl:items-end overflow-auto  ">
+            <div className="flex flex-col justify-end w-full  hide-scrollbar mt-20 items-end  ">
               {chats?.map((chat, index) => (
                 <div
                   key={`${chat.id} ${index}`}
@@ -393,12 +408,12 @@ const MessageUser = () => {
             </div>
           </div>
           <div className="flex w-full justify-end">
-            <div className="fixed bottom-20 left-72 justify-end flex ">
+            <div className="fixed bottom-20 lg:left-72 justify-end flex ">
               {toggleEmoji && <EmojiPicker onEmojiClick={emojiHandleSelect} />}
             </div>
           </div>
 
-          <div className="w-[56rem] fixed bottom-0 left-[43rem] p-4 bg-white border border-gray-300">
+          <div className="w-[56rem] fixed bottom-0 lg:left-[43rem] p-4 bg-white border border-gray-300">
             <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-4xl mx-auto">
               <input
                 type="text"
@@ -429,7 +444,7 @@ const MessageUser = () => {
         <div>
           {connects?.map((connect) => {
             return (
-              <div className="w-20">
+              <div className="2xl:w-20 2xl:block xs:hidden">
                 {senders === connect.id ? (
                   <div
                     key={senders}

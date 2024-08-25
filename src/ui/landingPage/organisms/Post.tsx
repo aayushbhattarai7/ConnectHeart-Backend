@@ -101,13 +101,13 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
   });
 
   return (
-    <div className="w-[56rem]  mb-10   bg-white rounded-lg shadow-md p-4">
+    <div className="2xl:w-[50rem] xl:w-[48rem]  lg:w-[40rem] md:w-[40rem] sm:w-[30rem] mb-10 mt-20  bg-white rounded-lg shadow-md p-6">
       <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
-        <div className="flex gap-10 items-start mb-4" key={user?.id}>
+        <div className="flex gap-6 items-start mb-6" key={user?.id}>
           {user?.profile?.path ? (
             <Link to="/profile">
               {' '}
-              <img className="w-20 h-20 rounded-full" src={user?.profile?.path} alt="Profile" />
+              <img className="w-16 h-16 rounded-full" src={user?.profile?.path} alt="Profile" />
             </Link>
           ) : (
             <Link to="/profile">
@@ -118,12 +118,12 @@ const Post: React.FC<PostProps> = ({ postId, refresh }) => {
               />
             </Link>
           )}
-          <div className="flex mt-3 gap-8 ">
+          <div className="flex flex-col flex-1  gap-4 ">
             <input
               placeholder="What on your mind?"
               name="thought"
               onChange={handleChange}
-              className="w-[34rem] p-2 pl-6 border bg-gray-100 border-gray-300 rounded-2xl focus:outline-none resize-none"
+              className="w-full p-3 border bg-gray-100 border-gray-300 rounded-2xl focus:outline-none resize-none"
             />
             <div className="flex items-center justify-between">
               <Button

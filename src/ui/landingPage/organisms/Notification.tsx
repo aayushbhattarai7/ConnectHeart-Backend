@@ -22,9 +22,8 @@ interface Request {
 }
 const Notification = () => {
   const [requests, setRequests] = useState<Request[]>([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const request = async () => {
-
     try {
       const response = await axiosInstance.get('/connect/requests', {
         headers: {
@@ -41,41 +40,41 @@ const Notification = () => {
   };
 
   const getRequest = () => {
-    navigate('/requests')
-  }
+    navigate('/requests');
+  };
   useEffect(() => {
     request();
-  },[]);
-  
-  return (
-    <div className=' fixed top-[7.5rem] rounded-lg right-2 h-[50vh] shadow-lg w-[29rem]  bg-white flex justify-center items-start '>
-    <div className="w-[30rem] flex flex-col justify-center items-center overflow-y-auto">
-    <h1 className='mt-6 text-xl font-poppins font-medium'>Connect Request Alert</h1>
-    {requests.length ===0 ? (
-      <div className='h-[40vh] flex justify-center items-center'>
-      <p>No Notification Yet</p>
-      </div>
-    ):(
-      <div> {requests?.map((request) => (
-        <div className='bg-blue-300 w-full h-16 rounded-lg items-center justify-start flex p-5 mb-2 gap-5'>
-          <div className='w-10 h-10 '>
-            {request?.sender?.profile?.path?  (
-              <img className='rounded-full' src={request.sender.profile.path} alt="" />
-            ):(
-                <img className='rounded-full' src="/profilenull.jpg" alt="" />
-            )}
-          </div>
-           <p className=' font-poppins font-bold' onClick={getRequest}>
-          {request.sender.details.first_name} {request.sender.details.last_name} <span className='font-normal'>wants to connect with you</span>
-        </p>
+  }, []);
 
-        </div>
-       
-      ))}</div>
-     
-    )}
-      
-    </div>
+  return (
+    <div className=" fixed top-[7.5rem] rounded-lg right-2 h-[50vh] shadow-lg w-96 xl:w-80 lg:w-72 lg:p-0 bg-white flex justify-center items-start ">
+      <div className="w-[30rem] flex flex-col justify-center items-center overflow-y-auto">
+        <h1 className="mt-6 text-xl font-poppins font-medium">Connect Request Alert</h1>
+        {requests.length === 0 ? (
+          <div className="h-[40vh] flex justify-center items-center">
+            <p>No Notification Yet</p>
+          </div>
+        ) : (
+          <div>
+            {' '}
+            {requests?.map((request) => (
+              <div className="bg-blue-300 w-full h-16 rounded-lg items-center justify-start flex p-5 mb-2 gap-5">
+                <div className="w-10 h-10 ">
+                  {request?.sender?.profile?.path ? (
+                    <img className="rounded-full" src={request.sender.profile.path} alt="" />
+                  ) : (
+                    <img className="rounded-full" src="/profilenull.jpg" alt="" />
+                  )}
+                </div>
+                <p className=" font-poppins font-bold" onClick={getRequest}>
+                  {request.sender.details.first_name} {request.sender.details.last_name}{' '}
+                  <span className="font-normal">wants to connect with you</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

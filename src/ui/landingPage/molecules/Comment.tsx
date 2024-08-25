@@ -60,14 +60,14 @@ const Comments: React.FC<CommentProps> = ({ postId, refresh }) => {
     <div className=" ">
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)} action="">
-        <div className="flex shadow-xl h-16 w-[40rem] bg-gray-200 rounded-lg border border-gray-200 ml-20">
+        <div className="flex shadow-xl h-16 2xl:w-[40rem] mx-auto bg-gray-200 sm:w-56  rounded-lg border border-gray-200 ml-10">
           <div className=" rounded-lg mb-4  h-10 ">
             <InputField
               placeholder={authLabel.comment[lang]}
               type="text"
               name="comment"
               register={register}
-              className={`h-14 w-[35.7rem] bg-gray-200 text-lg pl-10  border-none outline-none`}
+              className={`h-14 2xl:w-[35.5rem] mx-auto bg-gray-200 text-lg  sm:w-56  border-none outline-none`}
               required
               onKeyDown={handleKeyPress}
             />

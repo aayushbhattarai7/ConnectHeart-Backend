@@ -9,6 +9,7 @@ import { MdOutlineArrowOutward } from 'react-icons/md';
 import { authLabel } from '../../../localization/auth';
 import axiosInstance from '../../../service/instance';
 import axios from 'axios';
+
 interface FormData {
   email: string;
   password: string;
@@ -17,7 +18,6 @@ interface FormData {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { lang } = useLang();
-
   const {
     register,
     handleSubmit,
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
       navigate('/');
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || 'e');
+        setError(error.response?.data?.message || 'An error occurred');
       } else {
         setError('Email or password is incorrect');
       }
@@ -50,97 +50,74 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className=" ">
-      <div
-        className="flex flex-col justify-center items-center h-screen 
-      bg-[#f3f4f6] font-poppins "
-      >
-        <div
-          className=" shadow-[0_4px_6px_rgba(128,128,128,0.5)] bg-white
-       p-9 rounded-lg flex flex-col justify-center items-center pl-20"
-        >
-          <div className="mr-64  mb-6 ">
-            <h1 className="text-2xl mb-3 font-semibold">Login</h1>
-            <p>Hi, Welcome Back👋</p>
-          </div>
+    <div className="flex justify-center items-center min-h-screen bg-[#f3f4f6] font-poppins px-4">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold mb-4">Login</h1>
+        <p className="mb-6">Hi, Welcome Back👋</p>
 
-          <div
-            className="flex gap-3 border rounded-lg  w-googlew mr-16 p-3 
-          justify-center mb-9"
-          >
-            <img className="bg-white w-7 h-7" src="/google.png" alt="" />
-            <button type="submit">Continue With Google</button>
-          </div>
-
-          <div className="pr-10 relative mb-8">
-            <div className=" w-googlew h-0 border relative top-4  "></div>
-            <p
-              className="text-gray-400  bg-white ml-24 top-1  
-            absolute"
-            >
-              or login with email
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} noValidate className="">
-            {error && <p className="text-red-500">{error}</p>}
-
-            <div className="mb-5">
-              <div className="mb-2">
-                <Label name={'email'} label={authLabel.email[lang]}></Label>
-              </div>
-              <InputField
-                placeholder={authLabel.enterYourEmail[lang]}
-                type="email"
-                name="email"
-                register={register}
-                className=""
-              />
-            </div>
-
-            <div className="mb-5">
-              <div className="mb-2">
-                <Label name={'password'} label={authLabel.password[lang]}></Label>
-              </div>
-
-              <InputField
-                placeholder={authLabel.enterYourPassword[lang]}
-                type="password"
-                name="password"
-                register={register}
-                className=""
-              />
-            </div>
-
-            <div className="flex gap-20 mr-10 mb-7">
-              <div className="flex gap-3">
-                <input type="checkbox" />
-                <p>Remember Me</p>
-              </div>
-              <Link className="text-blue-800" to={''}>
-                Forget Password?
-              </Link>
-            </div>
-
-            <div className="">
-              <Button
-                buttonText={authLabel.login[lang]}
-                name=""
-                type="submit"
-                disabled={isSubmitting}
-                className={'w-[22rem] mb-5  hover:bg-blue-900 '}
-              />
-            </div>
-          </form>
-
-          <div className="flex w-[25rem]">
-            <Link className="flex text-blue-800  " to={'/signup'}>
-              Not registered yet?
-              <MdOutlineArrowOutward />
-            </Link>
-            <Link to={''}></Link>
-          </div>
+        <div className="flex items-center gap-3 border rounded-lg p-3 mb-6">
+          <img className="w-7 h-7" src="/google.png" alt="Google Logo" />
+          <button type="button" className="text-blue-500">
+            Continue With Google
+          </button>
         </div>
+
+        <div className="relative mb-6">
+          <div className="absolute inset-x-0 top-1/2 border-t border-gray-300" />
+          <p className="absolute inset-x-0 top-1/2 text-center bg-white px-2 text-gray-400">
+            or login with email
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
+          <div className="mb-4">
+            <Label name="email" label={authLabel.email[lang]} />
+            <InputField
+              placeholder={authLabel.enterYourEmail[lang]}
+              type="email"
+              name="email"
+              register={register}
+              className="w-full"
+            />
+          </div>
+
+          <div className="mb-4">
+            <Label name="password" label={authLabel.password[lang]} />
+            <InputField
+              placeholder={authLabel.enterYourPassword[lang]}
+              type="password"
+              name="password"
+              register={register}
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="rememberMe" />
+              <label htmlFor="rememberMe">Remember Me</label>
+            </div>
+            <Link className="text-blue-800" to="">
+              Forgot Password?
+            </Link>
+          </div>
+
+          <Button
+            buttonText={authLabel.login[lang]}
+            name=""
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full mb-5 hover:bg-blue-900"
+          />
+
+          <div className="text-center">
+            <Link className="text-blue-800 flex justify-center items-center" to="/signup">
+              Not registered yet? <MdOutlineArrowOutward className="ml-1" />
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -27,10 +27,11 @@ export default {
       },
       scrollbar: ['rounded'],
 
+      screens: {
+        xs: '200px', 
+      },
     },
-    safelist: [
-      'hide-scrollbar',
-    ],
+    safelist: ['hide-scrollbar'],
   },
   plugins: [],
 };

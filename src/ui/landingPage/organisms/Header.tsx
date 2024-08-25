@@ -1,7 +1,15 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import SideBarDetails from './SideBarDetails';
+import { IoMenu } from 'react-icons/io5';
+import { useState } from 'react';
+import { IoNotificationsSharp } from "react-icons/io5";
+
 
 const Header = () => {
+  const [sideBar, setSidebar] = useState(false);
+  const handleClick = () => {
+    setSidebar(true);
+  };
   const location = useLocation();
   const targetPath =
     location.pathname !== '/login' && location.pathname !== '/signup' ? '/' : '/login';
@@ -23,8 +31,9 @@ const Header = () => {
           <div className="flex justify-end gap-7 pr-10">
             {location.pathname !== '/login' && location.pathname !== '/signup' && (
               <>
-                <NavLink to={'/support'}>Support</NavLink>
-                <NavLink to={'/faq'}>FAQ</NavLink>
+                <NavLink to={'/support'}>
+                  <IoNotificationsSharp className='text-2xl'/>
+                </NavLink>
               </>
             )}
 
@@ -54,8 +63,17 @@ const Header = () => {
           </div>
         </div>
       </header>
-
-      <SideBarDetails />
+      <div className="">
+        <div className=" hidden xl:block ">
+          <SideBarDetails />
+        </div>
+        {sideBar && <SideBarDetails />}
+        <div className="  top-8 fixed  left-2 z-50 block xl:hidden">
+          <button className="text-3xl" onClick={() => setSidebar(!sideBar)}>
+            <IoMenu />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

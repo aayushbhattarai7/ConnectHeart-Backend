@@ -70,13 +70,13 @@ const Connection = () => {
   }, []);
 
   return (
-    <div className="p-4 sm:p-8  bg-gray-100 ">
+    <div className="p-4 sm:p-8  bg-gray-100 flex flex-col">
       <div className="bg-gray-100 ">
-        <div className="justify-center items-center flex p-5 bg-gray-200">
-          <h1 className="ml-20 font-poppins font-medium">Connections</h1>
+        <div className="justify-center items-center flex p-5 bg-gray-100">
+          <h1 className="sm:ml-12 2xl:ml-20 xl:ml-20 mt-20 font-poppins font-medium">Connections</h1>
         </div>
-        <div className="ml-96 mt-10 justify-start w-[92rem] h-auto p-8 items-start bg-gray-100">
-          <div className="justify-start flex flex-wrap gap-8 mb-10 overflow-hidden">
+        <div className=" justify-start 2xl:mx-96 h-auto pl-16 items-start bg-gray-100">
+          <div className="justify-start flex mx-auto flex-wrap gap-8 mb-10 overflow-hidden">
             {error && <p>{error}</p>}
             {connects.length === 0 ? (
               <div className="flex flex-col mt-14 items-center justify-center w-full h-[75vh] bg-gray-100">
@@ -121,7 +121,7 @@ const Connection = () => {
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-300 mt-10"></div>
+      <div className="border-t border-gray-300 mt-10 ml-32"></div>
 
       <User />
     </div>
