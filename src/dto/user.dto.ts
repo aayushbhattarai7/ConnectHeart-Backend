@@ -62,8 +62,18 @@ export class GoogleLoginDTO {
 }
 
 export class ResetPasswordDTO {
+
+
+   @IsNotEmpty()
+  @IsString()
+  @IsStrongPassword()
+   oldPassword: string;
+  
   @IsNotEmpty()
   @IsString()
   @IsStrongPassword()
   password: string;
+
+
+
 }

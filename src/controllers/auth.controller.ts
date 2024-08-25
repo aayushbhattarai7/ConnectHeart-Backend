@@ -96,19 +96,6 @@ export class AuthController {
     });
   }
 
-  async update(req: Request, res: Response) {
-    try {
-      const userId = req.params.id;
-      const body = req.body;
-      await userService.update(body, userId);
-      res.status(StatusCodes.CREATED).json(Message.created);
-    } catch (error) {
-      console.log('🚀 ~ AuthController ~ update ~ error:', error);
-      res.status(StatusCodes.BAD_REQUEST).json({
-        message: Message.error,
-      });
-    }
-  }
 
   async getId(req: Request, res: Response) {
     try {
@@ -137,7 +124,6 @@ export class AuthController {
       const search = await userService.searchUser(
         userId as string,
         firstName as string,
-        middleName as string,
         lastName as string,
       );
       res.status(StatusCodes.SUCCESS).json({

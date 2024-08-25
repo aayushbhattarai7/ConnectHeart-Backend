@@ -10,7 +10,7 @@ function listen() {
   const PORT = DotenvConfig.PORT;
   const httpServer = createServer(app);
   socket.ChatSocket(httpServer);
-  httpServer.listen(PORT);
+  httpServer.listen(PORT, '0.0.0.0');
   Print.info(`🚀 Server is listening on port ${DotenvConfig.PORT}`);
 }
 

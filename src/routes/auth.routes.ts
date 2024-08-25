@@ -1,8 +1,6 @@
-import { Router, type Request, type Response } from 'express';
+import { Router, type Response } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { catchAsync } from '../utils/catchAsync.utils';
-import RequestValidator from '../middleware/Requestvalidator';
-import { AuthDTO, GoogleLoginDTO, UpdateDTO } from '../dto/user.dto';
 import { authorization } from '../middleware/authorization.middleware';
 import wrapper from '@myrotvorets/express-async-middleware-wrapper';
 import { StatusCodes } from '../constant/StatusCodes';

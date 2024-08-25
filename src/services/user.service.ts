@@ -1,8 +1,6 @@
 import { AppDataSource } from '../config/database.config';
 import { UserDetails } from '../entities/auth/details.entities';
-import { Message } from '../constant/message';
 import { Auth } from '../entities/auth/auth.entity';
-import { UpdateDTO } from '../dto/user.dto';
 import { EmailService } from './email.service';
 import HttpException from '../utils/HttpException.utils';
 import { generateHtml } from '../utils/mail.template';
@@ -31,34 +29,10 @@ class UserService {
     }
   }
 
-  async update(body: UpdateDTO, userId: string): Promise<string> {
-    try {
-      const id = userId;
-      const user = await this.getById(id);
-      (user.details.first_name = body.first_name),
-        (user.details.last_name = body.last_name),
-        (user.details.phone_number = body.phone_number),
-        (user.email = body.email),
-        await this.getDet.save(user.details);
-      await this.getDetails.save(user);
-      await this.getById(user.id);
-      await this.mailService.sendMail({
-        to: user.email,
-        text: 'Profile Updated Successfully',
-        subject: 'Profile Updated Successfully',
-        html: generateHtml(`Profile Updated Successfully`),
-      });
-      return Message.updated;
-    } catch (error) {
-      console.log(error, 'error in update');
-      return Message.error;
-    }
-  }
 
   async searchUser(
     userId: string,
     firstName: string,
-    middleName: string,
     lastName: string,
   ) {
     try {
@@ -91,24 +65,3 @@ class UserService {
 
 export default new UserService();
 
-/* try {
-        const id = userId
-        const user = await UserService.getById(id);
-          (user.details.first_name = body.first_name),
-          (user.details.last_name = body.last_name),
-          (user.details.phone_number = body.phone_number),
-          (user.email = body.email),
-          await this.getDetails.save(user.details)
-        await this.getDetails.save(user)
-        await UserService.getById(user.id)
-        await this.mailService.sendMail({
-          to: user.email,
-          text:'Profile Updated Successfully',
-          subject:'Profile Updated Successfully',
-          html:generateHtml(`Profile Updated Successfully`)
-        })
-        return Message.updated
-      } catch (error) {
-        console.log(error, 'error in update')
-        return Message.error
-      } */

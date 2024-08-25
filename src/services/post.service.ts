@@ -262,26 +262,6 @@ class PostService {
 
       if (!post) throw HttpException.notFound;
 
-      await this.postMediaRepository
-        .createQueryBuilder('postimage')
-        .delete()
-        .where('postimage.post_id =:postId', { postId })
-        .execute();
-
-      const comment = await this.commentRepo
-        .createQueryBuilder()
-        .delete()
-        .from('comment')
-        .where('comment.post_id =:postId', { postId })
-        .execute();
-
-      await this.likeRepo
-        .createQueryBuilder()
-        .delete()
-        .from('likes')
-        .where('likes.post_id =:postId', { postId })
-        .execute();
-
       await this.postRepository
         .createQueryBuilder('post')
         .delete()

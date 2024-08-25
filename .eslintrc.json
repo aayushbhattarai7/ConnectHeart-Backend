@@ -18,11 +18,11 @@
   "rules": {
     "prettier/prettier": "error",
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "react/react-in-jsx-scope": "off" // Disable the rule that requires React to be in scope for JSX
+    "react/react-in-jsx-scope": "off"
   },
   "settings": {
     "react": {
-      "version": "detect" // Automatically detect the React version
+      "version": "detect"
     }
   }
 }

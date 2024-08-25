@@ -12,8 +12,8 @@
     "start:dev": "ts-node-dev  src/server.ts",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check .",
-    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint --quiet --ext .ts src --fix",
+  "lint": "eslint 'src/**/*.{ts,tsx}' --report-unused-disable-directives --max-warnings 0 --config eslint.config.ts",
+      "lint:fix": "eslint --quiet --ext .ts src --fix",
     "sass": "sass --watch public/style/index.scss:public/style/index.css",
     "seed:admin": "ts-node-dev  ./src/seeder/admin.seed.ts seed"
   },
