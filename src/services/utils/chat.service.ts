@@ -162,6 +162,7 @@ export class ChatService {
       { read: true },
     );
     console.log('clicked');
+    
     return readChat;
   }
 }

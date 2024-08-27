@@ -21,4 +21,5 @@ export enum Status {
 export enum Gender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
+  NULL = 'NULL'
 }

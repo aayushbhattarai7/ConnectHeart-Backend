@@ -82,7 +82,7 @@ export class PostController {
     } catch (error) {
       console.log('🚀 ~ PostController ~ getAllPost ~ error:', error);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: 'Error While fetching post',
+        message: 'Post Not Found',
       });
     }
   }

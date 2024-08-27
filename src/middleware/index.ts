@@ -26,8 +26,8 @@ const middleware = (app: Application) => {
   //   }),
   // );
 app.use(cors({
-  origin: '*', // Allow all origins
-  credentials: true, // This should be false or removed if you're using '*' for origin
+  origin: '*', 
+  credentials: true, 
 }));
   app.use((req: Request, res: Response, next: NextFunction) => {
     const userAgent = req.headers['user-agent'];

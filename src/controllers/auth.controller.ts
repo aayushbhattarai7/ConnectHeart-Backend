@@ -64,8 +64,7 @@ export class AuthController {
     }
   }
   async googleLogin(req: Request, res: Response) {
-    const googleId = req.body.googleId;
-    console.log('🚀 ~ AuthController ~ googleLogin ~ googleId:', googleId);
+    const googleId = req.body.id;
     const data = await authService.googleLogin(googleId);
     console.log('🚀 ~ AuthController ~ googleLogin ~ data:', data);
 
@@ -86,6 +85,10 @@ export class AuthController {
             middleName: data?.details?.middle_name,
             lastName: data?.details?.last_name,
           },
+          profile: {
+            id: data?.profile?.id,
+            path:data?.profile?.path
+          }
         },
         tokens: {
           accessToken: tokens.accessToken,

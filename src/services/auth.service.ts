@@ -13,7 +13,8 @@ import { generateHtml } from '../utils/mail.template'
 import Profile from '../entities/auth/profile.entity'
 import { Gender } from '../constant/enum'
 import { transferImageFromUploadToTemp } from '../utils/path.utils'
-import {  emailRegex, passwordRegex } from '../utils/regex'
+import { emailRegex, passwordRegex } from '../utils/regex'
+import mime from 'mime-types'
 class AuthService {
   constructor(
     private readonly getDetails = AppDataSource.getRepository(UserDetails),
@@ -111,7 +112,11 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
   }
 
   async googleLogin(googleId: string): Promise<any> {
+    console.log(googleId, 'hahauhduahsfuhueshd')
+          const decoded: any = jwtDecode(googleId)
+console.log(decoded.email,"emailhoyochau")
     try {
+
       const decoded: any = jwtDecode(googleId)
       const user = await this.getAuth.findOne({
         where: { email: decoded.email },
@@ -122,20 +127,27 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
           const user = new Auth()
           user.email = decoded?.email
           user.password = await this.bcryptService.hash(decoded?.sub)
-
+          
           const save = await this.getAuth.save(user)
+         console.log(decoded)
           if (save) {
             const details = new UserDetails()
             details.auth = save
             details.first_name = decoded.given_name
+               console.log(decoded.given_name,'hyaaa')
+
             details.last_name = decoded.family_name
-            details.gender = decoded.gender
+            details.gender = Gender.NULL
+
             await this.getDetails.save(details)
-            return await UserService.getById(save.id)
+            return await UserService.getById(save?.id)
           }
         } catch (error) {
           throw HttpException.badRequest(Message.error)
         }
+      } else {
+        return await UserService.getById(user?.id)
+
       }
     } catch (error) {
       console.log(error)
@@ -151,6 +163,36 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
       html: '<p>http://localhost:4000/user/updatePassword</p>',
     })
   }
+
+  // async passwordUpdate(userId: string, data: ResetPasswordDTO): Promise<string> {
+
+  //   try {
+  //      const users = await this.getAuth.findOneBy({id:userId})
+  //     if (!users) throw HttpException.unauthorized(Message.notAuthorized)
+  //           const passwordMatched = await this.bcryptService.compare(data.password, users.password)
+  //      if (passwordMatched) {
+  //         const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id','password'] })
+  //     if (!auth) throw HttpException.unauthorized
+  //     if (!auth.password) throw HttpException.badRequest('No password')
+  //     console.log('🚀 ~ AuthService ~ passwordReset ~ !auth:', auth.password)
+  //   auth.password = await this.bcryptService.hash(data.password)
+  //     console.log("🚀 ~ AuthService ~ passwordReset ~ data.password:", data.password)
+  //     await this.getAuth.update(auth.id, { password: auth.password });
+  //     await this.mailService.sendMail({
+  //       to: users.email,
+  //       text:'Password Reset Successfully',
+  //       subject:'Password Reset Successfully',
+  //       html:'<p>Password changed Successfully!</p>'
+  //     })
+  //     return Message.passwordReset
+  //     } else {
+  //       throw HttpException.badRequest('Invalid current password')
+  //     }
+
+  //   } catch (error) {
+  //     throw HttpException.badRequest
+  //   }
+  // }
 
   async passwordReset(userId: string, data: ResetPasswordDTO): Promise<string> {
     try {

@@ -120,11 +120,7 @@ export class Socket {
 
           await chatService.readChat(userId, senderId);
 
-          const unreadCount = await chatService.unreadChat(userId, senderId);
-          io.to(senderId).emit('unreadCounts', {
-            senderId: userId,
-            unreadCount: unreadCount,
-          });
+          
         } catch (error) {
           console.error('Error marking messages as read:', error);
         }
