@@ -10,7 +10,7 @@ import { FiSearch } from 'react-icons/fi';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { image } from '../../../config/constant/image';
 import { PiPhoneCallFill } from 'react-icons/pi';
-import { FaVideo } from 'react-icons/fa6';
+import { FaCircleArrowLeft, FaCircleArrowRight, FaVideo } from 'react-icons/fa6';
 import { IoMdMail } from 'react-icons/io';
 
 interface Connection {
@@ -77,8 +77,9 @@ const MessageUser = () => {
   const [senders, setSenders] = useState('');
   const [type, setType] = useState<boolean>(false);
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({});
-  const[profile, setProfile] = useState(false)
-
+  const [profile, setProfile] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [sideMenu, setSideMenu] = useState(false);
   const {
     register,
     handleSubmit,
@@ -180,7 +181,6 @@ const MessageUser = () => {
         'Content-Type': 'application/json',
       },
     });
-
     socket?.emit('readed', { senderId, userId: decodedToken?.id });
     setSenders(senderId);
     console.log(response);
@@ -245,107 +245,155 @@ const MessageUser = () => {
     showConnection();
   }, []);
 
-   useEffect(() => {
-     const handleResize = () => {
-       if (window.innerWidth > 480) {
-         setProfile(false);
+  useEffect(() => {
+    showConnection();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1580) {
+        setProfile(false);
+      } else {
+        setProfile(true);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+ useEffect(() => {
+   const handleResize = () => {
+     if (window.innerWidth < 1034) {
+       if (window.innerWidth < 1034) {
+         setSideMenu(false);
+         setShowMessage(true);
+       } else {
+         setShowMessage(false);
+         setSideMenu(true);
        }
-     };
+     } else {
+       setShowMessage(true);
+       setSideMenu(true);
+     }
+   };
 
-     handleResize();
+   handleResize();
 
-     window.addEventListener('resize', handleResize);
+   window.addEventListener('resize', handleResize);
 
-     return () => window.removeEventListener('resize', handleResize);
-   }, []);
+   return () => window.removeEventListener('resize', handleResize);
+ }, []);
 
+ const sides = () => {
+   setSideMenu(!sideMenu);
+   setShowMessage(!showMessage);
+ };
+  
   return (
     <div className=" font-poppins flex justify-between">
-      <div className=" lg:ml-[18rem] mt-20 justify-start  lg:fixed top-0 w-[25rem] bg-white pt-5 items-start h-screen ">
-        <div className=" flex flex-col  mb-2 overflow-none w-[25rem] border border-gray-200 h-[53.66rem] pt-5">
-          <div className="mb-6">
-            <h1 className="text-blue-500 font-medium pl-7">Messages</h1>
-          </div>
-          <div className=" w-[22rem] mb-10 flex gap-5 ml-6 h-10 border bg-gray-100 rounded-lg">
-            <button>
-              <FiSearch />
-            </button>
-            <input
-              className="outline-none bg-gray-100 w-[20rem]"
-              type="text"
-              name=""
-              id=""
-              placeholder="Search"
-            />
-          </div>
-          {error && <p>{error}</p>}
-          {connects?.map((connect) => {
-            const unreadCount = unreadCounts[connect.id] || 0;
+      {/* {user && ( */}
+      <div className=" mt-20 justify-start  fixed top-0 lg:left-0 xs:left-1  lg:w-[25rem] sm:w-[25rem] xs:w-[26rem] bg-white  items-start h-screen ">
+        {sideMenu && (
+          <div className=" flex flex-col  mb-2 overflow-none lg:w-[25rem] border h-screen pt-5">
+            <div className="mb-6">
+              <h1 className="text-blue-500 font-medium pl-7">Messages</h1>
+            </div>
+            <div className=" w-[22rem] mb-10 flex gap-5 ml-6 h-10 border bg-gray-100 rounded-lg">
+              <button>
+                <FiSearch />
+              </button>
+              <input
+                className="outline-none bg-gray-100 w-[20rem]"
+                type="text"
+                name=""
+                id=""
+                placeholder="Search"
+              />
+            </div>
+            {error && <p>{error}</p>}
+            {connects?.map((connect) => {
+              const unreadCount = unreadCounts[connect.id] || 0;
 
-            return (
-              <div
-                key={connect?.id}
-                className={`flex flex-col p-8 h-11 mb-10 justify-center overflow-hidden w-[24.9rem]  items-center cursor-pointer${
-                  senders === connect.id
-                    ? ' text-black hover:bg-gray-100 bg-gray-100 border-t-2 border-b-2 '
-                    : ' hover:bg-gray-100'
-                }`}
-                onClick={() => handleChatClick(connect?.id)}
-              >
-                <div className="flex items-center justify-center">
-                  <div className="flex pt-2">
-                    {connect?.profile?.path ? (
-                      <img
-                        className="h-12 w-12 rounded-full mb-3"
-                        src={connect?.profile?.path}
-                        alt="Profile"
-                      />
-                    ) : (
-                      <img
-                        className="w-12 h-12 rounded-full"
-                        src="/profilenull.jpg"
-                        alt="Default Profile"
-                      />
-                    )}
-                    <div className="flex justify-start w-[18rem] pl-3 items-center">
-                      <div className="mb-3 mt-2 w-[10rem]  flex flex-col font-medium">
-                        <p className="font-medium">
-                          {connect?.details?.first_name} {connect?.details?.last_name}
-                        </p>
-                        {type && senders === connect.id && <p>Typing...</p>}
+              return (
+                <div
+                  key={connect?.id}
+                  className={`flex flex-col p-8  h-11 mb-10 justify-center overflow-hidden w-[24.9rem]  items-center cursor-pointer${
+                    senders === connect.id
+                      ? ' text-black hover:bg-gray-100 bg-gray-100 border-t-2 border-b-2 '
+                      : ' hover:bg-gray-100'
+                  }`}
+                  onClick={() => handleChatClick(connect?.id)}
+                >
+                  <div className="flex items-center justify-center">
+                    <div className="flex pt-2">
+                      {connect?.profile?.path ? (
+                        <img
+                          className="h-12 w-12 rounded-full mb-3"
+                          src={connect?.profile?.path}
+                          alt="Profile"
+                        />
+                      ) : (
+                        <img
+                          className="w-12 h-12 rounded-full"
+                          src="/profilenull.jpg"
+                          alt="Default Profile"
+                        />
+                      )}
+                      <div className="flex justify-start w-[18rem] pl-3 items-center">
+                        <div className="mb-3 mt-2 w-[10rem]  flex flex-col font-medium">
+                          <p className="font-medium">
+                            {connect?.details?.first_name} {connect?.details?.last_name}
+                          </p>
+                          {type && senders === connect.id && <p>Typing...</p>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="pr-7">
-                    <p className="">5:30</p>
-                    {unreadCount > 0 && (
-                      <span className="bg-red-500 text-white rounded-full text-xs w-9 px-[8px] h-5">
-                        {unreadCount}
-                      </span>
-                    )}
+                    <div className="pr-7">
+                      <p className="">5:30</p>
+                      {unreadCount > 0 && (
+                        <span className="bg-red-500 text-white rounded-full text-xs w-9 px-[8px] h-5">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        )}
+
+        <div>
+          <button
+            className="fixed right-2 z-50 top-24 text-2xl block lg:hidden"
+            onClick={() => sides()}
+          >
+            {sideMenu ? <FaCircleArrowRight /> : <FaCircleArrowLeft />}
+          </button>
         </div>
       </div>
-
-      <div className="lg:h-[58rem]  flex flex-col  overflow-hidden">
+      <div className="h-[58rem]  flex flex-col w-full  overflow-hidden">
         <div className="p-4 flex items-center justify-between bg-white"></div>
-        <div className=" 2xl:ml-[43rem] ml-0 p-4 mb-10 justify-start items-start mt-[4.7rem] lg:w-full xs:hidden overflow-auto mx-auto w-[60rem] max-w-4xl bg-white shadow-lg overflow-y-auto border  flex-grow">
-          {connects?.map((connect) => {
+        {showMessage && (
+          <div className=" 2xl:ml-[25rem] xl:ml-10 p-4 mb-10 justify-start items-start   overflow-auto mx-auto 2xl:w-[70rem] xl:w-[40rem] lg:w-[35rem] sm:w-[30rem] xs:w-[25rem] bg-white shadow-lg overflow-y-auto border  flex-grow">
+            {/* {connects?.map((connect) => {
             return (
               <div>
                 {senders === connect.id ? (
+                  <div>
                     <div
                       key={senders}
-                      className="flex gap-6 lg:fixed lg:top-[6.9rem] h-20 rounded right-[22rem] text-black w-[56rem]"
+                      className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black bg-white border w-[56rem]"
                     >
+                      <div>
                         {senders ? (
                           <div
                             key={senders}
-                            className="flex pl-3 pt- gap-6 fixed top-[6.78rem] h-20 border-r-none rounded right-[21rem] text-black bg-white border w-[56rem]"
+                            className="flex gap-6 fixed top-[6.7rem] h-16 rounded right-[21rem] text-black border w-[56rem]"
                           >
                             {connect?.profile?.path ? (
                               <img
@@ -371,80 +419,82 @@ const MessageUser = () => {
                             </div>
                           </div>
                         ) : null}
-                    
+                      </div>
                     </div>
-                 
+                  </div>
                 ) : null}
               </div>
             );
-          })}
-          <div className="flex mt-20 2xl:justify-end 2xl:items-end overflow-auto  ">
-            <div className="flex flex-col justify-end w-full  hide-scrollbar mt-20 items-end  ">
-              {chats?.map((chat, index) => (
-                <div
-                  key={`${chat.id} ${index}`}
-                  className={`mb-2 p-4 rounded-lg shadow-md  flex justify-end items-end  ${
-                    decodedToken?.id === chat?.sender?.id
-                      ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
-                      : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
-                  }`}
-                >
-                  <div className="">
-                    <img src="" alt="" />
-                    <p className="font-semibold">{chat?.sender?.details?.first_name}</p>
-                    <div className="flex flex-col">
-                      <p>{chat.message}</p>
+          })} */}
+            <div className="flex mt-20 2xl:justify-center xs:block justify-end items-end overflow-auto 2xl:w-[65rem]  ">
+              <div className="flex flex-col justify-end  overflow-auto hide-scrollbar  items-end  h-full ">
+                {chats?.map((chat, index) => (
+                  <div
+                    key={`${chat.id} ${index}`}
+                    className={`mb-2 p-4 rounded-lg shadow-md mt-5 flex justify-end items-end ${
+                      decodedToken?.id === chat?.sender?.id
+                        ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
+                        : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
+                    } max-w-[25rem] break-words`}
+                  >
+                    <div className="">
+                      <img src="" alt="" />
+                      <p className="font-semibold">{chat?.sender?.details?.first_name}</p>
+                      <div className="flex flex-col">
+                        <p>{chat.message}</p>
+                      </div>
                     </div>
                   </div>
+                ))}
+                <div className="w-full justify-start items-start flex">
+                  {type && (
+                    <p>
+                      <img src={image?.typing} alt="" />
+                    </p>
+                  )}
                 </div>
-              ))}
-              <div className="w-full justify-start items-start flex">
-                {type && (
-                  <p>
-                    <img src={image?.typing} alt="" />
-                  </p>
-                )}
+              </div>
+            </div>
+            <div className="flex w-full justify-end">
+              <div className="fixed bottom-20 justify-end flex ">
+                {toggleEmoji && <EmojiPicker onEmojiClick={emojiHandleSelect} />}
               </div>
             </div>
           </div>
-          <div className="flex w-full justify-end">
-            <div className="fixed bottom-20 lg:left-72 justify-end flex ">
-              {toggleEmoji && <EmojiPicker onEmojiClick={emojiHandleSelect} />}
+        )}
+
+        <div className="w-[70rem] xs:left-[40rem] fixed bottom-0 lg:left-[25rem] gap-20 p-4 bg-white border border-gray-300">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex w-full xl:max-w-[65rem]  mx-auto">
+            <input
+              type="text"
+              {...register('message')}
+              placeholder="Type Here..."
+              className="flex-grow p-2 rounded-l-lg  outline-none"
+              onKeyDown={() => socket?.emit('typing', { senders })}
+              required
+            />
+            <div className="flex gap-12 xl:pl-20 ">
+              <p className="text-2xl pt-3 " onClick={() => setToggleEmoji(!toggleEmoji)}>
+                <MdOutlineEmojiEmotions />
+              </p>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="text-blue-700 text-2xl  p-2 rounded-r-full hover:text-blue-900 transition duration-300"
+              >
+                <BsFillSendFill />
+              </button>
             </div>
-          </div>
-
-          <div className="w-[56rem] fixed bottom-0 lg:left-[43rem] p-4 bg-white border border-gray-300">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-4xl mx-auto">
-              <input
-                type="text"
-                {...register('message')}
-                placeholder="Type Here..."
-                className="flex-grow p-2 rounded-l-lg outline-none"
-                onKeyDown={() => socket?.emit('typing', { senders })}
-                required
-              />
-              <div className="flex gap-12">
-                <p className="text-2xl pt-3" onClick={() => setToggleEmoji(!toggleEmoji)}>
-                  <MdOutlineEmojiEmotions />
-                </p>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="text-blue-700 text-2xl  p-2 rounded-r-full hover:text-blue-900 transition duration-300"
-                >
-                  <BsFillSendFill />
-                </button>
-              </div>
-            </form>
-          </div>
+          </form>
         </div>
       </div>
-      <div className="pt-32 pr-56">
-        <div>
+
+      {profile && (
+        <div className="pt-32 mr-64">
           {connects?.map((connect) => {
             return (
-              <div className="2xl:w-20 2xl:block xs:hidden">
+              <div className="w-20">
                 {senders === connect.id ? (
                   <div
                     key={senders}
@@ -463,10 +513,10 @@ const MessageUser = () => {
                         alt="Default Profile"
                       />
                     )}
-                    <p className="font-medium text-xl pl-2">
+                    <p className="font-medium text-xl pl-7">
                       {connect?.details?.first_name} {connect?.details.last_name}
                     </p>
-                    <div className="flex gap-7 justify-center  mb-5">
+                    <div className="flex gap-7 justify-center ml-8 mb-5">
                       <p className="text-xl bg-gray-200 p-2 rounded-full">
                         <PiPhoneCallFill />
                       </p>
@@ -503,8 +553,8 @@ const MessageUser = () => {
               </div>
             );
           })}
-        </div>{' '}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -64,17 +64,17 @@ const User = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-start mt-4 mx-auto ">
+    <div className="flex flex-col items-start mt-4 mx-auto overflow-y-auto lg:w-[23rem] xs:w-[30rem] ">
       <div className="flex justify-start mb-4">
         <h1 className="text-xl font-poppins font-medium text-gray-800">People You May Know</h1>
       </div>
-      <div className="w-full min-w-[22rem] bg-white shadow-md rounded-lg overflow-hidden 2xl:w-[40rem] xl:w-[32rem] lg:w-[27rem] md:w-[30rem] sm:w-[40rem]">
+      <div className="w-full min-w-[22rem] bg-white shadow-md rounded-lg overflow-hidden 2xl:w-[40rem] xl:w-[32rem] lg:w-[27rem] md:w-[30rem] sm:w-[40rem] ">
         {error && <p className="text-red-500 p-4">{error}</p>}
         <ul className="divide-y divide-gray-200">
           {users?.map((user) => (
             <li
               key={user?.id}
-              className="flex flex-col sm:flex-row  sm:justify-between p-4 hover:bg-gray-50"
+              className="flex flex-col sm:flex-row  xs:gap-2 lg:justify-between p-2 hover:bg-gray-50"
             >
               <div
                 className="flex items-center space-x-4 cursor-pointer"

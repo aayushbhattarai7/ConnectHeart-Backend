@@ -9,6 +9,7 @@ import { MdOutlineArrowOutward } from 'react-icons/md';
 import { authLabel } from '../../../localization/auth';
 import axiosInstance from '../../../service/instance';
 import axios from 'axios';
+import GoogleAuth from '../molecules/GoogleLogin';
 
 interface FormData {
   email: string;
@@ -55,11 +56,12 @@ const Login: React.FC = () => {
         <h1 className="text-2xl font-semibold mb-4">Login</h1>
         <p className="mb-6">Hi, Welcome Back👋</p>
 
-        <div className="flex items-center gap-3 border rounded-lg p-3 mb-6">
-          <img className="w-7 h-7" src="/google.png" alt="Google Logo" />
+        <div className="flex items-center justify-center gap-3  rounded-lg pl-20 p-2 mb-6">
+          {/* <img className="w-7 h-7" src="/google.png" alt="Google Logo" />
           <button type="button" className="text-blue-500">
             Continue With Google
-          </button>
+          </button> */}
+          <GoogleAuth />
         </div>
 
         <div className="relative mb-6">

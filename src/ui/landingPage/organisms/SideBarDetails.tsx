@@ -65,8 +65,8 @@ const SideBarDetails = () => {
 
   return (
     <div>
-      {location.pathname !== '/login' && location.pathname !== '/signup' && (
-        <div className="p-8 flex-col  fixed top-20 left-2 w-72 h-screen bg-white  ">
+      {location.pathname !== '/login' && location.pathname !== '/signup' && location.pathname !=='/message' && (
+        <div className="p-8 flex-col  fixed top-20 left-2 w-72  h-screen xs:h-auto bg-white  ">
           <div key={user?.id} className="flex-col justify-center ml-4 flex mb-10 ">
             {user?.profile?.path ? (
               <Link to="/profile">

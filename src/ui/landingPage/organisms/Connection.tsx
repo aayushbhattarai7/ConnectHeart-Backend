@@ -75,7 +75,7 @@ const Connection = () => {
         <div className="justify-center items-center flex p-5 bg-gray-100">
           <h1 className="sm:ml-12 2xl:ml-20 xl:ml-20 mt-20 font-poppins font-medium">Connections</h1>
         </div>
-        <div className=" justify-start 2xl:mx-96 h-auto pl-16 items-start bg-gray-100">
+        <div className=" justify-start lg:mx-96 xs:ml-[2rem] h-auto pl-16 items-start bg-gray-100">
           <div className="justify-start flex mx-auto flex-wrap gap-8 mb-10 overflow-hidden">
             {error && <p>{error}</p>}
             {connects.length === 0 ? (
@@ -121,7 +121,7 @@ const Connection = () => {
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-300 mt-10 ml-32"></div>
+      <div className="border-t border-gray-300 mt-10 ml-4"></div>
 
       <User />
     </div>

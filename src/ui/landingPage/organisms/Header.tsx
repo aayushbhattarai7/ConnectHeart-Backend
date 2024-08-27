@@ -6,15 +6,18 @@ import { IoNotificationsSharp } from "react-icons/io5";
 
 
 const Header = () => {
+
   const [sideBar, setSidebar] = useState(false);
   const handleClick = () => {
     setSidebar(true);
   };
   const location = useLocation();
+
   const targetPath =
     location.pathname !== '/login' && location.pathname !== '/signup' ? '/' : '/login';
   return (
     <div className="relative">
+      
       <header className="fixed top-0 left-0 w-full h-[11vh] bg-white shadow-md z-50">
         <div
           className="font-poppins font-medium flex items-center justify-between 
@@ -64,7 +67,7 @@ const Header = () => {
         </div>
       </header>
       <div className="">
-        <div className=" hidden xl:block ">
+        <div className=" hidden 2xl:block ">
           <SideBarDetails />
         </div>
         {sideBar && <SideBarDetails />}

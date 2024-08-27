@@ -47,7 +47,7 @@ const Notification = () => {
   }, []);
 
   return (
-    <div className=" fixed top-[7.5rem] rounded-lg right-2 h-[50vh] shadow-lg w-96 xl:w-80 lg:w-72 lg:p-0 bg-white flex justify-center items-start ">
+    <div className=" fixed lg:top-[7.5rem] xs:top-[6rem] rounded-lg right-2 lg:h-[50vh] xs:h-[45vh] shadow-lg w-96 xl:w-96 lg:w-72 xs:w-[31rem] lg:p-0 bg-white flex justify-center items-start ">
       <div className="w-[30rem] flex flex-col justify-center items-center overflow-y-auto">
         <h1 className="mt-6 text-xl font-poppins font-medium">Connect Request Alert</h1>
         {requests.length === 0 ? (
@@ -59,11 +59,15 @@ const Notification = () => {
             {' '}
             {requests?.map((request) => (
               <div className="bg-blue-300 w-full h-16 rounded-lg items-center justify-start flex p-5 mb-2 gap-5">
-                <div className="w-10 h-10 ">
+                <div className=" ">
                   {request?.sender?.profile?.path ? (
-                    <img className="rounded-full" src={request.sender.profile.path} alt="" />
+                    <img
+                      className="rounded-full w-10 h-10"
+                      src={request.sender.profile.path}
+                      alt=""
+                    />
                   ) : (
-                    <img className="rounded-full" src="/profilenull.jpg" alt="" />
+                    <img className="rounded-full w-10 h-10" src="/profilenull.jpg" alt="" />
                   )}
                 </div>
                 <p className=" font-poppins font-bold" onClick={getRequest}>

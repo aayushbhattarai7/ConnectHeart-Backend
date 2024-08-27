@@ -13,7 +13,7 @@ import Support from './ui/landingPage/organisms/Support';
 import Faq from './ui/landingPage/organisms/Faq';
 import UserProfile from './ui/landingPage/organisms/UserProfile';
 import MessageUser from './ui/landingPage/organisms/MessageUser';
-import './App.css'
+import './App.css';
 
 const router = createBrowserRouter([
   {
@@ -42,11 +42,10 @@ const router = createBrowserRouter([
         element: <User />,
       },
 
-  
-       {
-        path:'/message',
-        element: <MessageUser/>
-       },
+      {
+        path: '/message',
+        element: <MessageUser />,
+      },
       {
         path: '/profile',
         element: <Profile />,
@@ -67,11 +66,17 @@ const router = createBrowserRouter([
         path: '/userProfile/:userId',
         element: <UserProfile />,
       },
+     
     ],
   },
 ]);
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+     
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;
