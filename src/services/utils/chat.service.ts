@@ -75,6 +75,7 @@ export class ChatService {
         relations: ['sender', 'receiver', 'sender.details', 'receiver.details'],
         order: { createdAt: 'ASC' },
       });
+      if(!chats) throw HttpException.notFound
       const decryptedChats = chats.map(chat => {
         try {
           const decryptedMessage = EncryptionService.decryptMessage(
@@ -95,24 +96,24 @@ export class ChatService {
   }
 
   async chatCount(userId: string, receiverId: string) {
-    try {
-      const auth = await this.AuthRepo.findOneBy({ id: userId });
-      if (!auth) throw HttpException.unauthorized;
+    // try {
+    //   const auth = await this.AuthRepo.findOneBy({ id: userId });
+    //   if (!auth) throw HttpException.unauthorized;
 
-      const receiver = await this.AuthRepo.findOneBy({ id: receiverId });
-      if (!receiver) throw HttpException.notFound;
+    //   const receiver = await this.AuthRepo.findOneBy({ id: receiverId });
+    //   if (!receiver) throw HttpException.notFound;
 
-      const chat = await this.chatRepo.find({
-        where: [{ sender: { id: receiverId }, receiver: { id: userId } }],
-      });
+    //   const chat = await this.chatRepo.find({
+    //     where: [{ sender: { id: receiverId }, receiver: { id: userId } }],
+    //   });
 
-      const chatCount: number = chat.length;
+    //   const chatCount: number = chat.length;
 
-      return chatCount;
-    } catch (error) {
-      console.log('🚀 ~ ChatService ~ chatCount ~ error:', error);
-      throw HttpException.badRequest;
-    }
+    //   return chatCount;
+    // } catch (error) {
+    //   console.log('🚀 ~ ChatService ~ chatCount ~ error:', error);
+    //   throw HttpException.badRequest;
+    // }
   }
 
   async unreadChat(userId: string, senderId: string) {
@@ -127,7 +128,6 @@ export class ChatService {
         where: [
           { receiver: { id: userId }, sender: { id: senderId }, read: false },
         ],
-        relations: ['receiver', 'sender'],
       });
 
       const getUnread = getUnreadChat.length;
@@ -144,14 +144,12 @@ export class ChatService {
   }
 
   async readChat(userId: string, senderId: string) {
-    console.log('🚀 ~ ChatService ~ readChat ~ senderId:', senderId);
-    console.log('🚀 ~ ChatService ~ readChat ~ userId:', userId);
 
-    const auth = await this.AuthRepo.findOneBy({ id: userId });
-    if (!auth) throw HttpException.unauthorized;
+    //           const auth = await this.AuthRepo.findOneBy({ id: userId });
+    // if (!auth) throw HttpException.unauthorized;
 
-    const sender = await this.AuthRepo.findOneBy({ id: senderId });
-    if (!sender) throw HttpException.notFound;
+    // const sender = await this.AuthRepo.findOneBy({ id: senderId });
+    // if (!sender) throw HttpException.notFound;
 
     const readChat = await this.chatRepo.update(
       {
@@ -162,7 +160,7 @@ export class ChatService {
       { read: true },
     );
     console.log('clicked');
-    
+
     return readChat;
   }
 }

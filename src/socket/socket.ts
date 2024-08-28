@@ -38,10 +38,11 @@ export class Socket {
     });
 
     io.on('connection', socket => {
-      socket.join(socket.data.user.id);
+      socket.join(socket.data.user.id)
 
       socket.on('room', async ({ receiverId }) => {
         const userId = socket.data.user.id;
+        
         try {
           const rooms = await roomService.checkRoom(userId, receiverId);
           if (rooms) {
@@ -75,7 +76,7 @@ export class Socket {
               const senders = await userService.getById(userId);
               const receiver = await userService.getById(receiverId);
 
-              rooms.forEach(room => {
+              rooms.forEach(async room => {
                 const messagePayload = {
                   id: socket.data.user.id,
                   message: chat.message,
@@ -93,16 +94,19 @@ export class Socket {
                   },
                 };
 
-                io.to(room.id).emit('message', messagePayload);
 
-                chatService
-                  .unreadChat(receiverId, senders.id)
-                  .then(unreadCount => {
-                    io.to(receiverId).emit('unreadCounts', {
-                      senderId: senders.id,
-                      unreadCount: unreadCount,
-                    });
-                  });
+
+                io.to(room.id).emit('message', messagePayload);
+              try {
+                const unreadCount = await chatService.unreadChat(receiverId, senders.id)
+                io.to(receiverId).emit('unreadCounts', {
+                  senderId: senders.id,
+                  unreadCount: unreadCount
+                })
+              } catch (error) {
+              console.log(error)
+              }
+
               });
             }
           } else {
@@ -113,32 +117,20 @@ export class Socket {
         }
       });
 
+
       socket.on('readed', async ({ senderId }) => {
         try {
-          const userId = socket.data.user.id;
-          if (!userId) throw HttpException.unauthorized;
+          const userId = socket.data.user.id
+          await chatService.readChat(userId, senderId)
+        const unreadCount = await chatService.unreadChat(userId, senderId)
 
-          await chatService.readChat(userId, senderId);
-
-          
+          io.to(userId).emit('read',{senderId, unreadCount})
+                
         } catch (error) {
-          console.error('Error marking messages as read:', error);
+          console.log(error)
         }
-      });
+      })
 
-      socket.on('getUnreadCounts', async ({ senderId }) => {
-        try {
-          const receiverId = socket.data.user.id;
-          const unreadCount = await chatService.unreadChat(
-            receiverId,
-            senderId,
-          );
-
-          io.to(socket.id).emit('unreadCounts', { senderId, unreadCount });
-        } catch (error) {
-          console.error('Error fetching unread counts:', error);
-        }
-      });
 
       socket.on('typing', async ({ receiverId }) => {
         const userId = socket.data.user.id;
