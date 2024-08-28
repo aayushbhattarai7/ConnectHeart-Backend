@@ -80,6 +80,8 @@ const MessageUser = () => {
   const [profile, setProfile] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [sideMenu, setSideMenu] = useState(false);
+  const [messageBox, setMessageBox] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -132,7 +134,6 @@ const MessageUser = () => {
 
     newSocket.on('message', (message: Messages) => {
       setChats((prevChats) => [...prevChats, message]);
-      
     });
 
     newSocket.on('read', ({ senderId, unreadCount }) => {
@@ -171,7 +172,6 @@ const MessageUser = () => {
         [senderId]: unreadCount,
       }));
     });
-
     return () => {
       socket?.off('unreadCounts');
     };
@@ -187,7 +187,7 @@ const MessageUser = () => {
         'Content-Type': 'application/json',
       },
     });
-
+    setMessageBox(true);
     setSenders(senderId);
     console.log(response);
   };
@@ -400,8 +400,8 @@ const MessageUser = () => {
       </div>
       <div className="h-[58rem]  flex flex-col w-full  overflow-hidden">
         <div className="p-4 flex items-center justify-between bg-white"></div>
-        {showMessage && (
-          <div className=" 2xl:ml-[25rem] xl:ml-10 p-4 mb-10 justify-start items-start   overflow-auto mx-auto 2xl:w-[70rem] xl:w-[40rem] lg:w-[35rem] sm:w-[30rem] xs:w-[25rem] bg-white shadow-lg overflow-y-auto border  flex-grow">
+        {showMessage && messageBox ? (
+          <div className=" 2xl:ml-[25rem] xl:ml-10 p-4 mb-10 justify-start items-start   overflow-auto mx-auto 2xl:w-[70rem] xl:w-[40rem] lg:w-[35rem] sm:w-[30rem] xs:w-[25rem] bg-white border-b-0 overflow-y-auto border  flex-grow">
             {/* {connects?.map((connect) => {
             return (
               <div>
@@ -487,33 +487,41 @@ const MessageUser = () => {
               </div>
             </div>
           </div>
+        ) : (
+          <div className='h-screen flex justify-center items-center ml-32'>
+            <p className="ml-56">Select any user to message</p>
+          </div>
         )}
+        {messageBox && (
+          <div className="w-[70rem] xs:left-[40rem] fixed bottom-0 lg:left-[25rem] gap-20 p-4 bg-white border border-gray-300">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex w-full xl:max-w-[65rem]  mx-auto"
+            >
+              <input
+                type="text"
+                {...register('message')}
+                placeholder="Type Here..."
+                className="flex-grow p-2 rounded-l-lg  outline-none"
+                onKeyDown={() => socket?.emit('typing', { senders })}
+                required
+              />
+              <div className="flex gap-12 xl:pl-20 ">
+                <p className="text-2xl pt-3 " onClick={() => setToggleEmoji(!toggleEmoji)}>
+                  <MdOutlineEmojiEmotions />
+                </p>
 
-        <div className="w-[70rem] xs:left-[40rem] fixed bottom-0 lg:left-[25rem] gap-20 p-4 bg-white border border-gray-300">
-          <form onSubmit={handleSubmit(onSubmit)} className="flex w-full xl:max-w-[65rem]  mx-auto">
-            <input
-              type="text"
-              {...register('message')}
-              placeholder="Type Here..."
-              className="flex-grow p-2 rounded-l-lg  outline-none"
-              onKeyDown={() => socket?.emit('typing', { senders })}
-              required
-            />
-            <div className="flex gap-12 xl:pl-20 ">
-              <p className="text-2xl pt-3 " onClick={() => setToggleEmoji(!toggleEmoji)}>
-                <MdOutlineEmojiEmotions />
-              </p>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="text-blue-700 text-2xl  p-2 rounded-r-full hover:text-blue-900 transition duration-300"
-              >
-                <BsFillSendFill />
-              </button>
-            </div>
-          </form>
-        </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="text-blue-700 text-2xl  p-2 rounded-r-full hover:text-blue-900 transition duration-300"
+                >
+                  <BsFillSendFill />
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
 
       {profile && (
