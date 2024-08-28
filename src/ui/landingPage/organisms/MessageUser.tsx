@@ -127,17 +127,20 @@ const MessageUser = () => {
       if (senders) {
         newSocket?.emit('room', { receiverId: senders });
       }
+      console.log(senders);
     });
 
     newSocket.on('message', (message: Messages) => {
       setChats((prevChats) => [...prevChats, message]);
+      
     });
 
-    newSocket.on('read', ({ senderId }) => {
+    newSocket.on('read', ({ senderId, unreadCount }) => {
       if (senderId) {
-        setChats((prevMessages) =>
-          prevMessages.filter((message) => message.sender.id !== senderId),
-        );
+        setUnreadCounts((prevUnreadCounts) => ({
+          ...prevUnreadCounts,
+          [senderId]: unreadCount,
+        }));
       }
     });
 
@@ -175,17 +178,18 @@ const MessageUser = () => {
   }, [socket]);
 
   const handleChatClick = async (senderId: string) => {
+    socket?.emit('readed', { senderId }, (response: any) => {
+      console.log('yess', response);
+    });
     console.log('clicked');
     const response = await axiosInstance.get(`/chat/${senderId}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    socket?.emit('readed', { senderId, userId: decodedToken?.id });
+
     setSenders(senderId);
     console.log(response);
-    console.log(senderId, 'this is senderId');
-    socket?.emit('getUnreadCounts', { senderId, receiverId: decodedToken?.id });
   };
 
   const fetchChat = async (id: string) => {
@@ -195,11 +199,29 @@ const MessageUser = () => {
           'Content-Type': 'application/json',
         },
       });
+      fetchUnreadCounts;
 
       setChats(response.data.displaychat);
       console.log(response?.data?.displaychat);
     } catch (error) {
       console.error('Error fetching chat data', error);
+    }
+  };
+
+  const fetchUnreadCounts = async (id: string) => {
+    try {
+      const res = await axiosInstance.get(`/chat/unread/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      setUnreadCounts(() => ({
+        [id]: res.data.unreadchat,
+      }));
+
+      console.log(res.data, 'resdatatatata');
+    } catch (error) {
+      console.log('🚀 ~ fetchUnreadtCounts ~ error:', error);
     }
   };
 
@@ -231,7 +253,7 @@ const MessageUser = () => {
         },
       });
       setConnects(response?.data?.friends);
-      console.log(response?.data?.friends);
+      response.data.friends.map((friend: any) => fetchUnreadCounts(friend.id));
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || 'Error while fetching connection');
@@ -244,10 +266,12 @@ const MessageUser = () => {
   useEffect(() => {
     showConnection();
   }, []);
-
-  useEffect(() => {
-    showConnection();
-  }, []);
+  // useEffect(() => {
+  //   if (connects.length > 0) {
+  //     const firstUser = connects[0];
+  //     handleChatClick(firstUser.id);
+  //   }
+  // }, [connects]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -265,34 +289,34 @@ const MessageUser = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
- useEffect(() => {
-   const handleResize = () => {
-     if (window.innerWidth < 1034) {
-       if (window.innerWidth < 1034) {
-         setSideMenu(false);
-         setShowMessage(true);
-       } else {
-         setShowMessage(false);
-         setSideMenu(true);
-       }
-     } else {
-       setShowMessage(true);
-       setSideMenu(true);
-     }
-   };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1034) {
+        if (window.innerWidth < 1034) {
+          setSideMenu(false);
+          setShowMessage(true);
+        } else {
+          setShowMessage(false);
+          setSideMenu(true);
+        }
+      } else {
+        setShowMessage(true);
+        setSideMenu(true);
+      }
+    };
 
-   handleResize();
+    handleResize();
 
-   window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize);
 
-   return () => window.removeEventListener('resize', handleResize);
- }, []);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
- const sides = () => {
-   setSideMenu(!sideMenu);
-   setShowMessage(!showMessage);
- };
-  
+  const sides = () => {
+    setSideMenu(!sideMenu);
+    setShowMessage(!showMessage);
+  };
+
   return (
     <div className=" font-poppins flex justify-between">
       {/* {user && ( */}
@@ -316,8 +340,6 @@ const MessageUser = () => {
             </div>
             {error && <p>{error}</p>}
             {connects?.map((connect) => {
-              const unreadCount = unreadCounts[connect.id] || 0;
-
               return (
                 <div
                   key={connect?.id}
@@ -354,9 +376,9 @@ const MessageUser = () => {
                     </div>
                     <div className="pr-7">
                       <p className="">5:30</p>
-                      {unreadCount > 0 && (
+                      {unreadCounts[connect.id] > 0 && (
                         <span className="bg-red-500 text-white rounded-full text-xs w-9 px-[8px] h-5">
-                          {unreadCount}
+                          {unreadCounts[connect.id]}
                         </span>
                       )}
                     </div>
@@ -436,6 +458,10 @@ const MessageUser = () => {
                         ? 'bg-blue-700 text-white justify-end items-end self-end ml-auto'
                         : 'bg-gray-300 text-black justify-start items-end self-start mr-auto'
                     } max-w-[25rem] break-words`}
+                    style={{
+                      msOverflowStyle: 'none',
+                      scrollbarWidth: 'none',
+                    }}
                   >
                     <div className="">
                       <img src="" alt="" />

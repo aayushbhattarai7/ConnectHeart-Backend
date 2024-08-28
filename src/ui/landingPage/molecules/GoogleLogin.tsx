@@ -3,7 +3,6 @@ import axiosInstance from '../../../service/instance';
 import { useNavigate } from 'react-router-dom';
 interface CustomCredentialResponse {
   credential?: string;
-  // Add other properties if needed
 }
 const GoogleAuth = () => {
   const navigate = useNavigate();
