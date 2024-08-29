@@ -182,10 +182,10 @@ export class AuthController {
         message: Message.success,
         reset,
       });
-    } catch (error) {
-      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error);
+    } catch (error:any) {
+      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error.message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: Message.error,
+        message: error?.message,
       });
     }
   }
@@ -213,7 +213,7 @@ export class AuthController {
       );
       res.status(StatusCodes.SUCCESS).json({
         getUser,
-        message: Message.success,
+        message: Message,
       });
     } catch (error: any) {
       console.log(error?.message);

@@ -74,6 +74,10 @@ export class ResetPasswordDTO {
   @IsStrongPassword()
   password: string;
 
+ @IsNotEmpty()
+  @IsString()
+  @IsStrongPassword()
+  confirmPassword: string;
 
 
 }

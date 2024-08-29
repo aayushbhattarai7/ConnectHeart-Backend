@@ -28,17 +28,26 @@ class AuthService {
     try {
       const emailExist = await this.getAuth.findOne({where: {
         email:data.email
-      }})
+      }
+      })
       
       if (emailExist) throw HttpException.badRequest('Entered email is already registered')
-      
+              if (!data.email || !data.first_name || !data.last_name ) throw HttpException.badRequest('Please fill all the required fields ')
+
       if (!emailRegex.test(data.email)) {
         throw HttpException.badRequest('Please enter valid email')
+      }
+      if (passwordRegex.test(data.password)) {
+        console.log('true')
+      } else {
+        console.log('false')
+        console.log(data.password)
       }
 
       if (!passwordRegex.test(data.password)) {
 throw HttpException.badRequest('Password requires an uppercase, digit, and special char.');
       }
+
 
       const auth = this.getAuth.create({
         email: data.email,
@@ -196,33 +205,42 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
 
   async passwordReset(userId: string, data: ResetPasswordDTO): Promise<string> {
     try {
-      const users = await this.getAuth.findOneBy({id:userId})
+ const users = await this.getAuth.findOne({
+        where: [{ id: userId }],
+        select: ['id',  'password'],
+ })
       if (!users) throw HttpException.unauthorized(Message.notAuthorized)
-            const passwordMatched = await this.bcryptService.compare(data.password, users.password)
+            const passwordMatched = await this.bcryptService.compare(data.oldPassword, users.password)
+      if (!passwordMatched) {
+        throw new Error('Password didnot matched')
+      }
+       if (!passwordRegex.test(data.password)) {
+throw HttpException.badRequest('Password requires an uppercase, digit, and special char.');
+      }
+      if(data.password !== data.confirmPassword) throw new Error('Password must be same in both fields')
 
       if (passwordMatched) {
-          const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id','password'] })
+        const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id', 'password'] })
+        console.log(passwordMatched, "ahha")
       if (!auth) throw HttpException.unauthorized
       if (!auth.password) throw HttpException.badRequest('No password')
-      console.log('🚀 ~ AuthService ~ passwordReset ~ !auth:', auth.password)
     auth.password = await this.bcryptService.hash(data.password)
-      console.log("🚀 ~ AuthService ~ passwordReset ~ data.password:", data.password)
       await this.getAuth.update(auth.id, { password: auth.password });
-      await this.mailService.sendMail({
-        to: users.email,
-        text:'Password Reset Successfully',
-        subject:'Password Reset Successfully',
-        html:'<p>Password changed Successfully!</p>'
-      })
-      return Message.passwordReset
+      // await this.mailService.sendMail({
+      //   to: users.email,
+      //   text:'Password Reset Successfully',
+      //   subject:'Password Reset Successfully',
+      //   html:'<p>Password changed Successfully!</p>'
+      // })
+      return ('Password updated Successfully')
       } else {
         throw HttpException.badRequest('Invalid current password')
       }
       
     
-    } catch (error) {
+    } catch (error:any) {
       console.log('🚀 ~ AuthService ~ passwordReset ~ error:', error)
-      return Message.error
+      throw HttpException.notFound(error.message)
     }
   }
 
