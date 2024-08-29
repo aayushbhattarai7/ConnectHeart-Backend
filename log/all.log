@@ -1,0 +1,13 @@
+2024-08-05 08:05:43:543) [31merror[39m: [31m❌ Database failed to connectconnect ECONNREFUSED 127.0.0.1:5432[39m
+2024-08-05 08:05:51:551) [31merror[39m: [31m❌ Database failed to connectconnect ECONNREFUSED 127.0.0.1:5432[39m
+2024-08-05 09:11:08:118) [31merror[39m: [31m❌ Database failed to connectconnect ECONNREFUSED 127.0.0.1:5432[39m
+2024-08-05 09:56:32:5632) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 09:56:53:5653) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 09:58:45:5845) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:02:31:231) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:05:32:532) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:05:50:550) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:08:41:841) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:09:34:934) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:09:54:954) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
+2024-08-05 10:09:56:956) [31merror[39m: [31m❌ Database failed to connectSASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string[39m
