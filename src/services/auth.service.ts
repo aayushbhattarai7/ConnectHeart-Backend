@@ -112,9 +112,7 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
   }
 
   async googleLogin(googleId: string): Promise<any> {
-    console.log(googleId, 'hahauhduahsfuhueshd')
           const decoded: any = jwtDecode(googleId)
-console.log(decoded.email,"emailhoyochau")
     try {
 
       const decoded: any = jwtDecode(googleId)
@@ -134,7 +132,6 @@ console.log(decoded.email,"emailhoyochau")
             const details = new UserDetails()
             details.auth = save
             details.first_name = decoded.given_name
-               console.log(decoded.given_name,'hyaaa')
 
             details.last_name = decoded.family_name
             details.gender = Gender.NULL

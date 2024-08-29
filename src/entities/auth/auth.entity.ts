@@ -37,6 +37,9 @@ export class Auth extends Base {
   @Column({ name: 'verified', default: false })
   Verified: boolean;
 
+  @Column({ name: 'active', nullable: true })
+    active:true
+
   @OneToOne(() => UserDetails, details => details.auth, { cascade: true })
   details: UserDetails;
 
@@ -45,6 +48,7 @@ export class Auth extends Base {
     nullable: true,
   })
   profile: Profile;
+
 
   @OneToMany(() => Post, post => post.postIt, { cascade: true })
   posts: Post;
