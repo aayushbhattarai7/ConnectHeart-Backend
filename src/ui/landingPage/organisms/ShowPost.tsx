@@ -13,6 +13,7 @@ import User from './User';
 import { FaHeart } from 'react-icons/fa';
 import CommentOptions from '../molecules/CommentOption';
 import { FaCircleArrowLeft, FaCircleArrowRight } from 'react-icons/fa6';
+import { useSocket } from '../../../contexts/OnlineStatus';
 
 interface Post {
   id: string;
@@ -83,6 +84,7 @@ const ShowPost = () => {
   const [commentForm, setCommentForm] = useState<string | null>(null);
   const [sideMenu, setSideMenu] = useState(false);
   const [displayPost, setDisplayPost] = useState(false);
+const socket = useSocket()
   const getPost = async () => {
     try {
       const response = await axiosInstance.get('/post/', {
@@ -104,10 +106,7 @@ const ShowPost = () => {
     }
   };
 
-  // const isValidURL = (text: string): boolean => {
-  //   new URL(text);
-  //   return true;
-  // };
+  
 
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');

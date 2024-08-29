@@ -12,11 +12,13 @@ import { image } from '../../../config/constant/image';
 import { PiPhoneCallFill } from 'react-icons/pi';
 import { FaCircleArrowLeft, FaCircleArrowRight, FaVideo } from 'react-icons/fa6';
 import { IoMdMail } from 'react-icons/io';
+import { useSocket } from '../../../contexts/OnlineStatus';
 
 interface Connection {
   id: string;
   email?: string;
   username?: string;
+  active?: boolean;
   details: {
     first_name?: string;
     last_name?: string;
@@ -81,7 +83,7 @@ const MessageUser = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [sideMenu, setSideMenu] = useState(false);
   const [messageBox, setMessageBox] = useState(false);
-
+  const sockets = useSocket();
   const {
     register,
     handleSubmit,
@@ -126,10 +128,10 @@ const MessageUser = () => {
 
     newSocket.on('connect', () => {
       console.log('Connected to Socket.IO server');
+
       if (senders) {
         newSocket?.emit('room', { receiverId: senders });
       }
-      console.log(senders);
     });
 
     newSocket.on('message', (message: Messages) => {
@@ -160,10 +162,31 @@ const MessageUser = () => {
       newSocket.off('message');
       newSocket.off('read');
       newSocket.off('unreadCounts');
+      newSocket.off('online');
       newSocket.off('connect_error');
       newSocket.disconnect();
     };
   }, [senders]);
+
+ 
+
+  useEffect(() => {
+    const handleOnlineStatus = ({ userId, status }: { userId: string; status: boolean }) => {
+      setConnects((prev) => {
+        const updatedConnects = prev.map((connect) =>
+          connect.id === userId ? { ...connect, active: status } : connect,
+        );
+        console.log('Updated connects:', updatedConnects); 
+        return updatedConnects;
+      });
+    };
+
+    socket?.on('online', handleOnlineStatus);
+
+    return () => {
+      socket?.off('online');
+    };
+  }, [socket]);
 
   useEffect(() => {
     socket?.on('unreadCounts', ({ senderId, unreadCount }) => {
@@ -381,6 +404,7 @@ const MessageUser = () => {
                           {unreadCounts[connect.id]}
                         </span>
                       )}
+                      {connect.active && <p>Active</p>}
                     </div>
                   </div>
                 </div>
@@ -488,7 +512,7 @@ const MessageUser = () => {
             </div>
           </div>
         ) : (
-          <div className='h-screen flex justify-center items-center ml-32'>
+          <div className="h-screen flex justify-center items-center ml-32">
             <p className="ml-56">Select any user to message</p>
           </div>
         )}

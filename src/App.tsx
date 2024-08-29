@@ -14,6 +14,7 @@ import Faq from './ui/landingPage/organisms/Faq';
 import UserProfile from './ui/landingPage/organisms/UserProfile';
 import MessageUser from './ui/landingPage/organisms/MessageUser';
 import './App.css';
+import { SocketProvider } from './contexts/OnlineStatus';
 
 const router = createBrowserRouter([
   {
@@ -73,8 +74,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-     
-      <RouterProvider router={router} />
+      <SocketProvider>
+        <RouterProvider router={router} />
+      </SocketProvider>
     </>
   );
 }
