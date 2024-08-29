@@ -168,15 +168,13 @@ const MessageUser = () => {
     };
   }, [senders]);
 
- 
-
   useEffect(() => {
     const handleOnlineStatus = ({ userId, status }: { userId: string; status: boolean }) => {
       setConnects((prev) => {
         const updatedConnects = prev.map((connect) =>
           connect.id === userId ? { ...connect, active: status } : connect,
         );
-        console.log('Updated connects:', updatedConnects); 
+        console.log('Updated connects:', updatedConnects);
         return updatedConnects;
       });
     };
@@ -373,7 +371,7 @@ const MessageUser = () => {
                   }`}
                   onClick={() => handleChatClick(connect?.id)}
                 >
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center relative">
                     <div className="flex pt-2">
                       {connect?.profile?.path ? (
                         <img
@@ -387,6 +385,15 @@ const MessageUser = () => {
                           src="/profilenull.jpg"
                           alt="Default Profile"
                         />
+                      )}
+                      {connect.active ? (
+                        <div className="flex items-center justify-center rounded-full h-5 w-5 bg-white space-x-2 absolute top-9 left-8">
+                          <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center rounded-full h-5 w-5 bg-white space-x-2 absolute top-9 left-8">
+                          <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
+                        </div>
                       )}
                       <div className="flex justify-start w-[18rem] pl-3 items-center">
                         <div className="mb-3 mt-2 w-[10rem]  flex flex-col font-medium">
@@ -404,7 +411,6 @@ const MessageUser = () => {
                           {unreadCounts[connect.id]}
                         </span>
                       )}
-                      {connect.active && <p>Active</p>}
                     </div>
                   </div>
                 </div>
