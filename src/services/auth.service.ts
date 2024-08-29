@@ -175,6 +175,23 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
     }
    
   }
+
+  async offActiveStatusOfUser(userId: string) {
+    try {
+      const auth = await this.getAuth.findOneBy({ id: userId })
+      console.log(userId)
+    if (!auth) throw HttpException.unauthorized
+    
+       const changeActiveStatus = await this.getAuth.update(userId, { active: false });
+
+    return changeActiveStatus
+    } catch (error) {
+      console.log(error)
+    }
+   
+  }
+
+  
  
 
   async passwordReset(userId: string, data: ResetPasswordDTO): Promise<string> {

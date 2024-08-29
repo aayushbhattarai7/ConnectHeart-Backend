@@ -5,6 +5,7 @@ import { DotenvConfig } from '../config/env.config';
 import { RoomService } from '../services/utils/room.service';
 import { ChatService } from '../services/utils/chat.service';
 import userService from '../services/user.service';
+import authService from '../services/auth.service';
 
 const roomService = new RoomService();
 const chatService = new ChatService();
@@ -143,11 +144,10 @@ export class Socket {
         }
       });
 
-      socket.on('online', (newUserId) => {
+      socket.on('online', async(newUserId) => {
         const userId = socket.data.user.id
-        if (userId) {
-          
-        }
+        const status = await authService.onActiveStatusOfUser(userId)
+        
       })
 
       socket.on('notify', ({ receiverId }) => {});
