@@ -49,8 +49,8 @@ const EditUser: React.FC<UserProps> = ({
   useEffect(() => {
     setFormdata((prevData) => ({
       ...prevData,
-      first_name: first_name || '',
-      last_name: last_name || '',
+      first_name: first_name,
+      last_name: last_name,
       email: email || '',
       phone_number: phone_number || '',
     }));
