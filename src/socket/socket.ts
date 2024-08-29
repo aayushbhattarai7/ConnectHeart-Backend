@@ -38,7 +38,7 @@ export class Socket {
       }
     });
 
-    io.on('connection', socket => {
+    io.on('connection', async socket => {
       socket.join(socket.data.user.id)
 
       socket.on('room', async ({ receiverId }) => {
@@ -143,17 +143,23 @@ export class Socket {
           io.to(roomId).emit('typing', { userId });
         }
       });
+              
 
-      socket.on('online', async(newUserId) => {
-        const userId = socket.data.user.id
-        const status = await authService.onActiveStatusOfUser(userId)
-        
-      })
+ const userId = socket.data.user.id
+        await authService.onActiveStatusOfUser(userId)
+      io.emit('online', {userId, status:true})
+     
+
+      
 
       socket.on('notify', ({ receiverId }) => {});
 
-      socket.on('disconnect', () => {
+      socket.on('disconnect', async() => {
         console.log('User Disconnected', socket.id);
+        const userId = socket.data.user.id
+        await authService.offActiveStatusOfUser(userId)
+          io.emit('online', { userId, status: false });
+
       });
     });
   }
