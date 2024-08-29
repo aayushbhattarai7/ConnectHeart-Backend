@@ -37,8 +37,8 @@ export class Auth extends Base {
   @Column({ name: 'verified', default: false })
   Verified: boolean;
 
-  @Column({ name: 'active', nullable: true })
-    active:true
+  @Column({ name: 'active', default: false, nullable:true })
+    active:boolean
 
   @OneToOne(() => UserDetails, details => details.auth, { cascade: true })
   details: UserDetails;

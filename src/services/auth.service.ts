@@ -161,35 +161,21 @@ throw HttpException.badRequest('Password requires an uppercase, digit, and speci
     })
   }
 
-  // async passwordUpdate(userId: string, data: ResetPasswordDTO): Promise<string> {
+  async onActiveStatusOfUser(userId: string) {
+    try {
+      const auth = await this.getAuth.findOneBy({ id: userId })
+      console.log(userId)
+    if (!auth) throw HttpException.unauthorized
+    
+       const changeActiveStatus = await this.getAuth.update(userId, { active: true });
 
-  //   try {
-  //      const users = await this.getAuth.findOneBy({id:userId})
-  //     if (!users) throw HttpException.unauthorized(Message.notAuthorized)
-  //           const passwordMatched = await this.bcryptService.compare(data.password, users.password)
-  //      if (passwordMatched) {
-  //         const auth = await this.getAuth.findOne({ where: { id: userId }, select: ['id','password'] })
-  //     if (!auth) throw HttpException.unauthorized
-  //     if (!auth.password) throw HttpException.badRequest('No password')
-  //     console.log('🚀 ~ AuthService ~ passwordReset ~ !auth:', auth.password)
-  //   auth.password = await this.bcryptService.hash(data.password)
-  //     console.log("🚀 ~ AuthService ~ passwordReset ~ data.password:", data.password)
-  //     await this.getAuth.update(auth.id, { password: auth.password });
-  //     await this.mailService.sendMail({
-  //       to: users.email,
-  //       text:'Password Reset Successfully',
-  //       subject:'Password Reset Successfully',
-  //       html:'<p>Password changed Successfully!</p>'
-  //     })
-  //     return Message.passwordReset
-  //     } else {
-  //       throw HttpException.badRequest('Invalid current password')
-  //     }
-
-  //   } catch (error) {
-  //     throw HttpException.badRequest
-  //   }
-  // }
+    return changeActiveStatus
+    } catch (error) {
+      console.log(error)
+    }
+   
+  }
+ 
 
   async passwordReset(userId: string, data: ResetPasswordDTO): Promise<string> {
     try {

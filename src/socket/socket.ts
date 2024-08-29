@@ -143,6 +143,13 @@ export class Socket {
         }
       });
 
+      socket.on('online', (newUserId) => {
+        const userId = socket.data.user.id
+        if (userId) {
+          
+        }
+      })
+
       socket.on('notify', ({ receiverId }) => {});
 
       socket.on('disconnect', () => {

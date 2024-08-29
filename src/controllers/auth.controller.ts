@@ -7,6 +7,7 @@ import webTokenService from '../utils/webToken.service';
 import userService from '../services/user.service';
 import HttpException from '../utils/HttpException.utils';
 import { EmailService } from '../services/email.service';
+import { StartupSnapshot } from 'v8';
 const emailservice = new EmailService();
 export class AuthController {
   async create(req: Request, res: Response) {
@@ -147,6 +148,23 @@ export class AuthController {
     } catch (error) {
       console.log('🚀 ~ AuthController ~ getEmail ~ error:', error);
       res.json({ message: Message.error });
+    }
+  }
+
+  async changeStatus(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id
+      const activeStatus = await authService.onActiveStatusOfUser(userId as string)
+      res.status(StatusCodes.SUCCESS).json({
+        message: Message.success,
+        activeStatus,
+      });
+
+    } catch (error) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+        message: Message.error,
+        });
+      console.log(error)
     }
   }
 

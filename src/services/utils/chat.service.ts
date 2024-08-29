@@ -145,11 +145,6 @@ export class ChatService {
 
   async readChat(userId: string, senderId: string) {
 
-    //           const auth = await this.AuthRepo.findOneBy({ id: userId });
-    // if (!auth) throw HttpException.unauthorized;
-
-    // const sender = await this.AuthRepo.findOneBy({ id: senderId });
-    // if (!sender) throw HttpException.notFound;
 
     const readChat = await this.chatRepo.update(
       {
