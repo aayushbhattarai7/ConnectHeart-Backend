@@ -22,7 +22,7 @@ export class AuthController {
         : null;
 
       await authService.create(image as any, req.body as AuthDTO);
-      res.status(StatusCodes.CREATED).json({ message: Message.created });
+      res.status(StatusCodes.CREATED).json({ message: Message.registerSuccessfully });
     } catch (error: any) {
       console.log('🚀 ~ AuthController ~ create ~ error:', error?.message);
       res.status(StatusCodes.BAD_REQUEST).json({
