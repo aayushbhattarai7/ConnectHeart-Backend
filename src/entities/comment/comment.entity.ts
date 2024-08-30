@@ -1,38 +1,30 @@
-import Base from '../../entities/base.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  TreeChildren,
-  TreeParent,
-  Tree,
-} from 'typeorm';
-import { Auth } from '../../entities/auth/auth.entity';
-import { Post } from '../../entities/posts/posts.entity';
+import Base from '../../entities/base.entity'
+import { Column, Entity, ManyToOne, JoinColumn, TreeChildren, TreeParent, Tree } from 'typeorm'
+import { Auth } from '../../entities/auth/auth.entity'
+import { Post } from '../../entities/posts/posts.entity'
 
 @Entity('comment')
 @Tree('closure-table')
 export class Comment extends Base {
   @Column({ name: 'comment' })
-  comment: string;
+  comment: string
 
   @TreeParent()
   @JoinColumn({ name: 'parent_id' })
-  parentComment: Comment | null;
+  parentComment: Comment | null
 
   @TreeChildren()
-  childComment: Comment[];
+  childComment: Comment[]
 
-  @ManyToOne(() => Auth, commentAuth => commentAuth.comments, {
+  @ManyToOne(() => Auth, (commentAuth) => commentAuth.comments, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'auth_id' })
-  commentAuth: Auth;
+  commentAuth: Auth
 
-  @ManyToOne(() => Post, posts => posts.comment , {
+  @ManyToOne(() => Post, (posts) => posts.comment, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'post_id' })
-  posts: Post;
+  posts: Post
 }

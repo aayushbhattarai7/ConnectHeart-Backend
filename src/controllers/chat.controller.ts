@@ -1,10 +1,10 @@
-import { type Request, type Response } from 'express';
-import { ChatService } from '../services/utils/chat.service';
-import { StatusCodes } from '../constant/StatusCodes';
-import { ChatDTO } from '../dto/chat.dto';
-import { RoomService } from '../services/utils/room.service';
-import { Message } from '../constant/message';
-const chat = new ChatService();
+import { type Request, type Response } from 'express'
+import { ChatService } from '../services/utils/chat.service'
+import { StatusCodes } from '../constant/StatusCodes'
+import { ChatDTO } from '../dto/chat.dto'
+import { RoomService } from '../services/utils/room.service'
+import { Message } from '../constant/message'
+const chat = new ChatService()
 export class ChatController {
   async sendChat(req: Request, res: Response) {
     // try {
@@ -26,48 +26,48 @@ export class ChatController {
 
   async displayChat(req: Request, res: Response) {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id
 
-      const receiverId = req.params.id;
-      const displaychat = await chat.displayChat(userId as string, receiverId);
+      const receiverId = req.params.id
+      const displaychat = await chat.displayChat(userId as string, receiverId)
       res.status(StatusCodes.SUCCESS).json({
         displaychat,
-      });
+      })
     } catch (error) {
-      console.log('🚀 ~ ChatController ~ displayChat ~ error:', error);
+      console.log('🚀 ~ ChatController ~ displayChat ~ error:', error)
     }
   }
 
   async chatCount(req: Request, res: Response) {
     try {
-      const userId = req.user?.id;
-      const receiverId = req.params.id;
-      const getCount = await chat.chatCount(userId as string, receiverId);
+      const userId = req.user?.id
+      const receiverId = req.params.id
+      const getCount = await chat.chatCount(userId as string, receiverId)
       res.status(StatusCodes.SUCCESS).json({
         getCount,
         message: Message.success,
-      });
+      })
     } catch (error) {
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      });
+      })
     }
   }
 
   async getUndreadChat(req: Request, res: Response) {
     try {
-      const userId = req.user?.id;
-      const senderId = req.params.id;
-      const unreadchat = await chat.unreadChat(userId as string, senderId);
+      const userId = req.user?.id
+      const senderId = req.params.id
+      const unreadchat = await chat.unreadChat(userId as string, senderId)
       res.status(StatusCodes.SUCCESS).json({
         message: Message.success,
         unreadchat,
-      });
+      })
     } catch (error) {
-      console.log('🚀 ~ ChatController ~ getUndreadChat ~ error:', error);
+      console.log('🚀 ~ ChatController ~ getUndreadChat ~ error:', error)
       res.status(StatusCodes.BAD_REQUEST).json({
         message: Message.error,
-      });
+      })
     }
   }
 

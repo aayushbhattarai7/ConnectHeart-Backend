@@ -1,8 +1,8 @@
 export interface IJwtOptions {
-  secret: string;
-  expiresIn: string;
+  secret: string
+  expiresIn: string
 }
 
 export interface IJwtPayload {
-  id: string;
+  id: string
 }

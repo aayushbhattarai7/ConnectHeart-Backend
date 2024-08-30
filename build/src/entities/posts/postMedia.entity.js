@@ -1,7 +1,7 @@
-"use strict";
+'use strict'
 // import fs from 'fs'
 // import path from 'path'
-// import {AfterLoad,Column, Entity, JoinColumn, ManyToOne} from 'typeorm' 
+// import {AfterLoad,Column, Entity, JoinColumn, ManyToOne} from 'typeorm'
 // import Base from '../base.entity'
 // import { MediaType } from '../../constant/enum'
 // import { Post } from './posts.entity'

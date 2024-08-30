@@ -1,44 +1,37 @@
-import {
-  Column,
-  JoinColumn,
-  ManyToOne,
-  Entity,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
-import Base from '../../entities/base.entity';
-import { Auth } from '../../entities/auth/auth.entity';
-import { Room } from './room.entity';
-import ChatMedia from './chatMedia.entity';
+import { Column, JoinColumn, ManyToOne, Entity, ManyToMany, OneToMany } from 'typeorm'
+import Base from '../../entities/base.entity'
+import { Auth } from '../../entities/auth/auth.entity'
+import { Room } from './room.entity'
+import ChatMedia from './chatMedia.entity'
 
 @Entity('chat')
 export class Chat extends Base {
   @Column({ name: 'message' })
-  message: string;
+  message: string
 
   @Column({ default: false })
-  read: boolean;
+  read: boolean
 
-  @ManyToOne(() => Auth, auth => auth.sendMessage, {
+  @ManyToOne(() => Auth, (auth) => auth.sendMessage, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'sender_id' })
-  sender: Auth;
+  sender: Auth
 
-  @ManyToOne(() => Auth, auth => auth.receiveMessage, {
+  @ManyToOne(() => Auth, (auth) => auth.receiveMessage, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'receiver_id' })
-  receiver: Auth;
+  receiver: Auth
 
-  @OneToMany(() => ChatMedia, chatMedia => chatMedia.chats, { nullable: true })
-  chatMedia: ChatMedia[];
+  @OneToMany(() => ChatMedia, (chatMedia) => chatMedia.chats, { nullable: true })
+  chatMedia: ChatMedia[]
 
-  @ManyToOne(() => Room, room => room.chat, {
+  @ManyToOne(() => Room, (room) => room.chat, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'room_id' })
-  room: Room;
+  room: Room
 }
 
 /*  // if(detail){

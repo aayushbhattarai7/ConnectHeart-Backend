@@ -1,7 +1,6 @@
 export const Message = {
   registerSuccessfully: 'Registered Successfully',
-  passwordShouldStrong:
-    'Password must contain one uppercase, one digit and minimum of 8 characters',
+  passwordShouldStrong: 'Password must contain one uppercase, one digit and minimum of 8 characters',
   passwordShouldMatch: 'Passwords should match',
   validPhoneNumber: 'Invalid Phone number',
   notFound: 'Not Found',
@@ -18,20 +17,21 @@ export const Message = {
   uploadFailed: 'Sorry file couldnot be uploaded',
   success: 'Success',
   accepted: 'accepted',
-};
+  otpExpired: 'Your OTP is expired please try again later',
+}
 
 export const getNotFoundMessage = (title: string) => {
-  return `${title} not found`;
-};
+  return `${title} not found`
+}
 
 export const deletedMessage = (title: string) => {
-  return `${title} deleted Successfully`;
-};
+  return `${title} deleted Successfully`
+}
 
 export const updatedMessage = (title: string) => {
-  return `${title} updated successfully`;
-};
+  return `${title} updated successfully`
+}
 
 export const createdMessage = (title: string) => {
-  return `${title} created Successfully`;
-};
+  return `${title} created Successfully`
+}

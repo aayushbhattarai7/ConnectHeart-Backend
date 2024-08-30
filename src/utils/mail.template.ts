@@ -20,5 +20,5 @@ export const generateHtml = (body: string) => {
       </main>
   </body>
   
-  </html>`;
-};
+  </html>`
+}

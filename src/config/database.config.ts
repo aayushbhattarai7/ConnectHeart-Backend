@@ -1,6 +1,6 @@
-import 'reflect-metadata';
-import { DataSource } from 'typeorm';
-import { DotenvConfig } from './env.config';
+import 'reflect-metadata'
+import { DataSource } from 'typeorm'
+import { DotenvConfig } from './env.config'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -13,4 +13,4 @@ export const AppDataSource = new DataSource({
   dropSchema: false,
   synchronize: true,
   entities: ['src/entities/**/*{.ts, .js}'],
-});
+})

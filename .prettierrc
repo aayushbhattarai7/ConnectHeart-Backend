@@ -1,28 +1,10 @@
 {
-<<<<<<< HEAD
-    "trailingComma": "es5",
-    "semi": false,
-    "singleQuote": true,
-    "bracketSpacing": true,
-    "printWidth": 120,
-    "tabWidth": 2,
-    "jsxSingleQuote": true,
-    "arrowParens": "always"
-  }
-  
-=======
-  "printWidth": 80,
-  "tabWidth": 2,
-  "useTabs": false,
-  "semi": true,
+  "trailingComma": "es5",
+  "semi": false,
   "singleQuote": true,
-  "trailingComma": "all",
   "bracketSpacing": true,
-  "arrowParens": "avoid",
-  "endOfLine": "lf",
-  "quoteProps": "consistent",
-  "jsxSingleQuote": false,
-  "proseWrap": "preserve",
-  "embeddedLanguageFormatting": "auto"
+  "printWidth": 120,
+  "tabWidth": 2,
+  "jsxSingleQuote": true,
+  "arrowParens": "always"
 }
->>>>>>> 91fcbfe (Initial commit)

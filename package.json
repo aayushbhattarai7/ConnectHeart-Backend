@@ -12,7 +12,6 @@
     "start:dev": "ts-node-dev  src/server.ts",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check .",
-    "lint": "eslint 'src/**/*.{ts,tsx}' --report-unused-disable-directives --max-warnings 0 --config eslint.config.ts",
     "lint:fix": "eslint --quiet --ext .ts src --fix",
     "sass": "sass --watch public/style/index.scss:public/style/index.css",
     "seed:admin": "ts-node-dev  ./src/seeder/admin.seed.ts seed"
@@ -55,6 +54,7 @@
     "compression": "^1.7.4",
     "cookie": "^0.6.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^7.4.0",

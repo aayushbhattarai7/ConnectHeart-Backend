@@ -1,19 +1,19 @@
-import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { DotenvConfig } from '../config/env.config';
+import nodemailer from 'nodemailer'
+import SMTPTransport from 'nodemailer/lib/smtp-transport'
+import { DotenvConfig } from '../config/env.config'
 
 interface IMailOptions {
-  to: string;
-  subject: string;
-  text: string;
-  html?: string;
+  to: string
+  subject: string
+  text: string
+  html?: string
 }
 
 export class EmailService {
-  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
-  private readonly from: string;
+  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>
+  private readonly from: string
   constructor() {
-    this.from = DotenvConfig.MAIL_FROM!;
+    this.from = DotenvConfig.MAIL_FROM!
     this.transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       port: +process.env.MAIL_PORT!,
@@ -23,7 +23,7 @@ export class EmailService {
         user: DotenvConfig.MAIL_USERNAME,
         pass: DotenvConfig.MAIL_PASSWORD,
       },
-    });
+    })
   }
   async sendMail({ to, html, subject, text }: IMailOptions) {
     const mailOptions = {
@@ -32,8 +32,8 @@ export class EmailService {
       to,
       html,
       subject,
-    };
-    const send = await this.transporter.sendMail(mailOptions);
-    return send;
+    }
+    const send = await this.transporter.sendMail(mailOptions)
+    return send
   }
 }
