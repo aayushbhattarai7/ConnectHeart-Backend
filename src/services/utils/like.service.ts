@@ -87,7 +87,7 @@ class LikeService {
     }
   }
 
-  async getLikeCount(userId: string, postId: string): Promise<Number> {
+  async getLikeCount( postId: string): Promise<Number> {
     try {
       const likeCount = await this.likeRepo.count({
         where: { post: { id: postId } },
@@ -97,5 +97,21 @@ class LikeService {
       throw HttpException.badRequest
     }
   }
+   async getUserLikes(userId: string, postId: string) {
+     try {
+       const auth = await this.AuthRepo.findOneBy({ id: userId })
+       if(!auth) throw HttpException.badRequest('Unauthorized')
+      const likeCount = await this.likeRepo.find({
+        where: { post: { id: postId }, auth: { id: userId } },
+        relations:['auth', 'auth.details','auth.profile','post']
+      })
+      return likeCount
+    } catch (error) {
+      throw HttpException.badRequest
+    }
+  }
 }
+
+
+
 export default LikeService

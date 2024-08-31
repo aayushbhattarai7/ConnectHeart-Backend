@@ -14,5 +14,6 @@ router.use(authorization([Role.USER]))
 
 router.post('/:postId', like.changeLike)
 router.get('/:postId', like.likeCount)
+router.get('/like/:postId', like.userLikes)
 
 export default router

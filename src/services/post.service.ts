@@ -15,15 +15,15 @@ class PostService {
     private readonly getAuth = AppDataSource.getRepository(Auth),
     private readonly postMediaRepository = AppDataSource.getRepository(PostMedia),
     private readonly commentRepo = AppDataSource.getRepository(Comment),
-    private readonly likeRepo = AppDataSource.getRepository(Like)
   ) {}
 
   async createPost(data: any[], detail: PostDTO, userId: string): Promise<string> {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-
-      const post = this.postRepository.create({
+ if ((!data || data.length === 0) && !detail.feeling && !detail.thought) {
+      throw HttpException.badRequest('Post should not be empty');
+    }      const post = this.postRepository.create({
         thought: detail.thought,
         feeling: detail.feeling,
         postIt: auth,

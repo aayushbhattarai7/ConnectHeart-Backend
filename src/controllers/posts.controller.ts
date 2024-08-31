@@ -7,7 +7,6 @@ export class PostController {
   async create(req: Request, res: Response) {
     try {
       const userId = req?.user?.id
-      console.log(req?.files, 'aayushhh')
       const data = req.files?.map((file: any) => {
         return {
           name: file?.filename,

@@ -25,7 +25,16 @@ export class LikeController {
   async likeCount(req: Request, res: Response) {
     const userId = req?.user?.id
     const postId = req?.params?.postId
-    const likes = await like.getLikeCount(userId as string, postId)
+    const likes = await like.getLikeCount( postId)
+    res.status(StatusCodes.SUCCESS).json({
+      likes,
+    })
+  }
+
+   async userLikes(req: Request, res: Response) {
+    const userId = req?.user?.id
+    const postId = req?.params?.postId
+    const likes = await like.getUserLikes(userId as string, postId)
     res.status(StatusCodes.SUCCESS).json({
       likes,
     })

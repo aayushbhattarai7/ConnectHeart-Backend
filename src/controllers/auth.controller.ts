@@ -120,7 +120,7 @@ export class AuthController {
   async searchUser(req: Request, res: Response) {
     try {
       const userId = req.user?.id
-      const { firstName, middleName, lastName } = req.query
+      const { firstName, lastName } = req.query
 
       const search = await userService.searchUser(userId as string, firstName as string, lastName as string)
       res.status(StatusCodes.SUCCESS).json({
