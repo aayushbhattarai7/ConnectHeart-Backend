@@ -27,8 +27,10 @@ export class CommentController {
     try {
       const userId = req.user?.id
       const postId = req.params.postId
+      const topCommentId = req.params.topCommentId
       const commentId = req.params.commentId
-      const details = await CommentService.commentReply(req.body as CommentDTO, userId as string, postId, commentId)
+
+      const details = await CommentService.commentReply(req.body as CommentDTO, userId as string, postId, commentId, topCommentId)
       res.status(StatusCodes.CREATED).json({
         Message: Message.created,
         details,

@@ -8,4 +8,9 @@ export class CommentDTO {
 
   @IsEmpty()
   parentId: string
+
+  @IsEmpty()
+  topLevelComment:string
 }
+
+
