@@ -97,7 +97,7 @@ class LikeService {
       throw HttpException.badRequest
     }
   }
-   async getUserLikes(userId: string, postId: string) {
+   async postLike(userId: string, postId: string) {
      try {
        const auth = await this.AuthRepo.findOneBy({ id: userId })
        if(!auth) throw HttpException.badRequest('Unauthorized')
@@ -109,8 +109,40 @@ class LikeService {
     } catch (error) {
       throw HttpException.badRequest
     }
+   }
+  
+  async getUserLikes(userId: string) {
+  try {
+    const auth = await this.AuthRepo.findOne({
+      where: { id: userId },
+      relations: ['posts'], 
+    });
+
+    if (!auth) {
+      throw new HttpException('Unauthorized', 400);
+    }
+
+    const likeCount = await this.likeRepo.find({
+      where: {
+        post: {
+          postIt: { id: userId },
+        },
+      },
+    });
+
+    return likeCount;
+  } catch (error: any) {
+    if (error instanceof HttpException) {
+      throw error;
+    } else {
+      throw new HttpException('An unexpected error occurred', 500);
+    }
   }
 }
+
+}
+
+
 
 
 

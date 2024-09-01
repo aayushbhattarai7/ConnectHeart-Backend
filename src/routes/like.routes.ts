@@ -5,6 +5,7 @@ import wrapper from '@myrotvorets/express-async-middleware-wrapper'
 import { LikeController } from '../controllers/like.controller'
 import { Role } from '../constant/enum'
 import { authentication } from '../middleware/authentication.middleware'
+import { catchAsync } from '../utils/catchAsync.utils'
 const like = new LikeController()
 const router: Router = Router()
 
@@ -14,6 +15,6 @@ router.use(authorization([Role.USER]))
 
 router.post('/:postId', like.changeLike)
 router.get('/:postId', like.likeCount)
-router.get('/like/:postId', like.userLikes)
-
+router.get('/like/:postId', like.postLike)
+router.get('/', catchAsync(like.userLike))
 export default router
