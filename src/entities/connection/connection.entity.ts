@@ -7,7 +7,10 @@ import { Room } from '../../entities/chat/room.entity'
 
 @Entity('connect')
 export class Connect extends Base {
-  @ManyToOne(() => Auth, (sender) => sender.connect)
+  @ManyToOne(() => Auth, (sender) => sender.connect, {
+        onDelete: 'CASCADE',
+
+  })
   @JoinColumn({ name: 'sender_id' })
   sender: Auth
 
@@ -18,7 +21,10 @@ export class Connect extends Base {
   })
   status: Status.PENDING
 
-  @ManyToOne(() => Auth, (receiver) => receiver.connects)
+  @ManyToOne(() => Auth, (receiver) => receiver.connects, {
+        onDelete: 'CASCADE',
+
+  })
   @JoinColumn({ name: 'receiver_id' })
   receiver: Auth
 

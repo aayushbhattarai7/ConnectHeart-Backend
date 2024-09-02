@@ -274,4 +274,15 @@ export class AuthController {
       })
     }
   }
+
+  async deleteUser(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id
+      const deleteUser = await authService.deleteUser(userId as string)
+      res.status(StatusCodes.SUCCESS).json({deleteUser})
+    } catch (error:any) {
+      console.log(error)
+      res.status(StatusCodes.BAD_REQUEST).json({message:'Cannot delete User'})
+    }
+  }
 }

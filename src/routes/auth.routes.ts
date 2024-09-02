@@ -40,4 +40,5 @@ router.patch('/active', authController.changeStatus)
 router.get('/userProfile/:id', wrapper(authController.getUserProfile))
 router.get('/user', authController.getUser)
 router.get('/search', wrapper(authController.searchUser))
+router.patch('/delete', authController.deleteUser)
 export default router

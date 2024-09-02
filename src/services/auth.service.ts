@@ -16,6 +16,7 @@ import { transferImageFromUploadToTemp } from '../utils/path.utils'
 import { emailRegex, passwordRegex } from '../utils/regex'
 import { OtpService } from './otp.service'
 import { HashService } from './utils/hash.service'
+import cron from 'node-cron';
 class AuthService {
   constructor(
     private readonly getDetails = AppDataSource.getRepository(UserDetails),
@@ -25,7 +26,7 @@ class AuthService {
     private readonly mailService = new EmailService(),
     private readonly otpService = new OtpService(),
     private readonly hashService = new HashService()
-  ) {}
+  ) { }
 
   async create(image: any, data: AuthDTO): Promise<Auth> {
     try {
@@ -113,9 +114,9 @@ class AuthService {
       const userid = await Auths.getById(user.id)
       await this.mailService.sendMail({
         to: data.email,
-        text:'Login Info',
-        subject:'Login Info',
-        html:generateHtml(`Someone has logged in to your account`)
+        text: 'Login Info',
+        subject: 'Login Info',
+        html: generateHtml(`Someone has logged in to your account`)
       })
       return await Auths.getById(user.id)
     } catch (error: any) {
@@ -223,9 +224,9 @@ class AuthService {
         await this.getAuth.update(auth.id, { password: auth.password })
         await this.mailService.sendMail({
           to: users.email,
-          text:'Password updated Successfully',
-          subject:'Password updated Successfully',
-          html:'<p>Password updated Successfully!</p>'
+          text: 'Password updated Successfully',
+          subject: 'Password updated Successfully',
+          html: '<p>Password updated Successfully!</p>'
         })
         return 'Password updated Successfully'
       } else {
@@ -399,6 +400,35 @@ class AuthService {
       console.log('🚀  error:', error?.message)
       throw HttpException.badRequest(error?.message)
     }
+  }
+
+  async deleteUser(userId: string) {
+    try {
+      const auth = await this.getAuth.findOneBy({ id: userId })
+      if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
+      
+      
+      const deleteDate = new Date();
+      deleteDate.setDate(deleteDate.getDate() + 10);
+      await this.getAuth.update({ id: userId }, { deletedAt: deleteDate })
+
+    } catch (error: any) {
+      throw HttpException.badRequest(error.message)
+    }
+  }
+
+  async deleteAccounts() {
+    try {
+      const result = await this.getAuth.createQueryBuilder()
+        .delete()
+        .where('deleted_at < NOW()')
+        .execute()
+
+      return result
+    } catch (error: any) {
+      throw HttpException.badRequest(error.message)
+    }
+   
   }
 }
 
