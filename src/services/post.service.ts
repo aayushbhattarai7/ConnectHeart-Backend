@@ -185,6 +185,7 @@ class PostService {
         .leftJoinAndSelect('postIt.details', 'details')
         .leftJoinAndSelect('postIt.profile', 'profile')
         .leftJoinAndSelect('post.postImage', 'image')
+        .leftJoinAndSelect('post.likes','likes')
         .leftJoinAndSelect('post.comment', 'comment')
         .leftJoinAndSelect('comment.commentAuth', 'commentAuth')
         .leftJoinAndSelect('comment.childComment', 'childComment')
