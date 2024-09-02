@@ -33,18 +33,3 @@ export class Chat extends Base {
   @JoinColumn({ name: 'room_id' })
   room: Room
 }
-
-/*  // if(detail){
-            //     for(const file of detail) {
-            //         const chatImage = this.chatMediaRepo.create({
-            //             name:file.name,
-            //             mimetype:file.mimetype,
-            //             type:file.type,
-            //             chats:saveChat
-            //         })
-            //         const saveImage = await this.chatMediaRepo.save(chatImage)
-            //         saveImage.transferImageFromTempToUpload(chat.id, saveImage.type)
-            //     }
-            // }else{
-            //     console.log("hello")
-            // } */

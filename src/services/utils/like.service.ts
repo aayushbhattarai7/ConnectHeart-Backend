@@ -87,15 +87,15 @@ class LikeService {
     }
   }
 
-  async getLikeCount( postId: string): Promise<Number> {
-    try {
-      const likeCount = await this.likeRepo.count({
-        where: { post: { id: postId } },
-      })
-      return likeCount
-    } catch (error) {
-      throw HttpException.badRequest
-    }
+  async getLikeCount( postId: string) {
+    // try {
+    //   const likeCount = await this.likeRepo.count({
+    //     where: { post: { id: postId } },
+    //   })
+    //   return likeCount
+    // } catch (error) {
+    //   throw HttpException.badRequest
+    // }
   }
    async postLike(userId: string, postId: string) {
      try {
@@ -119,7 +119,7 @@ class LikeService {
     });
 
     if (!auth) {
-      throw new HttpException('Unauthorized', 400);
+      throw  HttpException.unauthorized
     }
 
     const likeCount = await this.likeRepo.find({
@@ -132,11 +132,7 @@ class LikeService {
 
     return likeCount;
   } catch (error: any) {
-    if (error instanceof HttpException) {
-      throw error;
-    } else {
-      throw new HttpException('An unexpected error occurred', 500);
-    }
+    throw HttpException.badRequest(error.message)
   }
 }
 
