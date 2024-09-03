@@ -411,7 +411,7 @@ class AuthService {
       const deleteDate = new Date();
       deleteDate.setDate(deleteDate.getDate() + 10);
       await this.getAuth.update({ id: userId }, { deletedAt: deleteDate })
-
+console.log('haha')
     } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }
