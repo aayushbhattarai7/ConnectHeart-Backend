@@ -9,7 +9,6 @@ export class CommentController {
     try {
       const userId = req.user?.id
       const postId = req.params.postId
-      console.log(req.body, 'hahahxyz')
       const details = await CommentService.comment(req.body as CommentDTO, userId as string, postId)
       res.status(StatusCodes.CREATED).json({
         Message: Message.created,

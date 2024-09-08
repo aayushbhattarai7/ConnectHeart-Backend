@@ -1,5 +1,4 @@
-import { IsEmpty, IsString } from 'class-validator'
-import {} from 'typeorm'
+import {  IsString } from 'class-validator'
 
 export class ChatDTO {
   @IsString()

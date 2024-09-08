@@ -45,7 +45,6 @@ class PostService {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException_utils_1.default.unauthorized(message_1.Message.notAuthorized)
       const post = await this.getPostRepo.findOneBy({ postIt: auth })
-      console.log(post, 'hehehahaha')
       if (!post) throw HttpException_utils_1.default.forbidden
       await this.getPostRepo.delete(postId)
       this.getPostRepo.delete(postId)

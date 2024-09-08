@@ -12,7 +12,7 @@ abstract class Base extends BaseEntity {
   updatedAt: Date
 
   @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date
+  deletedAt: Date | null
 
   @BeforeInsert()
   async UUID() {

@@ -16,7 +16,6 @@ import { transferImageFromUploadToTemp } from '../utils/path.utils'
 import { emailRegex, passwordRegex } from '../utils/regex'
 import { OtpService } from './otp.service'
 import { HashService } from './utils/hash.service'
-import cron from 'node-cron';
 class AuthService {
   constructor(
     private readonly getDetails = AppDataSource.getRepository(UserDetails),
@@ -50,9 +49,9 @@ class AuthService {
         console.log(data.password)
       }
 
-      if (!passwordRegex.test(data.password)) {
-        throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
-      }
+      // if (!passwordRegex.test(data.password)) {
+      //   throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
+      // }
 
       const auth = this.getAuth.create({
         email: data.email,
@@ -103,9 +102,10 @@ class AuthService {
     try {
       const user = await this.getAuth.findOne({
         where: [{ email: data.email }],
-        select: ['id', 'email', 'password'],
+        select: ['id', 'email', 'password', 'deletedAt'],
       })
       if (!user) throw HttpException.notFound('Please Enter a valid email')
+      await this.getAuth.update({id:user.id},{deletedAt:null} )
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
       if (!passwordMatched) {
         throw new Error('Incorrect Password')
@@ -129,15 +129,14 @@ class AuthService {
     try {
       const decoded: any = jwtDecode(googleId)
       const user = await this.getAuth.findOne({
-        where: { email: decoded.email },
-        relations: ['details'],
+        where: {  email: decoded.email },
       })
+      console.log(decoded.email)
       if (!user) {
         try {
           const user = new Auth()
           user.email = decoded?.email
           user.password = await this.bcryptService.hash(decoded?.sub)
-
           const save = await this.getAuth.save(user)
           console.log(decoded)
           if (save) {
@@ -151,14 +150,17 @@ class AuthService {
             await this.getDetails.save(details)
             return await UserService.getById(save?.id)
           }
-        } catch (error) {
-          throw HttpException.badRequest(Message.error)
+        } catch (error:any) {
+          throw HttpException.badRequest(error.message)
         }
       } else {
+        console.log(await UserService.getById(user?.id), 'hahahaha')
         return await UserService.getById(user?.id)
+        
       }
-    } catch (error) {
-      console.log(error)
+
+    } catch (error:any) {
+      console.log(error.message)
     }
   }
 
@@ -242,7 +244,6 @@ class AuthService {
     try {
       const user = await this.getAuth.findOneBy({ email })
       if (!user) throw HttpException.badRequest('Email is not registered')
-      console.log(email, 'ahdhahdjhadh')
       const otp = await this.otpService.generateOtp()
       const expires = Date.now() + 5 * 60 * 1000
       const payload = `${email}.${otp}.${expires}`
@@ -410,8 +411,13 @@ class AuthService {
       
       const deleteDate = new Date();
       deleteDate.setDate(deleteDate.getDate() + 10);
-      await this.getAuth.update({ id: userId }, { deletedAt: deleteDate })
-console.log('haha')
+      await this.getAuth.createQueryBuilder('auth')
+        .update(Auth)
+        .set({ deletedAt: deleteDate })
+        .where('auth.id = :userId', { userId })
+      .execute()
+      
+
     } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }

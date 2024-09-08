@@ -140,9 +140,6 @@ class PostService {
           createdAt: 'DESC',
         },
       })
-
-      if (!posts.length) throw HttpException.notFound('Posts not found')
-
       for (const post of posts) {
         const parentComments = await this.commentRepo.find({
           where: {
@@ -176,7 +173,7 @@ class PostService {
       await this.fetchReplies(child)
     }
   }
-
+//f4f27f52-6474-47c8-32e3-90144a3b873e
   async getUserPost(userId: string): Promise<object> {
     try {
       const fetchPost = await this.postRepository
