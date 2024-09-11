@@ -22,4 +22,5 @@ router.get('/count', wrapper(connectController.getCount))
 router.get('/suggestion', wrapper(connectController.getUserSuggestion))
 router.delete('/remove/:id', wrapper(connectController.removeConnection))
 router.patch('/block/:id', wrapper(connectController.chanageBlockStatus))
+router.get('/block/:id', wrapper(connectController.getBlockedStatus))
 export default router

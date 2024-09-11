@@ -287,4 +287,19 @@ throw HttpException.notFound  }
       throw HttpException.badRequest(error.message)
     }
   }
+
+  async getBlockedStatus(userId: string, blocked:string) {
+    try {
+ const user = await this.AuthRepo.findOneBy({ id: userId });
+      if (!user) throw HttpException.unauthorized;
+
+      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked });
+      if (!blockedUser) throw HttpException.unauthorized;
+
+      const isBlocked = await this.blockRepo.findOne({ where: [{ blocked_by: user }, { blocked_to: blockedUser }] })
+      return isBlocked
+          } catch (error:any) {
+      throw HttpException.badRequest(error.message)
+    }
+  }
 }
