@@ -38,12 +38,4 @@ export class Connect extends Base {
     name: 'blocked_by'
    })
   people:Auth
-  // @ManyToOne(()=> Room,(senderId) => senderId.sender)
-  // @JoinColumn({ name: 'sender_id' })
-
-  // senderId: Room
-
-  // @ManyToOne(()=> Room,(receiverId) => receiverId.receiver)
-  // @JoinColumn({ name: 'receiver_id' })
-  // receiverId: Room
 }

@@ -6,13 +6,16 @@ import { Gender, Status } from '../constant/enum'
 import { Message } from '../constant/message'
 import { Room } from '../entities/chat/room.entity'
 import { Chat } from '../entities/chat/chat.entity'
+import { BlockUser } from '../entities/connection/block.entity'
 
 export class ConnectService {
   constructor(
     private readonly connectRepo = AppDataSource.getRepository(Connect),
     private readonly AuthRepo = AppDataSource.getRepository(Auth),
     private readonly RoomRepo = AppDataSource.getRepository(Room),
-    private readonly chatRepo = AppDataSource.getRepository(Chat)
+    private readonly chatRepo = AppDataSource.getRepository(Chat),
+    private readonly blockRepo = AppDataSource.getRepository(BlockUser),
+
   ) {}
 
   async connect(sender: string, receiver: string): Promise<Connect> {
@@ -224,28 +227,21 @@ export class ConnectService {
     return users
   }
 
-  async blockUser(userId: string, senderId:string) {
-    
+  async blockUser(userId: string, blocked:string) {
     try {
   const user = await this.AuthRepo.findOneBy({ id: userId });
-  if (!user) throw HttpException.unauthorized;
-
-  const block = await this.connectRepo
-    .createQueryBuilder('connect')
-    .update('connect')
-    .set({
-      status: Status.BLOCKED,
-      people:userId
-     })
-    .where(
-      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
-      { senderId, userId }
-    )
-    .andWhere('connect.status = :status', { status: Status.ACCEPTED })
-    .execute();
-
+      if (!user) throw HttpException.unauthorized;
       
-  return block;
+      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked });
+      if(!blockedUser) throw HttpException.notFound
+      const block =  this.blockRepo.create({
+        blocked_by: user,
+        blocked_to:blockedUser
+      })
+      await this.blockRepo.save(block)
+      console.log(block)
+      return block
+      
     } catch (error: any) {
       console.log(error)
   throw HttpException.badRequest(error.message);
@@ -253,48 +249,38 @@ export class ConnectService {
 
   }
 
-   async unblockUser(userId: string, senderId:string) {
-    
-    try {
-  const user = await this.AuthRepo.findOneBy({ id: userId });
-  if (!user) throw HttpException.unauthorized;
+   async unblockUser(blockedBy: string, blockedTo: string) {
+  try {
+   
+    const result = await this.blockRepo
+      .createQueryBuilder()
+      .delete()
+      .from(BlockUser)
+      .where('blocked_by = :blockedBy AND blocked_to = :blockedTo', {
+        blockedBy: blockedBy,
+        blockedTo: blockedTo
+      })
+      .execute();
 
-  const block = await this.connectRepo
-    .createQueryBuilder('connect')
-    .update('connect')
-    .set({
-      status: Status.ACCEPTED,
-      people:null
-     })
-    .where(
-      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
-      { senderId, userId }
-    )
-    .andWhere('connect.status = :status', { status: Status.BLOCKED })
-    .execute();
-
-      
-  return block;
-    } catch (error: any) {
-      console.log(error)
-  throw HttpException.badRequest(error.message);
+    return 'Unblocked successfully';
+  } catch (error: any) {
+    console.error(error);
+throw HttpException.notFound  }
 }
 
-   }
   
-  async chanageBlockStatus(userId: string, senderId: string) {
+  async chanageBlockStatus(userId: string, blocked: string) {
     try {
-      const changeBlockStatus = await this.connectRepo.createQueryBuilder('connect')
+      const changeBlockStatus = await this.blockRepo.createQueryBuilder('block')
       .where(
-      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
-        { senderId, userId }
-      )
-        .andWhere('connect.status = :status', { status: Status.BLOCKED })
+      '(block.blocked_to = :blocked AND block.blocked_by = :userId)', 
+      { blocked, userId }
+    )
         .getOne()
       if (changeBlockStatus) {
-        await this.unblockUser(userId, senderId)
+        await this.unblockUser(userId, blocked)
       } else {
-        await this.blockUser(userId, senderId)
+        await this.blockUser(userId, blocked)
       }
       return changeBlockStatus
     } catch (error:any) {

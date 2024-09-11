@@ -9,6 +9,7 @@ import { Like } from '../../entities/like/like.entity'
 import Profile from './profile.entity'
 import { Chat } from '../../entities/chat/chat.entity'
 import { Room } from '../../entities/chat/room.entity'
+import { BlockUser } from '../../entities/connection/block.entity'
 @Entity('auth')
 export class Auth extends Base {
   @Column({
@@ -56,6 +57,13 @@ export class Auth extends Base {
 
   @OneToMany(() => Connect, (connects) => connects.receiver, { cascade: true })
   connects: Connect[]
+
+   @OneToMany(() => BlockUser, (auth) => auth.blocked_by, { cascade: true })
+   auth: BlockUser[]
+  
+    @OneToMany(() => BlockUser, (auth) => auth.blocked_to, { cascade: true })
+  auths: BlockUser[]
+
 
 
   @OneToMany(() => Connect, (blockedBy) => blockedBy.people, { cascade: true })
