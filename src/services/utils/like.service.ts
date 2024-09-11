@@ -66,8 +66,6 @@ class LikeService {
 
   async changeLike(userId: string, postId: string) {
     try {
-      console.log('hello223')
-
       const changelikes = await this.likeRepo
         .createQueryBuilder('like')
         .where('like.auth_id =:userId', { userId })

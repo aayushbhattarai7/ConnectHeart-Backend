@@ -28,6 +28,16 @@ export class Connect extends Base {
   @JoinColumn({ name: 'receiver_id' })
   receiver: Auth
 
+
+  @ManyToOne(() => Auth, (people) => people.blockedBy, {
+    onDelete: 'CASCADE',
+    nullable: true
+    
+  })
+  @JoinColumn({
+    name: 'blocked_by'
+   })
+  people:Auth
   // @ManyToOne(()=> Room,(senderId) => senderId.sender)
   // @JoinColumn({ name: 'sender_id' })
 

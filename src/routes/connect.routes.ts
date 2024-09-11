@@ -21,5 +21,5 @@ router.get('/friends', wrapper(connectController.friend))
 router.get('/count', wrapper(connectController.getCount))
 router.get('/suggestion', wrapper(connectController.getUserSuggestion))
 router.delete('/remove/:id', wrapper(connectController.removeConnection))
-router.patch('/block/:id', wrapper(connectController.blockUser))
+router.patch('/block/:id', wrapper(connectController.chanageBlockStatus))
 export default router

@@ -150,12 +150,13 @@ export class ConnectService {
     }
   }
 
-  async getFriends(userId: string): Promise<Auth[]> {
+  async getFriends(userId: string){
     try {
       const allFriends = await this.connectRepo
         .createQueryBuilder('connection')
         .leftJoinAndSelect('connection.sender', 'sender')
         .leftJoinAndSelect('connection.receiver', 'receiver')
+        .leftJoinAndSelect('connection.people','people')
         .leftJoinAndSelect('sender.details', 'senderDetails')
         .leftJoinAndSelect('receiver.details', 'receiverDetails')
         .leftJoinAndSelect('sender.profile', 'senderprofile')
@@ -165,10 +166,9 @@ export class ConnectService {
           { userId, status: Status.PENDING }
         )
         .getMany()
-
-      const friends: Auth[] = allFriends.map((connection) =>
-        connection.sender.id === userId ? connection.receiver : connection.sender
-      )
+   const friends = allFriends.map((connection) => {
+      const friend = connection.sender.id === userId ? connection.receiver : connection.sender;
+      return { ...friend, people: connection.people }; });
 
       return friends
     } catch (error) {
@@ -233,7 +233,10 @@ export class ConnectService {
   const block = await this.connectRepo
     .createQueryBuilder('connect')
     .update('connect')
-    .set({ status: Status.BLOCKED })
+    .set({
+      status: Status.BLOCKED,
+      people:userId
+     })
     .where(
       '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
       { senderId, userId }
@@ -241,10 +244,61 @@ export class ConnectService {
     .andWhere('connect.status = :status', { status: Status.ACCEPTED })
     .execute();
 
+      
   return block;
-} catch (error: any) {
+    } catch (error: any) {
+      console.log(error)
   throw HttpException.badRequest(error.message);
 }
 
+  }
+
+   async unblockUser(userId: string, senderId:string) {
+    
+    try {
+  const user = await this.AuthRepo.findOneBy({ id: userId });
+  if (!user) throw HttpException.unauthorized;
+
+  const block = await this.connectRepo
+    .createQueryBuilder('connect')
+    .update('connect')
+    .set({
+      status: Status.ACCEPTED,
+      people:null
+     })
+    .where(
+      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
+      { senderId, userId }
+    )
+    .andWhere('connect.status = :status', { status: Status.BLOCKED })
+    .execute();
+
+      
+  return block;
+    } catch (error: any) {
+      console.log(error)
+  throw HttpException.badRequest(error.message);
+}
+
+   }
+  
+  async chanageBlockStatus(userId: string, senderId: string) {
+    try {
+      const changeBlockStatus = await this.connectRepo.createQueryBuilder('connect')
+      .where(
+      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
+        { senderId, userId }
+      )
+        .andWhere('connect.status = :status', { status: Status.BLOCKED })
+        .getOne()
+      if (changeBlockStatus) {
+        await this.unblockUser(userId, senderId)
+      } else {
+        await this.blockUser(userId, senderId)
+      }
+      return changeBlockStatus
+    } catch (error:any) {
+      throw HttpException.badRequest(error.message)
+    }
   }
 }
