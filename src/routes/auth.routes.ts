@@ -29,6 +29,7 @@ router.patch('/verify', authController.verifyEmail)
 router.post('/verifyOTP', authController.verifyOtp)
 router.patch('/resetpassword', authController.resetPassword)
 router.use(authentication())
+router.get('/search', wrapper(authController.searchUser))
 
 router.use(authorization([Role.USER]))
 router.post('/get', authController.getEmail)
@@ -39,6 +40,5 @@ router.patch('/update', upload.single('profile'), catchAsync(authController.upda
 router.patch('/active', authController.changeStatus)
 router.get('/userProfile/:id', wrapper(authController.getUserProfile))
 router.get('/user', authController.getUser)
-router.get('/search', wrapper(authController.searchUser))
 router.patch('/delete', authController.deleteUser)
 export default router

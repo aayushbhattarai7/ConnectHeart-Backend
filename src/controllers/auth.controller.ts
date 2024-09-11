@@ -126,6 +126,7 @@ export class AuthController {
       res.status(StatusCodes.SUCCESS).json({
         search,
       })
+      console.log('hehehahaha')
     } catch (error) {
       console.log('🚀 ~ AuthController ~ searchUser ~ error:', error)
       res.status(StatusCodes.BAD_REQUEST).json({

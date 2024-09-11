@@ -48,7 +48,6 @@ class UserService {
         })
       }
       const search = await searchUser.getMany()
-      console.log('🚀 ~ UserService ~ searchUser ~ search:', search)
 
       return search
     } catch (error) {

@@ -129,4 +129,20 @@ export class ConnectController {
       })
     }
   }
+
+  async blockUser(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id
+    const senderId = req.params.id
+    const blockUser = await Connect.blockUser(userId as string, senderId)
+    res.status(StatusCodes.SUCCESS).json({
+      blockUser,
+      message:"User Blocked successfully"
+    })
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({
+      Message:Message.error
+    })
+  }
+}
 }

@@ -223,4 +223,28 @@ export class ConnectService {
       .getMany()
     return users
   }
+
+  async blockUser(userId: string, senderId:string) {
+    
+    try {
+  const user = await this.AuthRepo.findOneBy({ id: userId });
+  if (!user) throw HttpException.unauthorized;
+
+  const block = await this.connectRepo
+    .createQueryBuilder('connect')
+    .update('connect')
+    .set({ status: Status.BLOCKED })
+    .where(
+      '(connect.sender_id = :senderId AND connect.receiver_id = :userId) OR (connect.sender_id = :userId AND connect.receiver_id = :senderId)', 
+      { senderId, userId }
+    )
+    .andWhere('connect.status = :status', { status: Status.ACCEPTED })
+    .execute();
+
+  return block;
+} catch (error: any) {
+  throw HttpException.badRequest(error.message);
+}
+
+  }
 }
