@@ -14,16 +14,17 @@ class PostService {
     private readonly postRepository = AppDataSource.getRepository(Post),
     private readonly getAuth = AppDataSource.getRepository(Auth),
     private readonly postMediaRepository = AppDataSource.getRepository(PostMedia),
-    private readonly commentRepo = AppDataSource.getRepository(Comment),
+    private readonly commentRepo = AppDataSource.getRepository(Comment)
   ) {}
 
   async createPost(data: any[], detail: PostDTO, userId: string): Promise<string> {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
- if ((!data || data.length === 0) && !detail.feeling && !detail.thought) {
-      throw HttpException.badRequest('Post should not be empty');
-    }      const post = this.postRepository.create({
+      if ((!data || data.length === 0) && !detail.feeling && !detail.thought) {
+        throw HttpException.badRequest('Post should not be empty')
+      }
+      const post = this.postRepository.create({
         thought: detail.thought,
         feeling: detail.feeling,
         postIt: auth,
@@ -173,7 +174,7 @@ class PostService {
       await this.fetchReplies(child)
     }
   }
-//f4f27f52-6474-47c8-32e3-90144a3b873e
+  //f4f27f52-6474-47c8-32e3-90144a3b873e
   async getUserPost(userId: string): Promise<object> {
     try {
       const fetchPost = await this.postRepository
@@ -182,7 +183,7 @@ class PostService {
         .leftJoinAndSelect('postIt.details', 'details')
         .leftJoinAndSelect('postIt.profile', 'profile')
         .leftJoinAndSelect('post.postImage', 'image')
-        .leftJoinAndSelect('post.likes','likes')
+        .leftJoinAndSelect('post.likes', 'likes')
         .leftJoinAndSelect('post.comment', 'comment')
         .leftJoinAndSelect('comment.commentAuth', 'commentAuth')
         .leftJoinAndSelect('comment.childComment', 'childComment')

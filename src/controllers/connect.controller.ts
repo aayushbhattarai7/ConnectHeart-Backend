@@ -131,34 +131,33 @@ export class ConnectController {
   }
 
   async chanageBlockStatus(req: Request, res: Response) {
-  try {
-    const userId = req.user?.id
-    const blocked = req.params.id
-    const blockUser = await Connect.chanageBlockStatus(userId as string, blocked)
-    res.status(StatusCodes.SUCCESS).json({
-      blockUser,
-      message:Message.success
-    })
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({
-      Message:Message.error
-    })
+    try {
+      const userId = req.user?.id
+      const blocked = req.params.id
+      const blockUser = await Connect.chanageBlockStatus(userId as string, blocked)
+      res.status(StatusCodes.SUCCESS).json({
+        blockUser,
+        message: Message.success,
+      })
+    } catch (error) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        Message: Message.error,
+      })
+    }
   }
-  }
-  
+
   async getBlockedStatus(req: Request, res: Response) {
     try {
-       const userId = req.user?.id
+      const userId = req.user?.id
       const blocked = req.params.id
-          const blockeduser = await Connect.getBlockedStatus(userId as string, blocked)
-res.status(StatusCodes.SUCCESS).json({
-      blockeduser,
-      
-    })
+      const blockeduser = await Connect.getBlockedStatus(userId as string, blocked)
+      res.status(StatusCodes.SUCCESS).json({
+        blockeduser,
+      })
     } catch (error) {
-       res.status(StatusCodes.BAD_REQUEST).json({
-      Message:Message.error
-    })
+      res.status(StatusCodes.BAD_REQUEST).json({
+        Message: Message.error,
+      })
     }
   }
 }

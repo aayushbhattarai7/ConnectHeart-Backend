@@ -14,8 +14,7 @@ export class ConnectService {
     private readonly AuthRepo = AppDataSource.getRepository(Auth),
     private readonly RoomRepo = AppDataSource.getRepository(Room),
     private readonly chatRepo = AppDataSource.getRepository(Chat),
-    private readonly blockRepo = AppDataSource.getRepository(BlockUser),
-
+    private readonly blockRepo = AppDataSource.getRepository(BlockUser)
   ) {}
 
   async connect(sender: string, receiver: string): Promise<Connect> {
@@ -153,13 +152,13 @@ export class ConnectService {
     }
   }
 
-  async getFriends(userId: string){
+  async getFriends(userId: string) {
     try {
       const allFriends = await this.connectRepo
         .createQueryBuilder('connection')
         .leftJoinAndSelect('connection.sender', 'sender')
         .leftJoinAndSelect('connection.receiver', 'receiver')
-        .leftJoinAndSelect('connection.people','people')
+        .leftJoinAndSelect('connection.people', 'people')
         .leftJoinAndSelect('sender.details', 'senderDetails')
         .leftJoinAndSelect('receiver.details', 'receiverDetails')
         .leftJoinAndSelect('sender.profile', 'senderprofile')
@@ -169,9 +168,10 @@ export class ConnectService {
           { userId, status: Status.PENDING }
         )
         .getMany()
-   const friends = allFriends.map((connection) => {
-      const friend = connection.sender.id === userId ? connection.receiver : connection.sender;
-      return { ...friend, people: connection.people }; });
+      const friends = allFriends.map((connection) => {
+        const friend = connection.sender.id === userId ? connection.receiver : connection.sender
+        return { ...friend, people: connection.people }
+      })
 
       return friends
     } catch (error) {
@@ -227,55 +227,50 @@ export class ConnectService {
     return users
   }
 
-  async blockUser(userId: string, blocked:string) {
+  async blockUser(userId: string, blocked: string) {
     try {
-  const user = await this.AuthRepo.findOneBy({ id: userId });
-      if (!user) throw HttpException.unauthorized;
-      
-      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked });
-      if(!blockedUser) throw HttpException.notFound
-      const block =  this.blockRepo.create({
+      const user = await this.AuthRepo.findOneBy({ id: userId })
+      if (!user) throw HttpException.unauthorized
+
+      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked })
+      if (!blockedUser) throw HttpException.notFound
+      const block = this.blockRepo.create({
         blocked_by: user,
-        blocked_to:blockedUser
+        blocked_to: blockedUser,
       })
       await this.blockRepo.save(block)
       console.log(block)
       return block
-      
     } catch (error: any) {
       console.log(error)
-  throw HttpException.badRequest(error.message);
-}
-
+      throw HttpException.badRequest(error.message)
+    }
   }
 
-   async unblockUser(blockedBy: string, blockedTo: string) {
-  try {
-   
-    const result = await this.blockRepo
-      .createQueryBuilder()
-      .delete()
-      .from(BlockUser)
-      .where('blocked_by = :blockedBy AND blocked_to = :blockedTo', {
-        blockedBy: blockedBy,
-        blockedTo: blockedTo
-      })
-      .execute();
+  async unblockUser(blockedBy: string, blockedTo: string) {
+    try {
+      const result = await this.blockRepo
+        .createQueryBuilder()
+        .delete()
+        .from(BlockUser)
+        .where('blocked_by = :blockedBy AND blocked_to = :blockedTo', {
+          blockedBy: blockedBy,
+          blockedTo: blockedTo,
+        })
+        .execute()
 
-    return 'Unblocked successfully';
-  } catch (error: any) {
-    console.error(error);
-throw HttpException.notFound  }
-}
+      return 'Unblocked successfully'
+    } catch (error: any) {
+      console.error(error)
+      throw HttpException.notFound
+    }
+  }
 
-  
   async chanageBlockStatus(userId: string, blocked: string) {
     try {
-      const changeBlockStatus = await this.blockRepo.createQueryBuilder('block')
-      .where(
-      '(block.blocked_to = :blocked AND block.blocked_by = :userId)', 
-      { blocked, userId }
-    )
+      const changeBlockStatus = await this.blockRepo
+        .createQueryBuilder('block')
+        .where('(block.blocked_to = :blocked AND block.blocked_by = :userId)', { blocked, userId })
         .getOne()
       if (changeBlockStatus) {
         await this.unblockUser(userId, blocked)
@@ -283,22 +278,27 @@ throw HttpException.notFound  }
         await this.blockUser(userId, blocked)
       }
       return changeBlockStatus
-    } catch (error:any) {
+    } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }
   }
 
-  async getBlockedStatus(userId: string, blocked:string) {
+  async getBlockedStatus(userId: string, blocked: string) {
     try {
- const user = await this.AuthRepo.findOneBy({ id: userId });
-      if (!user) throw HttpException.unauthorized;
+      const user = await this.AuthRepo.findOneBy({ id: userId })
+      if (!user) throw HttpException.unauthorized
 
-      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked });
-      if (!blockedUser) throw HttpException.unauthorized;
-
-      const isBlocked = await this.blockRepo.findOne({ where: [{ blocked_by: user }, { blocked_to: blockedUser }] })
+      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked })
+      if (!blockedUser) throw HttpException.unauthorized
+   const isBlocked = await this.blockRepo.findOne({
+      where: {
+        blocked_by: { id: userId },   
+        blocked_to: { id: blocked }
+      }, relations:['blocked_by', 'blocked_to']
+    });
       return isBlocked
-          } catch (error:any) {
+
+    } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }
   }

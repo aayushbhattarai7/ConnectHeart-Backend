@@ -8,8 +8,7 @@ import { Room } from '../../entities/chat/room.entity'
 @Entity('connect')
 export class Connect extends Base {
   @ManyToOne(() => Auth, (sender) => sender.connect, {
-        onDelete: 'CASCADE',
-
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'sender_id' })
   sender: Auth
@@ -22,20 +21,17 @@ export class Connect extends Base {
   status: Status.PENDING
 
   @ManyToOne(() => Auth, (receiver) => receiver.connects, {
-        onDelete: 'CASCADE',
-
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'receiver_id' })
   receiver: Auth
 
-
   @ManyToOne(() => Auth, (people) => people.blockedBy, {
     onDelete: 'CASCADE',
-    nullable: true
-    
+    nullable: true,
   })
   @JoinColumn({
-    name: 'blocked_by'
-   })
-  people:Auth
+    name: 'blocked_by',
+  })
+  people: Auth
 }

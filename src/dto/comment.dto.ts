@@ -10,7 +10,5 @@ export class CommentDTO {
   parentId: string
 
   @IsEmpty()
-  topLevelComment:string
+  topLevelComment: string
 }
-
-

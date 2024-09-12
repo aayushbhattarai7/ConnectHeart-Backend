@@ -12,10 +12,9 @@ function listen() {
   socket.ChatSocket(httpServer)
   httpServer.listen(PORT, '0.0.0.0')
   Print.info(`🚀 Server is listening on port ${DotenvConfig.PORT}`)
-
 }
 const cronService = new CronService()
-cronService.startJob();
+cronService.startJob()
 AppDataSource.initialize()
   .then(async () => {
     Print.info(`🚀 Database connected successfully `)

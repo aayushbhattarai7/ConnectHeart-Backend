@@ -58,17 +58,15 @@ export class Auth extends Base {
   @OneToMany(() => Connect, (connects) => connects.receiver, { cascade: true })
   connects: Connect[]
 
-   @OneToMany(() => BlockUser, (auth) => auth.blocked_by, { cascade: true })
-   auth: BlockUser[]
-  
-    @OneToMany(() => BlockUser, (auth) => auth.blocked_to, { cascade: true })
+  @OneToMany(() => BlockUser, (auth) => auth.blocked_by, { cascade: true })
+  auth: BlockUser[]
+
+  @OneToMany(() => BlockUser, (auth) => auth.blocked_to, { cascade: true })
   auths: BlockUser[]
-
-
 
   @OneToMany(() => Connect, (blockedBy) => blockedBy.people, { cascade: true })
   blockedBy: Connect[]
-  
+
   @OneToMany(() => Like, (like) => like.auth, { cascade: true })
   likes: Like[]
 

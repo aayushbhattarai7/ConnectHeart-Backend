@@ -16,7 +16,7 @@ export enum Role {
 export enum Status {
   ACCEPTED = 'ACCEPTED',
   PENDING = 'PENDING',
-  BLOCKED = "BLOCKED"
+  BLOCKED = 'BLOCKED',
 }
 
 export enum Gender {

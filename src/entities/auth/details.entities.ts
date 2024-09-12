@@ -17,8 +17,7 @@ export class UserDetails extends Base {
   gender: Gender
 
   @OneToOne(() => Auth, (auth) => auth.details, {
-        onDelete: 'CASCADE',
-
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'auth_id' })
   auth: Auth

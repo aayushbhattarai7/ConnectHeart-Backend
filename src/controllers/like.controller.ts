@@ -46,8 +46,6 @@ export class LikeController {
     })
   }
 
- 
-
   async postLike(req: Request, res: Response) {
     const userId = req?.user?.id
     const postId = req?.params?.postId
@@ -56,6 +54,4 @@ export class LikeController {
       likes,
     })
   }
-  
- 
 }

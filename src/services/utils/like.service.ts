@@ -85,7 +85,7 @@ class LikeService {
     }
   }
 
-  async getLikeCount( postId: string) {
+  async getLikeCount(postId: string) {
     // try {
     //   const likeCount = await this.likeRepo.count({
     //     where: { post: { id: postId } },
@@ -95,49 +95,44 @@ class LikeService {
     //   throw HttpException.badRequest
     // }
   }
-   async postLike(userId: string, postId: string) {
-     try {
-       const auth = await this.AuthRepo.findOneBy({ id: userId })
-       if(!auth) throw HttpException.badRequest('Unauthorized')
+  async postLike(userId: string, postId: string) {
+    try {
+      const auth = await this.AuthRepo.findOneBy({ id: userId })
+      if (!auth) throw HttpException.badRequest('Unauthorized')
       const likeCount = await this.likeRepo.find({
         where: { post: { id: postId }, auth: { id: userId } },
-        relations:['auth', 'auth.details','auth.profile','post']
+        relations: ['auth', 'auth.details', 'auth.profile', 'post'],
       })
       return likeCount
     } catch (error) {
       throw HttpException.badRequest
     }
-   }
-  
+  }
+
   async getUserLikes(userId: string) {
-  try {
-    const auth = await this.AuthRepo.findOne({
-      where: { id: userId },
-      relations: ['posts'], 
-    });
+    try {
+      const auth = await this.AuthRepo.findOne({
+        where: { id: userId },
+        relations: ['posts'],
+      })
 
-    if (!auth) {
-      throw  HttpException.unauthorized
-    }
+      if (!auth) {
+        throw HttpException.unauthorized
+      }
 
-    const likeCount = await this.likeRepo.find({
-      where: {
-        post: {
-          postIt: { id: userId },
+      const likeCount = await this.likeRepo.find({
+        where: {
+          post: {
+            postIt: { id: userId },
+          },
         },
-      },
-    });
+      })
 
-    return likeCount;
-  } catch (error: any) {
-    throw HttpException.badRequest(error.message)
+      return likeCount
+    } catch (error: any) {
+      throw HttpException.badRequest(error.message)
+    }
   }
 }
-
-}
-
-
-
-
 
 export default LikeService

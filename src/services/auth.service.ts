@@ -25,7 +25,7 @@ class AuthService {
     private readonly mailService = new EmailService(),
     private readonly otpService = new OtpService(),
     private readonly hashService = new HashService()
-  ) { }
+  ) {}
 
   async create(image: any, data: AuthDTO): Promise<Auth> {
     try {
@@ -105,7 +105,7 @@ class AuthService {
         select: ['id', 'email', 'password', 'deletedAt'],
       })
       if (!user) throw HttpException.notFound('Please Enter a valid email')
-      await this.getAuth.update({id:user.id},{deletedAt:null} )
+      await this.getAuth.update({ id: user.id }, { deletedAt: null })
       const passwordMatched = await this.bcryptService.compare(data.password, user.password)
       if (!passwordMatched) {
         throw new Error('Incorrect Password')
@@ -116,7 +116,7 @@ class AuthService {
         to: data.email,
         text: 'Login Info',
         subject: 'Login Info',
-        html: generateHtml(`Someone has logged in to your account`)
+        html: generateHtml(`Someone has logged in to your account`),
       })
       return await Auths.getById(user.id)
     } catch (error: any) {
@@ -129,7 +129,7 @@ class AuthService {
     try {
       const decoded: any = jwtDecode(googleId)
       const user = await this.getAuth.findOne({
-        where: {  email: decoded.email },
+        where: { email: decoded.email },
       })
       console.log(decoded.email)
       if (!user) {
@@ -150,16 +150,14 @@ class AuthService {
             await this.getDetails.save(details)
             return await UserService.getById(save?.id)
           }
-        } catch (error:any) {
+        } catch (error: any) {
           throw HttpException.badRequest(error.message)
         }
       } else {
         console.log(await UserService.getById(user?.id), 'hahahaha')
         return await UserService.getById(user?.id)
-        
       }
-
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error.message)
     }
   }
@@ -228,7 +226,7 @@ class AuthService {
           to: users.email,
           text: 'Password updated Successfully',
           subject: 'Password updated Successfully',
-          html: '<p>Password updated Successfully!</p>'
+          html: '<p>Password updated Successfully!</p>',
         })
         return 'Password updated Successfully'
       } else {
@@ -407,17 +405,15 @@ class AuthService {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-      
-      
-      const deleteDate = new Date();
-      deleteDate.setDate(deleteDate.getDate() + 10);
-      await this.getAuth.createQueryBuilder('auth')
+
+      const deleteDate = new Date()
+      deleteDate.setDate(deleteDate.getDate() + 10)
+      await this.getAuth
+        .createQueryBuilder('auth')
         .update(Auth)
         .set({ deletedAt: deleteDate })
         .where('auth.id = :userId', { userId })
-      .execute()
-      
-
+        .execute()
     } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }
@@ -425,16 +421,12 @@ class AuthService {
 
   async deleteAccounts() {
     try {
-      const result = await this.getAuth.createQueryBuilder()
-        .delete()
-        .where('deleted_at < NOW()')
-        .execute()
+      const result = await this.getAuth.createQueryBuilder().delete().where('deleted_at < NOW()').execute()
 
       return result
     } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }
-   
   }
 }
 
