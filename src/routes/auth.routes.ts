@@ -30,12 +30,10 @@ router.post('/verifyOTP', authController.verifyOtp)
 router.patch('/resetpassword', authController.resetPassword)
 router.use(authentication())
 router.get('/search', wrapper(authController.searchUser))
-
 router.use(authorization([Role.USER]))
 router.post('/get', authController.getEmail)
 router.get('/updatePassword', (_, res) => res.status(StatusCodes.SUCCESS).render('password'))
 router.patch('/updatePassword', catchAsync(authController.updatePassword))
-
 router.patch('/update', upload.single('profile'), catchAsync(authController.updateUser))
 router.patch('/active', authController.changeStatus)
 router.get('/userProfile/:id', wrapper(authController.getUserProfile))

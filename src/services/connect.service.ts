@@ -290,14 +290,14 @@ export class ConnectService {
 
       const blockedUser = await this.AuthRepo.findOneBy({ id: blocked })
       if (!blockedUser) throw HttpException.unauthorized
-   const isBlocked = await this.blockRepo.findOne({
-      where: {
-        blocked_by: { id: userId },   
-        blocked_to: { id: blocked }
-      }, relations:['blocked_by', 'blocked_to']
-    });
+      const isBlocked = await this.blockRepo.findOne({
+        where: {
+          blocked_by: { id: userId },
+          blocked_to: { id: blocked },
+        },
+        relations: ['blocked_by', 'blocked_to'],
+      })
       return isBlocked
-
     } catch (error: any) {
       throw HttpException.badRequest(error.message)
     }

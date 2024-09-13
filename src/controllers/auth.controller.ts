@@ -63,6 +63,7 @@ export class AuthController {
       })
     }
   }
+
   async googleLogin(req: Request, res: Response) {
     const googleId = req.body.id
     const data = await authService.googleLogin(googleId)

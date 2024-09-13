@@ -44,9 +44,7 @@ class AuthService {
       }
       if (!passwordRegex.test(data.password)) {
         throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
-
       }
-   
 
       const auth = this.getAuth.create({
         email: data.email,
@@ -291,7 +289,7 @@ class AuthService {
 
   async resetPassword(email: string, password: string, confirmPassword: string) {
     try {
-       if (!passwordRegex.test(password)) {
+      if (!passwordRegex.test(password)) {
         throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
       }
       if (password !== confirmPassword) throw HttpException.badRequest('Password should be matched in both fields')
