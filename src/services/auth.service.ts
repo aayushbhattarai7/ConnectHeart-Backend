@@ -291,6 +291,9 @@ class AuthService {
 
   async resetPassword(email: string, password: string, confirmPassword: string) {
     try {
+       if (!passwordRegex.test(password)) {
+        throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
+      }
       if (password !== confirmPassword) throw HttpException.badRequest('Password should be matched in both fields')
       const hashedPassword = await this.bcryptService.hash(password)
       await this.getAuth.update({ email }, { password: hashedPassword })
