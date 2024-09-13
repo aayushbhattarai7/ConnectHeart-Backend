@@ -42,16 +42,11 @@ class AuthService {
       if (!emailRegex.test(data.email)) {
         throw HttpException.badRequest('Please enter valid email')
       }
-      if (passwordRegex.test(data.password)) {
-        console.log('true')
-      } else {
-        console.log('false')
-        console.log(data.password)
-      }
+      if (!passwordRegex.test(data.password)) {
+        throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
 
-      // if (!passwordRegex.test(data.password)) {
-      //   throw HttpException.badRequest('Password requires an uppercase, digit, and special char.')
-      // }
+      }
+   
 
       const auth = this.getAuth.create({
         email: data.email,
@@ -131,14 +126,12 @@ class AuthService {
       const user = await this.getAuth.findOne({
         where: { email: decoded.email },
       })
-      console.log(decoded.email)
       if (!user) {
         try {
           const user = new Auth()
           user.email = decoded?.email
           user.password = await this.bcryptService.hash(decoded?.sub)
           const save = await this.getAuth.save(user)
-          console.log(decoded)
           if (save) {
             const details = new UserDetails()
             details.auth = save
@@ -154,7 +147,6 @@ class AuthService {
           throw HttpException.badRequest(error.message)
         }
       } else {
-        console.log(await UserService.getById(user?.id), 'hahahaha')
         return await UserService.getById(user?.id)
       }
     } catch (error: any) {
