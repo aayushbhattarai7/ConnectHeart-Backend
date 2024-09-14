@@ -284,22 +284,25 @@ export class ConnectService {
   }
 
   async getBlockedStatus(userId: string, blocked: string) {
-    try {
-      const user = await this.AuthRepo.findOneBy({ id: userId })
-      if (!user) throw HttpException.unauthorized
+  try {
+    const user = await this.AuthRepo.findOneBy({ id: userId });
+    if (!user) throw new HttpException('User not authorized', 401);
 
-      const blockedUser = await this.AuthRepo.findOneBy({ id: blocked })
-      if (!blockedUser) throw HttpException.unauthorized
-      const isBlocked = await this.blockRepo.findOne({
-        where: {
-          blocked_by: { id: userId },
-          blocked_to: { id: blocked },
-        },
-        relations: ['blocked_by', 'blocked_to'],
-      })
-      return isBlocked
-    } catch (error: any) {
-      throw HttpException.badRequest(error.message)
-    }
+    const blockedUser = await this.AuthRepo.findOneBy({ id: blocked });
+    if (!blockedUser) throw new HttpException('Blocked user not authorized', 401);
+
+    const isBlocked = await this.blockRepo.findOne({
+      where: [
+        { blocked_by: { id: userId }, blocked_to: { id: blocked } }, 
+        { blocked_by: { id: blocked }, blocked_to: { id: userId } }   
+      ],
+      relations: ['blocked_by', 'blocked_to'],
+    });
+
+    return isBlocked;
+  } catch (error: any) {
+    throw new HttpException(error.message, 400);
   }
+}
+
 }
