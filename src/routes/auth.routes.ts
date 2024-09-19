@@ -1,4 +1,4 @@
-import { Router, type Response } from 'express'
+import { Router } from 'express'
 import { AuthController } from '../controllers/auth.controller'
 import { catchAsync } from '../utils/catchAsync.utils'
 import { authorization } from '../middleware/authorization.middleware'
@@ -12,13 +12,7 @@ const router: Router = Router()
 const authController = new AuthController()
 
 router.post('/signup', upload.single('profile'), catchAsync(authController.create))
-router.get('/signup', (_, res: Response) => {
-  res.render('signup')
-})
 
-router.get('/login', (_, res: Response) => {
-  res.status(StatusCodes.SUCCESS).render('login')
-})
 router.post('/login', wrapper(authController.login))
 
 router.post('/google', wrapper(authController.googleLogin))

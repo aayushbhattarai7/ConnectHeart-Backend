@@ -30,7 +30,6 @@ class PostMedia extends Base {
 
   transferImageFromTempToUpload(id: string, type: MediaType): void {
     const post_id = this.posts.id
-    console.log(post_id, 'Post ko id postid')
     const TEMP_PATH = path.join(getTempFolderPathForPost(), this.name)
     const UPLOAD_PATH = path.join(getUploadFolderpathForPost(), type.toLowerCase(), this.id.toString())
     !fs.existsSync(UPLOAD_PATH) && fs.mkdirSync(UPLOAD_PATH, { recursive: true })
