@@ -10,6 +10,7 @@ class webTokenService {
         id: user.id,
         role,
       },
+      
       options.secret,
       {
         expiresIn: options.expiresIn,
