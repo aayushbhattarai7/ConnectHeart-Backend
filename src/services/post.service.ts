@@ -8,7 +8,6 @@ import PostMedia from '../entities/posts/postMedia.entity'
 import HttpException from '../utils/HttpException.utils'
 import { transferImageFromUploadToTemp } from '../utils/path.utils'
 import { IsNull } from 'typeorm'
-import { Like } from '../entities/like/like.entity'
 class PostService {
   constructor(
     private readonly postRepository = AppDataSource.getRepository(Post),
