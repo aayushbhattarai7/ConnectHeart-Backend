@@ -1,1 +1,1 @@
-# The social media backend code
+# The social media backend code.
