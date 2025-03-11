@@ -411,7 +411,7 @@ class AuthService {
       throw HttpException.badRequest(error.message)
     }
   }
-
+//commit
   async deleteAccounts() {
     try {
       const result = await this.getAuth.createQueryBuilder().delete().where('deleted_at < NOW()').execute()
