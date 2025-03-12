@@ -398,7 +398,7 @@ class AuthService {
     try {
       const auth = await this.getAuth.findOneBy({ id: userId })
       if (!auth) throw HttpException.unauthorized(Message.notAuthorized)
-
+//delete user
       const deleteDate = new Date()
       deleteDate.setDate(deleteDate.getDate() + 10)
       await this.getAuth
